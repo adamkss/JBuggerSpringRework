@@ -59,7 +59,6 @@ sap.ui.define([
 		_updateUIElements: function () {
 			var oModel = this.getOwnerComponent().getModel();
 			var oUIState = this.getOwnerComponent().getHelper().getCurrentUIState();
-			oModel.setData(oUIState);
 		},
 
 		onExit: function () {

@@ -2,6 +2,7 @@
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns="sap.uxap" 
 	xmlns:tnt="sap.tnt" 
+	xmlns:f="sap.f"
 	xmlns:core="sap.ui.core" 
 	xmlns:m="sap.m" controllerName="jbuggerSAPUI.controller.ManageBugs">
 
@@ -20,7 +21,7 @@
 		<tnt:sideContent>
 			<tnt:SideNavigation expanded="true" itemSelect="onItemSelect">
 				<tnt:NavigationList>
-					<tnt:NavigationListItem text="View bugs" icon="sap-icon://table-view"/>
+					<tnt:NavigationListItem text="View bugs" icon="sap-icon://table-view" key="flexibleColumnLayout"/>
 					<tnt:NavigationListItem text="Create bug" icon="sap-icon://add"/>
 				</tnt:NavigationList>
 			</tnt:SideNavigation>
@@ -28,6 +29,7 @@
 		<tnt:mainContents>
 			<m:NavContainer id="pageContainer">
 				<m:pages>
+					<f:FlexibleColumnLayout id="flexibleColumnLayout" stateChange="onStateChanged" layout="{/layout}" backgroundDesign="Solid"></f:FlexibleColumnLayout>
 				</m:pages>
 			</m:NavContainer>
 		</tnt:mainContents>

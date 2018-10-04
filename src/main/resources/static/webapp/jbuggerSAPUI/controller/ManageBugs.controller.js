@@ -11,14 +11,14 @@ sap.ui.define([
          */
         onInit: function () {
             this._objectPageLayout = this.byId("ObjectPageLayout");
-            this.navigateToViewBugs();
+            // this.navigateToViewBugs();
         },
 
         onItemSelect: function (oEvent) {
             var item = oEvent.getParameter('item');
             switch (item.getText()) {
-                case "View bugs": {
-                    this.navigateToViewBugs();
+                case "View bugs":{
+                    this.navigateToViewBugs(oEvent);
                     break;
                 }
                 case "Create bug": {
@@ -28,14 +28,14 @@ sap.ui.define([
             }
         },
 
-        navigateToViewBugs: function () {
-            if (!this._viewBugsView) {
-                this._viewBugsView = sap.ui.xmlview("jbuggerSAPUI.view.ViewBugs");
-            }
+        // navigateToViewBugs: function () {
+        //     if (!this._viewBugsView) {
+        //         this._viewBugsView = sap.ui.xmlview("jbuggerSAPUI.view.ViewBugs");
+        //     }
 
-            this.getView().byId("pageContainer").addPage(this._viewBugsView);
-            sap.ui.getCore().byId(this.getView().getId() + "--pageContainer").to(this._viewBugsView.sId);
-        },
+        //     this.getView().byId("pageContainer").addPage(this._viewBugsView);
+        //     sap.ui.getCore().byId(this.getView().getId() + "--pageContainer").to(this._viewBugsView.sId);
+        // },
 
         navigateToCreateBug: function () {
             if (!this._createBugView) {
@@ -44,6 +44,12 @@ sap.ui.define([
 
             this.getView().byId("pageContainer").addPage(this._createBugView);
             sap.ui.getCore().byId(this.getView().getId() + "--pageContainer").to(this._createBugView.sId);
+        },
+
+        navigateToViewBugs: function(oEvent){
+            var item = oEvent.getParameter('item');
+			var viewId = this.getView().getId();
+            sap.ui.getCore().byId(viewId + "--pageContainer").to(viewId + "--" + item.getKey());
         },
 
         onSideNavButtonPress: function () {
