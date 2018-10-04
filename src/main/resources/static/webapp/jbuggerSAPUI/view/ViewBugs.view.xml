@@ -1,0 +1,27 @@
+<mvc:View height="100%" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.uxap" 
+	xmlns:f="sap.f"
+	xmlns:core="sap.ui.core" 
+	xmlns:m="sap.m" controllerName="jbuggerSAPUI.controller.ViewBugs">
+	<m:Page title="View bugs" class="sapUiContentPadding" showNavButton="false">
+		<m:headerContent>
+			<!-- <m:Button icon="sap-icon://action" tooltip="Share" /> -->
+		</m:headerContent>
+		<m:subHeader>
+
+		</m:subHeader>
+		<m:content>
+			<f:FlexibleColumnLayout id="flexibleColumnLayout" stateChange="onStateChanged" layout="{/layout}" backgroundDesign="Solid"></f:FlexibleColumnLayout>
+		</m:content>
+		<m:footer>
+			<!-- <Toolbar>
+				<ToolbarSpacer/>
+				<Button text="Accept" type="Accept" />
+				<Button text="Reject" type="Reject" />
+				<Button text="Edit" />
+				<Button text="Delete" />
+			</Toolbar> -->
+		</m:footer>
+	</m:Page>
+</mvc:View>

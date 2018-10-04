@@ -1,0 +1,36 @@
+<mvc:View height="100%" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.uxap" 
+	xmlns:tnt="sap.tnt" 
+	xmlns:core="sap.ui.core" 
+	xmlns:m="sap.m" controllerName="jbuggerSAPUI.controller.ManageBugs">
+
+	<tnt:ToolPage id="toolPage">
+		<tnt:header>
+			<tnt:ToolHeader>
+				<m:Button id="sideNavigationToggleButton" icon="sap-icon://menu2" type="Transparent" press="onSideNavButtonPress">
+					<m:layoutData>
+						<m:OverflowToolbarLayoutData priority="NeverOverflow" />
+					</m:layoutData>
+				</m:Button>
+				<m:ToolbarSpacer/>
+				<m:Button text="Change language" type="Transparent"/>
+			</tnt:ToolHeader>
+		</tnt:header>
+		<tnt:sideContent>
+			<tnt:SideNavigation expanded="true" itemSelect="onItemSelect">
+				<tnt:NavigationList>
+					<tnt:NavigationListItem text="View bugs" icon="sap-icon://table-view"/>
+					<tnt:NavigationListItem text="Create bug" icon="sap-icon://add"/>
+				</tnt:NavigationList>
+			</tnt:SideNavigation>
+		</tnt:sideContent>
+		<tnt:mainContents>
+			<m:NavContainer id="pageContainer">
+				<m:pages>
+				</m:pages>
+			</m:NavContainer>
+		</tnt:mainContents>
+	</tnt:ToolPage>
+
+</mvc:View>

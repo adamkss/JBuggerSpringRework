@@ -1,0 +1,26 @@
+<mvc:View height="100%" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.uxap" 
+	xmlns:core="sap.ui.core" 
+	xmlns:m="sap.m" controllerName="jbuggerSAPUI.controller.CreateBug">
+	<m:Page title="Create bug" class="sapUiContentPadding" showNavButton="false">
+		<m:headerContent>
+			<!-- <m:Button icon="sap-icon://action" tooltip="Share" /> -->
+		</m:headerContent>
+		<m:subHeader>
+
+		</m:subHeader>
+		<m:content>
+			<m:Text text="asasdsadd"/>
+		</m:content>
+		<m:footer>
+			<!-- <Toolbar>
+				<ToolbarSpacer/>
+				<Button text="Accept" type="Accept" />
+				<Button text="Reject" type="Reject" />
+				<Button text="Edit" />
+				<Button text="Delete" />
+			</Toolbar> -->
+		</m:footer>
+	</m:Page>
+</mvc:View>

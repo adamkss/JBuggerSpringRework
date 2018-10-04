@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="utf-8">
+
+	<title>JBugger</title>
+
+	<script id="sap-ui-bootstrap" src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js" data-sap-ui-libs="sap.m"
+	 data-sap-ui-theme="sap_belize" data-sap-ui-xx-bindingSyntax="complex" data-sap-ui-preload="async"
+	 data-sap-ui-compatVersion="edge" data-sap-ui-resourceroots='{"jbuggerSAPUI": "./"}'>
+
+	</script>
+
+	<!-- Application launch configuration -->
+	<script>
+		 sap.ui.getCore().attachInit(function () {
+            new sap.m.Shell({
+                app: new sap.ui.core.ComponentContainer({
+                    height: "100%",
+                    name: "jbuggerSAPUI"
+                }),
+                appWidthLimited: false
+            }).placeAt("content");
+        });
+	</script>
+</head>
+
+<!-- UI Content -->
+
+<body class="sapUiBody" id="content" role="application">
+</body>
+
+</html>
