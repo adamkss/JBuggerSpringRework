@@ -20,9 +20,9 @@
 		</tnt:header>
 		<tnt:sideContent>
 			<tnt:SideNavigation expanded="true" itemSelect="onItemSelect">
-				<tnt:NavigationList>
-					<tnt:NavigationListItem text="View bugs" icon="sap-icon://table-view" key="flexibleColumnLayout"/>
-					<tnt:NavigationListItem text="Create bug" icon="sap-icon://add"/>
+				<tnt:NavigationList id="navigationList">
+					<tnt:NavigationListItem id="viewBugsNavListItem" text="View bugs" icon="sap-icon://table-view" key="flexibleColumnLayout"/>
+					<tnt:NavigationListItem id="createBugNavListItem" text="Create bug" icon="sap-icon://add"/>
 				</tnt:NavigationList>
 			</tnt:SideNavigation>
 		</tnt:sideContent>

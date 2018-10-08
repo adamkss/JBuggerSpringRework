@@ -1,0 +1,6 @@
+<m:View displayBlock="true" controllerName="jbuggerSAPUI.controller.DetailDetail" height="100%"
+		xmlns="sap.f"
+		xmlns:m="sap.m">
+
+	<m:Text text="detailtetail"/>
+</m:View>

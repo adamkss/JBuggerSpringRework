@@ -1,0 +1,73 @@
+<m:View displayBlock="true" controllerName="jbuggerSAPUI.controller.Detail" height="100%" 
+	xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f" 
+	xmlns:form="sap.ui.layout.form">
+
+	<ObjectPageLayout id="ObjectPageLayout" showTitleInHeaderContent="false" alwaysShowContentHeader="true" preserveHeaderStateOnScroll="false" headerContentPinnable="true" isChildPage="true" upperCaseAnchorBar="false">
+		<headerTitle>
+			<ObjectPageDynamicHeaderTitle>
+				<expandedHeading>
+					<m:Title text="{selectedBugModel>/title}" wrapping="true" class="sapUiSmallMarginEnd"/>
+				</expandedHeading>
+
+				<navigationActions>
+					<m:OverflowToolbarButton type="Transparent" icon="sap-icon://full-screen" press="handleFullScreen" tooltip="Enter Full Screen Mode" visible="{= ${/actionButtonsInfo/midColumn/fullScreen} !== null }"/>
+					<m:OverflowToolbarButton type="Transparent" icon="sap-icon://exit-full-screen" press="handleExitFullScreen" tooltip="Exit Full Screen Mode" visible="{= ${/actionButtonsInfo/midColumn/exitFullScreen} !== null }"/>
+					<m:OverflowToolbarButton type="Transparent" icon="sap-icon://decline" press="handleClose" tooltip="Close column" visible="{= ${/actionButtonsInfo/midColumn/closeColumn} !== null }"/>
+				</navigationActions>
+
+			</ObjectPageDynamicHeaderTitle>
+		</headerTitle>
+
+		<headerContent>
+
+		</headerContent>
+
+		<sections>
+			<ObjectPageSection title="General Information">
+				<subSections>
+					<ObjectPageSubSection>
+						<blocks>
+							<form:SimpleForm maxContainerCols="2" editable="false" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12" emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1">
+								<form:content>
+									<m:Label text="Bug ID"/>
+									<m:Text text="{selectedBugModel>/id}"/>
+									<m:Label text="Description"/>
+									<m:Text text="{selectedBugModel>/description}"/>
+									<m:Label text="Revision"/>
+									<m:Text text="{selectedBugModel>/revision}"/>
+									<m:Label text="Severity"/>
+									<m:Text text="{selectedBugModel>/severity}"/>
+									<m:Label text="Status"/>
+									<m:Text text="{selectedBugModel>/status}"/>
+								</form:content>
+							</form:SimpleForm>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+
+			<ObjectPageSection title="Attachments">
+				<subSections>
+					<ObjectPageSubSection>
+						<blocks>
+							<m:Table id="attachmentsTable" items="{path : 'products>/ProductCollectionStats/Filters/1/values'}">
+								<m:columns>
+									<m:Column />
+								</m:columns>
+								<m:items>
+									<m:ColumnListItem type="Single" press="handleItemPress">
+										<m:cells>
+											<m:ObjectIdentifier text="{products>text}" />
+										</m:cells>
+									</m:ColumnListItem>
+								</m:items>
+							</m:Table>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+		</sections>
+	</ObjectPageLayout>
+</m:View>

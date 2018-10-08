@@ -1,14 +1,14 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.ViewBugOutDto;
+import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.services.BugService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/bugs")
 @RestController
@@ -21,5 +21,18 @@ public class BugController {
     @GetMapping
     public List<ViewBugOutDto> getAllBugs() {
         return ViewBugOutDto.mapToDtoList(bugService.getAllBugs());
+    }
+
+    @GetMapping("/bug/{id}")
+    public ResponseEntity<ViewBugOutDto> getBugById(@PathVariable(name ="id") Integer id){
+        Optional<Bug> bug = bugService.getBugById(id);
+
+        if(bug.isPresent()){
+            return ResponseEntity.ok(
+                    ViewBugOutDto.mapToDto(bug.get())
+            );
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 }

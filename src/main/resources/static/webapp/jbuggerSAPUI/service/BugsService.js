@@ -14,8 +14,21 @@ sap.ui.define([], function () {
             }).fail(function (oJqXHR) {
                 fnFail(oJqXHR);
             });
-        }
+        },
 
+        getBugById: function (sId, fnDone, fnFail) {
+            let sUrl = "http://localhost:8080/bugs/bug/"+sId;
+            jQuery.ajax({
+                url: sUrl,
+                type: "get",
+                async: false
+            }).done(function (oData) {
+                fnDone(oData);
+            }).fail(function (oJqXHR) {
+                fnFail(oJqXHR);
+            });
+        }
+                
         // addNewDog: function(sName,sOwnerName, fnDone){
         //     let sUrl = "http://localhost:8080/dogs/dog"
 

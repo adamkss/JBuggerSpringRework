@@ -1,0 +1,33 @@
+<core:View displayBlock="true" controllerName="jbuggerSAPUI.controller.Master" height="100%" 
+	xmlns="sap.m" 
+	xmlns:f="sap.f" 
+	xmlns:core="sap.ui.core">
+	<f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false">
+		<!-- DynamicPage Title -->
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Title text="Bugs"/>
+				</f:heading>
+			</f:DynamicPageTitle>
+		</f:title>
+
+		<!-- DynamicPage Content -->
+		<f:content>
+			<List id="BugsList" items="{/bugs}" mode="Single" includeItemInSelection="false" itemPress="onListItemPress">
+				<headerToolbar>
+					<Toolbar>
+						<content>
+							<Title text="Bugs" level="H2"/>
+						</content>
+					</Toolbar>
+				</headerToolbar>
+				<StandardListItem type="Active" title="{title}" description="{description}" />
+			</List>
+		</f:content>
+
+		<!-- DynamicPage Footer -->
+		<f:footer>
+		</f:footer>
+	</f:DynamicPage>
+</core:View>

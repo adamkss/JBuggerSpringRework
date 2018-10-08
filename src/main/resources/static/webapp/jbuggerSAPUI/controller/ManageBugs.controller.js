@@ -11,17 +11,20 @@ sap.ui.define([
          */
         onInit: function () {
             this._objectPageLayout = this.byId("ObjectPageLayout");
-            // this.navigateToViewBugs();
             this.oRouter = this.getOwnerComponent().getRouter();
-			this.oRouter.attachRouteMatched(this.onRouteMatched, this);
-			this.oRouter.attachBeforeRouteMatched(this.onBeforeRouteMatched, this);
+            this.oRouter.attachRouteMatched(this.onRouteMatched, this);
+            this.oRouter.attachBeforeRouteMatched(this.onBeforeRouteMatched, this);
+            this._navigationList = this.getView().byId("navigationList");
+            this._viewBugsNavListItem = this.getView().byId("viewBugsNavListItem");
+            this._createBugNavListItem = this.getView().byId("createBugNavListItem");
         },
+
 
         onItemSelect: function (oEvent) {
             var item = oEvent.getParameter('item');
             switch (item.getText()) {
-                case "View bugs":{
-                    this.navigateToViewBugs(oEvent);
+                case "View bugs": {
+                    this.navigateToViewBugs();
                     break;
                 }
                 case "Create bug": {
@@ -31,28 +34,13 @@ sap.ui.define([
             }
         },
 
-        // navigateToViewBugs: function () {
-        //     if (!this._viewBugsView) {
-        //         this._viewBugsView = sap.ui.xmlview("jbuggerSAPUI.view.ViewBugs");
-        //     }
-
-        //     this.getView().byId("pageContainer").addPage(this._viewBugsView);
-        //     sap.ui.getCore().byId(this.getView().getId() + "--pageContainer").to(this._viewBugsView.sId);
-        // },
-
         navigateToCreateBug: function () {
-            if (!this._createBugView) {
-                this._createBugView = sap.ui.xmlview("jbuggerSAPUI.view.CreateBug");
-            }
-
-            this.getView().byId("pageContainer").addPage(this._createBugView);
-            sap.ui.getCore().byId(this.getView().getId() + "--pageContainer").to(this._createBugView.sId);
+            this.oRouter.navTo("createBug");
         },
 
-        navigateToViewBugs: function(oEvent){
-            var item = oEvent.getParameter('item');
-			var viewId = this.getView().getId();
-            sap.ui.getCore().byId(viewId + "--pageContainer").to(viewId + "--" + item.getKey());
+        navigateToViewBugs: function () {
+            var oNextUIState = this.getOwnerComponent().getHelper().getNextUIState(0);
+            this.oRouter.navTo("viewBugsMaster", { layout: oNextUIState.layout });
         },
 
         onSideNavButtonPress: function () {
@@ -74,58 +62,84 @@ sap.ui.define([
             }
         },
 
-        onBeforeRouteMatched: function(oEvent) {
+        onBeforeRouteMatched: function (oEvent) {
 
-			var oModel = this.getOwnerComponent().getModel();
+            var oModel = this.getOwnerComponent().getModel();
 
-			var sLayout = oEvent.getParameters().arguments.layout;
+            var sLayout = oEvent.getParameters().arguments.layout;
 
-			// If there is no layout parameter, query for the default level 0 layout (normally OneColumn)
-			if (!sLayout) {
-				var oNextUIState = this.getOwnerComponent().getHelper().getNextUIState(0);
-				sLayout = oNextUIState.layout;
-			}
+            // If there is no layout parameter, query for the default level 0 layout (normally OneColumn)
+            if (!sLayout) {
+                var oNextUIState = this.getOwnerComponent().getHelper().getNextUIState(0);
+                sLayout = oNextUIState.layout;
+            }
 
-			// Update the layout of the FlexibleColumnLayout
-			if (sLayout) {
-				oModel.setProperty("/layout", sLayout);
-			}
-		},
+            // Update the layout of the FlexibleColumnLayout
+            if (sLayout) {
+                oModel.setProperty("/layout", sLayout);
+            }
+        },
 
-		onRouteMatched: function (oEvent) {
-			var sRouteName = oEvent.getParameter("name"),
-				oArguments = oEvent.getParameter("arguments");
+        onRouteMatched: function (oEvent) {
+            var sRouteName = oEvent.getParameter("name"),
+                oArguments = oEvent.getParameter("arguments");
 
-			// this._updateUIElements();
 
-			// Save the current route name
-			this.currentRouteName = sRouteName;
-			this.currentProduct = oArguments.product;
-			this.currentSupplier = oArguments.supplier;
-		},
+            // Save the current route name
+            this.currentRouteName = sRouteName;
+            this.currentBug = oArguments.bug;
+            this.currentSupplier = oArguments.supplier;
+            this._updateUIElements();
+            switch (sRouteName) {
+                case "home":
+                    var oNextUIState = this.getOwnerComponent().getHelper().getNextUIState(0);
+                    this.oRouter.navTo("viewBugsMaster", { layout: oNextUIState.layout });
+                    break;
 
-		onStateChanged: function (oEvent) {
-			var bIsNavigationArrow = oEvent.getParameter("isNavigationArrow"),
-				sLayout = oEvent.getParameter("layout");
+                case "viewBugsMaster":
+                case "detail":
+                    var viewId = this.getView().getId();
+                    sap.ui.getCore().byId(viewId + "--pageContainer").to(viewId + "--flexibleColumnLayout");
 
-			// this._updateUIElements();
+                    this._navigationList.setSelectedItem(this._viewBugsNavListItem);
 
-			// Replace the URL with the new layout if a navigation arrow was used
-			if (bIsNavigationArrow) {
-				this.oRouter.navTo(this.currentRouteName, {layout: sLayout, product: this.currentProduct, supplier: this.currentSupplier}, true);
-			}
-		},
+                    break;
 
-		// Update the close/fullscreen buttons visibility
-		_updateUIElements: function () {
-			var oModel = this.getOwnerComponent().getModel();
-			var oUIState = this.getOwnerComponent().getHelper().getCurrentUIState();
-			oModel.setData(oUIState);
-		},
+                case "createBug":
+                    if (!this._createBugView) {
+                        this._createBugView = sap.ui.xmlview("jbuggerSAPUI.view.CreateBug");
+                    }
+                    this.getView().byId("pageContainer").addPage(this._createBugView);
+                    sap.ui.getCore().byId(this.getView().getId() + "--pageContainer").to(this._createBugView.sId);
 
-		onExit: function () {
-			this.oRouter.detachRouteMatched(this.onRouteMatched, this);
-			this.oRouter.detachBeforeRouteMatched(this.onBeforeRouteMatched, this);
-		}
+                    this._navigationList.setSelectedItem(this._createBugNavListItem);
+
+                    break;
+            }
+        },
+
+        onStateChanged: function (oEvent) {
+            var bIsNavigationArrow = oEvent.getParameter("isNavigationArrow"),
+                sLayout = oEvent.getParameter("layout");
+
+            this._updateUIElements();
+
+            // Replace the URL with the new layout if a navigation arrow was used
+            if (bIsNavigationArrow) {
+                this.oRouter.navTo(this.currentRouteName, { layout: sLayout, bug: this.currentBug, supplier: this.currentSupplier }, true);
+            }
+        },
+
+        // Update the close/fullscreen buttons visibility
+        _updateUIElements: function () {
+            var oModel = this.getOwnerComponent().getModel();
+            var oUIState = this.getOwnerComponent().getHelper().getCurrentUIState();
+            oModel.setData(oUIState);
+        },
+
+        onExit: function () {
+            this.oRouter.detachRouteMatched(this.onRouteMatched, this);
+            this.oRouter.detachBeforeRouteMatched(this.onBeforeRouteMatched, this);
+        }
     });
 });

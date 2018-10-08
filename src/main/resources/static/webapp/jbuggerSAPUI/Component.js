@@ -42,4 +42,4 @@ function(UIComponent,FlexibleColumnLayoutSemanticHelper,JSONModel) {
 	});
 	return Component;
 	
-});
+},true);

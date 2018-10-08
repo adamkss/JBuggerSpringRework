@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,5 +15,9 @@ public class BugService {
 
     public List<Bug> getAllBugs(){
         return bugRepository.findAll();
+    }
+
+    public Optional<Bug> getBugById(Integer id){
+        return bugRepository.findById(id);
     }
 }

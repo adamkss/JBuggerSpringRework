@@ -30,39 +30,49 @@
 			},
 			"routes": [
 				{
-					"pattern": "page2",
-					"name": "page2",
-					"target": "page2",
-					"layout": "EndColumnFullScreen"
-				},
-				{
-					"pattern": ":layout:",
-					"name": "master",
+					"pattern": "",
+					"name": "home",
 					"target": [
-						"master",
+						"viewBugsMaster",
 						"detail"
 					]
 				},
 				{
-					"pattern": "detail/{product}/{layout}",
+					"pattern": "createBug",
+					"name": "createBug",
+					"target": "createBug"
+				},
+				{
+					"pattern": "viewBugs/:layout:",
+					"name": "viewBugsMaster",
+					"target": [
+						"viewBugsMaster",
+						"detail"
+					]
+				},
+				{
+					"pattern": "viewBugs/detail/{bug}/{layout}",
 					"name": "detail",
 					"target": [
-						"master",
+						"viewBugsMaster",
 						"detail"
 					]
 				},
 				{
-					"pattern": "detailDetail/{supplier}/{layout}",
+					"pattern": "viewBugs/detailDetail/{supplier}/{layout}",
 					"name": "detailDetail",
 					"target": [
-						"master",
+						"viewBugsMaster",
 						"detail",
 						"detailDetail"
 					]
 				}
 			],
 			"targets": {
-				"master": {
+				"createBug":{
+					"viewName":"ManageBugs"
+				},
+				"viewBugsMaster": {
 					"viewName": "Master",
 					"controlAggregation": "beginColumnPages"
 				},
