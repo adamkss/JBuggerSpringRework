@@ -2,6 +2,7 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.ViewUserDtoOut;
 import com.adam.kiss.jbugger.entities.User;
+import com.adam.kiss.jbugger.projections.UserWithNameAndUsernameProjection;
 import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -31,5 +33,10 @@ public class UserController {
             );
         else
             return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/namesAndUsernames")
+    public List<UserWithNameAndUsernameProjection> getAllUsernames(){
+        return userService.getAllUsersWithNamesAndUsernames();
     }
 }

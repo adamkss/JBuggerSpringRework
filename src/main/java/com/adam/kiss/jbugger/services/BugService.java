@@ -20,4 +20,8 @@ public class BugService {
     public Optional<Bug> getBugById(Integer id){
         return bugRepository.findById(id);
     }
+
+    public Bug createBug(Bug bug){
+        return bugRepository.save(bug);
+    }
 }

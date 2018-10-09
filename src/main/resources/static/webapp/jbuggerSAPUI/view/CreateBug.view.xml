@@ -1,26 +1,84 @@
-<mvc:View height="100%" 
+<mvc:View height="100%" controllerName="jbuggerSAPUI.controller.CreateBug" 
 	xmlns:mvc="sap.ui.core.mvc" 
-	xmlns="sap.uxap" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
 	xmlns:core="sap.ui.core" 
-	xmlns:m="sap.m" controllerName="jbuggerSAPUI.controller.CreateBug">
-	<m:Page title="Create bug" class="sapUiContentPadding" showNavButton="false">
-		<m:headerContent>
-			<!-- <m:Button icon="sap-icon://action" tooltip="Share" /> -->
-		</m:headerContent>
-		<m:subHeader>
-
-		</m:subHeader>
+	xmlns:u="sap.ui.unified" 
+	xmlns:m="sap.m" 
+	xmlns="sap.m">
+	<m:Page title="Create bug" titleLevel="H2" showFooter="false">
 		<m:content>
-			<m:Text text="asasdsadd"/>
+			<NavContainer id="wizardNavContainer">
+				<pages>
+					<Page id="wizardContentPage" showHeader="false">
+						<content>
+							<Wizard id="CreateBugWizard" complete="wizardCompletedHandler">
+								<WizardStep id="GeneralInfoStep" title="General information" validated="false" complete="onGeneralInfoStepComplete">
+									<MessageStrip class="sapUiSmallMarginBottom" text="Please enter general information related to the new bug." showIcon="true"/>
+									<form:SimpleForm id="SimpleFormDisplay480_12120" editable="false" layout="ResponsiveGridLayout" labelSpanXL="7" labelSpanL="4" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1" singleContainerFullSize="false" width="100%">
+										<form:content>
+											<Label text="Title" required="true"/>
+											<Input valueStateText="Enter 3 characters or more." valueState="{/bugTitleState}" id="bugTitle" liveChange="generalInfoValidation" placeholder="Give the bug a title..." value="{/bugTitle}"/>
+											<Label text="Description" required="true"/>
+											<TextArea valueStateText="Enter 10 characters or more." valueState="{/bugDescriptionState}" id="bugDescription" liveChange="generalInfoValidation" placeholder="Give the bug a description..." value="{/bugDescription}" height="200px"/>
+										</form:content>
+									</form:SimpleForm>
+								</WizardStep>
+								<WizardStep id="SeverityStep" validated="false" title="Severity" activate="onSeverityStepActivation" complete="onSeverityStepComplete">
+									<MessageStrip class="sapUiSmallMarginBottom" text="Please select the severity level for the bug." showIcon="true"/>
+									<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="7" labelSpanL="4" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1" singleContainerFullSize="false" width="100%">
+										<form:content>
+											<Label text="Severity" required="true"/>
+											<Select id="bugSeveritySelect" selectedKey="{/bugSeverity}" change="onSeveritySelectionChange">
+												<core:Item key="Critical" text="Critical"/>
+												<core:Item key="High" text="High"/>
+												<core:Item key="Medium" text="Medium"/>
+												<core:Item key="Low" text="Low"/>
+											</Select>
+										</form:content>
+									</form:SimpleForm>
+								</WizardStep>
+								<WizardStep id="AssignedToStep" validated="false" title="Assigned to" activate="onAssignedToStepActivation" complete="onAssignedToStepComplete">
+									<MessageStrip class="sapUiSmallMarginBottom" text="Please select a user to whom the bug is assigned to. You can skip this also and set it later." showIcon="true"/>
+									<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="7" labelSpanL="4" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1" singleContainerFullSize="false" width="100%">
+										<form:content>
+											<Label text="Assigned to"/>
+											<ComboBox id="assignedToComboBox" showSecondaryValues= "true" filterSecondaryValues= "true" selectedKey="{/assignedToUsername}" width="500px" items="{
+												path: '/UsersWithNameAndUsername',
+												sorter: { path: 'text' }
+											}" selectionChange="onAssignedToComboboxSelectionChange">
+												<core:ListItem key="{username}" text="{name}" additionalText="{username}"/>
+											</ComboBox>
+											<Label text="Target date"/>
+										</form:content>
+									</form:SimpleForm>
+									<Button id="assignedToSkipButton" text="Skip" press="onAssignedToSkipPressed"/>
+								</WizardStep>
+								<WizardStep id="TargetDateStep" validated="false" title="Target date" activate="onTargetDateStepActivation" complete="onTargetDateStepComplete">
+									<MessageStrip class="sapUiSmallMarginBottom" text="Please select a target date for the bug. You can skip this also and set it later." showIcon="true"/>
+									<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="7" labelSpanL="4" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1" singleContainerFullSize="false" width="100%">
+										<form:content>
+											<Label text="Target date"/>
+											<DatePicker id="targetDatePicker" displayFormat= "long" valueFormat="yyyy-MM-dd" value="{path:'/dateValue', type:'sap.ui.model.type.Date'}" class="sapUiSmallMarginBottom" change="onTargetDateValueChange"/>
+										</form:content>
+									</form:SimpleForm>
+									<Button id="targetDateSkipButton" text="Skip" press="onTargetDateSkipPressed"/>
+								</WizardStep>
+								<WizardStep id="AttachmentsStep" activate="pricingActivate" complete="pricingComplete" validated="true" title="Attachments">
+									<MessageStrip class="sapUiSmallMarginBottom" text="You can upload attachments for the new bug. You can skip this also and set it later." showIcon="true"/>
+									
+								</WizardStep>
+							</Wizard>
+						</content>
+						<footer>
+							<OverflowToolbar>
+								<ToolbarSpacer/>
+								<Button text="Cancel" press="handleWizardCancel"/>
+							</OverflowToolbar>
+						</footer>
+					</Page>
+				</pages>
+			</NavContainer>
 		</m:content>
-		<m:footer>
-			<!-- <Toolbar>
-				<ToolbarSpacer/>
-				<Button text="Accept" type="Accept" />
-				<Button text="Reject" type="Reject" />
-				<Button text="Edit" />
-				<Button text="Delete" />
-			</Toolbar> -->
-		</m:footer>
 	</m:Page>
 </mvc:View>

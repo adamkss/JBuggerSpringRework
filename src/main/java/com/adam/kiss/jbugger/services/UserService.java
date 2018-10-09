@@ -1,6 +1,7 @@
 package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.User;
+import com.adam.kiss.jbugger.projections.UserWithNameAndUsernameProjection;
 import com.adam.kiss.jbugger.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,5 +20,9 @@ public class UserService {
 
     public Optional<User> getUserById(Integer id){
         return userRepository.findById(id);
+    }
+
+    public List<UserWithNameAndUsernameProjection> getAllUsersWithNamesAndUsernames(){
+        return userRepository.findAllUsersWithNamesAndUsernamesProjectedBy();
     }
 }
