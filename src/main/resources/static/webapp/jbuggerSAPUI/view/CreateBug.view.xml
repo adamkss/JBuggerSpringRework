@@ -29,7 +29,7 @@
 									<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="7" labelSpanL="4" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1" singleContainerFullSize="false" width="100%">
 										<form:content>
 											<Label text="Severity" required="true"/>
-											<Select id="bugSeveritySelect" selectedKey="{/bugSeverity}" change="onSeveritySelectionChange">
+											<Select id="bugSeveritySelect" selectedKey="{/bugSeverity}" change="onSeveritySelectionChange" forceSelection="false">
 												<core:Item key="Critical" text="Critical"/>
 												<core:Item key="High" text="High"/>
 												<core:Item key="Medium" text="Medium"/>
