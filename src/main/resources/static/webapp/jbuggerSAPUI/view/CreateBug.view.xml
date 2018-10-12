@@ -30,10 +30,10 @@
 										<form:content>
 											<Label text="Severity" required="true"/>
 											<Select id="bugSeveritySelect" selectedKey="{/bugSeverity}" change="onSeveritySelectionChange" forceSelection="false">
-												<core:Item key="Critical" text="Critical"/>
-												<core:Item key="High" text="High"/>
-												<core:Item key="Medium" text="Medium"/>
-												<core:Item key="Low" text="Low"/>
+												<core:Item key="CRITICAL" text="Critical"/>
+												<core:Item key="HIGH" text="High"/>
+												<core:Item key="MEDIUM" text="Medium"/>
+												<core:Item key="LOW" text="Low"/>
 											</Select>
 										</form:content>
 									</form:SimpleForm>
@@ -59,14 +59,29 @@
 									<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="7" labelSpanL="4" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1" singleContainerFullSize="false" width="100%">
 										<form:content>
 											<Label text="Target date"/>
-											<DatePicker id="targetDatePicker" displayFormat= "long" valueFormat="yyyy-MM-dd" value="{path:'/dateValue', type:'sap.ui.model.type.Date'}" class="sapUiSmallMarginBottom" change="onTargetDateValueChange"/>
+											<DatePicker id="targetDatePicker" displayFormat= "long" valueFormat="yyyy-MM-dd" value="{path:'/bugTargetDate'}" class="sapUiSmallMarginBottom" change="onTargetDateValueChange"/>
 										</form:content>
 									</form:SimpleForm>
 									<Button id="targetDateSkipButton" text="Skip" press="onTargetDateSkipPressed"/>
 								</WizardStep>
 								<WizardStep id="AttachmentsStep" activate="pricingActivate" complete="pricingComplete" validated="true" title="Attachments">
 									<MessageStrip class="sapUiSmallMarginBottom" text="You can upload attachments for the new bug. You can skip this also and set it later." showIcon="true"/>
-									
+									<l:VerticalLayout >
+										<l:HorizontalLayout>
+											<Button text="Add one more file..." press="onAddOneMoreFileUploaderPress" type="Emphasized"/>
+											<Button text="Remove last file..." press="onRemoveOneFileUploaderPress" type="Reject" class="sapUiTinyMarginBegin"/>
+										</l:HorizontalLayout>
+										<l:VerticalLayout id="verticalLayoutForUploads" class="sapUiResponsiveContentPadding">
+											<u:FileUploader id="fileUploader"
+											name="fileUpload"
+											sendXHR="true"
+											buttonText="Select file..."
+											uploadUrl="http://localhost:8080/attachments"
+											tooltip="Upload your file to the local server"
+											change="onFileChanged"
+											uploadComplete="handleUploadComplete"/>
+										</l:VerticalLayout>
+									</l:VerticalLayout>
 								</WizardStep>
 							</Wizard>
 						</content>

@@ -26,16 +26,23 @@ sap.ui.define([
             this._targetDatePicker = this.byId("targetDatePicker");
             this._assignedToSkipButton = this.byId("assignedToSkipButton");
             this._targetDateSkipButton = this.byId("targetDateSkipButton");
-
+            this._attachmentsIds = [];
             this._oNavContainer.addPage(this._oWizardReviewPage);
+            this._fileUploaders = [this.byId("fileUploader")];
+            this._noOfFilesToUpload = 0;
+            this._noOfFilesUploaded = 0;
+            this._attachmentsNames = [];
 
             var oModel = new JSONModel({
+                bugTitle: "",
                 bugTitleState: "None",
                 bugDescriptionState: "None",
+                bugDescription: "",
                 bugSeverity: undefined,
                 UsersWithNameAndUsername: [],
-                dateValue: "",
-                assignedToUsername: ""
+                assignedToUsername: "",
+                bugTargetDate: "",
+                attachmentsNames: []
             });
             this._oModel = oModel;
             this.getView().setModel(oModel);
@@ -130,12 +137,109 @@ sap.ui.define([
             this._targetDatePicker.setEnabled(false);
             this._targetDateSkipButton.setVisible(false);
             this._targetDateSkipButton.setEnabled(false);
-           if(this._targetDatePicker.getValue()==="")
-           console.log("empty")
+            if (this._targetDatePicker.getValue() === "")
+                console.log("empty")
         },
 
-        wizardCompletedHandler: function(){
-            this._oNavContainer.to(this._oWizardReviewPage,"flip");
-        }
+        wizardCompletedHandler: function () {
+            this._fileUploaders.forEach(fileUploader => {
+                if (fileUploader.getValue() !== "") {
+                    this._attachmentsNames.push(
+                        {
+                            name: fileUploader.getValue()
+                        }
+                    );
+                }
+            })
+            this.getView().getModel().setProperty("/attachmentsNames", this._attachmentsNames);
+            this._oNavContainer.to(this._oWizardReviewPage);
+        },
+
+        onAddOneMoreFileUploaderPress: function () {
+            var oNewFileUploader = new sap.ui.unified.FileUploader(
+                {
+                    name: "fileUpload",
+                    sendXHR: true,
+                    buttonText: "Select file...",
+                    uploadUrl: "http://localhost:8080/attachments",
+                    uploadComplete: this.handleUploadComplete.bind(this)
+                });
+            this._fileUploaders.push(oNewFileUploader);
+
+            this.byId("verticalLayoutForUploads").addContent(oNewFileUploader);
+        },
+
+        onRemoveOneFileUploaderPress: function () {
+            this.byId("verticalLayoutForUploads").removeContent(this._fileUploaders.pop());
+        },
+
+        handleUploadComplete: function (oEvent) {
+            var attachmentId = oEvent.getParameter("responseRaw");
+            this._attachmentsIds.push(attachmentId);
+            this._noOfFilesUploaded++;
+            if (this._noOfFilesToUpload === this._noOfFilesUploaded) {
+                this._saveNewBug();
+            }
+        },
+
+        onFileChanged: function (oEvent) {
+
+
+        },
+
+        _saveNewBug: function () {
+            var oModel = this.getView().getModel().getData();
+            BugsService.createBug(
+                oModel.bugTitle,
+                oModel.bugDescription,
+                oModel.bugSeverity,
+                oModel.bugTargetDate,
+                oModel.assignedToUsername,
+                this._attachmentsIds,
+                () => { MessageToast.show("Success") }
+            );
+        },
+
+        onFormSubmission: function () {
+            this._fileUploaders.forEach(fileUploader => {
+                if (fileUploader.getValue() !== "") {
+                    this._noOfFilesToUpload++;
+                    fileUploader.upload()
+                }
+            })
+
+            if (this._noOfFilesToUpload === 0) {
+                this._saveNewBug();
+            }//else wait for _saveNewBug to be called at the end of the uploads
+        },
+        backToWizardContent : function () {
+			this._oNavContainer.backToPage(this._oWizardContentPage.getId());
+        },
+        
+        _handleNavigationToStep : function (iStepNumber) {
+			var fnAfterNavigate = function () {
+				this._wizard.goToStep(this._wizard.getSteps()[iStepNumber]);
+				this._oNavContainer.detachAfterNavigate(fnAfterNavigate);
+			}.bind(this);
+
+			this._oNavContainer.attachAfterNavigate(fnAfterNavigate);
+			this.backToWizardContent();
+        },
+        
+        _handleMessageBoxOpen : function (sMessage, sMessageBoxType) {
+			MessageBox[sMessageBoxType](sMessage, {
+				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+				onClose: function (oAction) {
+					if (oAction === MessageBox.Action.YES) {
+						this._handleNavigationToStep(0);
+						this._wizard.discardProgress(this._wizard.getSteps()[0]);
+					}
+				}.bind(this)
+			});
+        },
+        
+        handleWizardCancel : function () {
+			this._handleMessageBoxOpen("Are you sure you want to cancel your report?", "warning");
+		}
     });
 });

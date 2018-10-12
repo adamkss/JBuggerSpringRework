@@ -8,11 +8,13 @@ import javax.persistence.*;
 @Entity
 @Data
 @Table(name = "attachments")
+@NoArgsConstructor
 public class Attachment {
     @Id
     @GeneratedValue
     private int id;
 
+    @Lob
     private byte[] content;
 
     private String name;

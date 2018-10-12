@@ -3,5 +3,46 @@
     xmlns:form="sap.ui.layout.form" 
     xmlns:core="sap.ui.core" 
     xmlns="sap.m">
-    <Text text="asd"/>
+    <layout:VerticalLayout>
+        <form:SimpleForm
+            editable="false"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="7"
+            labelSpanL="4"
+            labelSpanM="12"
+            labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="0"
+            emptySpanL="0"
+            emptySpanM="0"
+            emptySpanS="0"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="1"
+            singleContainerFullSize="false"
+            width="100%">
+            <form:content>
+                <Label text="Title"/>
+                <Text text="{/bugTitle}"/>
+                <Label text="Description"/>
+                <Text text="{/bugDescription}"/>
+                <Label text="Severity"/>
+                <Text text="{/bugSeverity}"/>
+                <Label text="Assigned to"/>
+                <Text text="{/assignedToUsername}"/>
+                <Label text="Target date"/>
+                <Text text="{/bugTargetDate}"/>
+                <List
+                    headerText="Attachments"
+                    items="{
+                            path: '/attachmentsNames'
+                        }" >
+                    <StandardListItem
+                        title="{name}"/>             
+                </List>    	
+            </form:content>
+        </form:SimpleForm>
+        <Button text="Confirm" type="Accept" press="onFormSubmission" class="sapUiSmallMarginBegin"/>
+        <Button text="Cancel" press="handleWizardCancel"/>
+    </layout:VerticalLayout>
 </core:FragmentDefinition>

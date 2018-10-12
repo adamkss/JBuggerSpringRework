@@ -7,6 +7,7 @@ import com.adam.kiss.jbugger.enums.Status;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,8 @@ public class ViewBugOutDto {
 
     private Status status;
 
+    private LocalDate targetDate;
+
     private int assignedToUserId;
 
     private List<Integer> attachmentsIds;
@@ -48,6 +51,7 @@ public class ViewBugOutDto {
                 .attachmentsIds(
                         bug.getAttachments().stream().map(Attachment::getId).collect(Collectors.toList())
                 )
+                .targetDate(bug.getTargetDate())
                 .build();
     }
 

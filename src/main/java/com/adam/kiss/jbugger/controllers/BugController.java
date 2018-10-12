@@ -1,5 +1,6 @@
 package com.adam.kiss.jbugger.controllers;
 
+import com.adam.kiss.jbugger.dtos.CreateBugDtoIn;
 import com.adam.kiss.jbugger.dtos.ViewBugOutDto;
 import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.services.BugService;
@@ -34,5 +35,11 @@ public class BugController {
         }else{
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping
+    public ResponseEntity<ViewBugOutDto> createBug(@RequestBody CreateBugDtoIn createBugDtoIn){
+        System.out.println(createBugDtoIn);
+        return null;
     }
 }

@@ -17,7 +17,7 @@ sap.ui.define([], function () {
         },
 
         getBugById: function (sId, fnDone, fnFail) {
-            let sUrl = "http://localhost:8080/bugs/bug/"+sId;
+            let sUrl = "http://localhost:8080/bugs/bug/" + sId;
             jQuery.ajax({
                 url: sUrl,
                 type: "get",
@@ -27,26 +27,31 @@ sap.ui.define([], function () {
             }).fail(function (oJqXHR) {
                 fnFail(oJqXHR);
             });
-        }
-                
-        // addNewDog: function(sName,sOwnerName, fnDone){
-        //     let sUrl = "http://localhost:8080/dogs/dog"
+        },
 
-        //     jQuery.ajax({
-        //         url: sUrl,
-        //         type: "post",
-        //         async: true,
-        //         contentType:"application/json",
-        //         data: JSON.stringify({
-        //             name: sName,
-        //             ownerName: sOwnerName
-        //         })
-        //     }).done(function(oData){
-        //         fnDone(oData);
-        //     }).fail(function(oJqXHR){
-            
-        //     })
-        // }
+        createBug: function (sBugTitle, sBugDescription, sBugSeverity, sBugTargetDate, sBugAssignedToUsername, aAttachmentIds, fnDone) {
+            let sUrl = "http://localhost:8080/bugs"
+
+            jQuery.ajax({
+                url: sUrl,
+                type: "post",
+                async: true,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    title: sBugTitle,
+                    description: sBugDescription,
+                    targetDate: sBugTargetDate,
+                    severity: sBugSeverity,
+                    createdByUsername: "admin",
+                    assignedToUsername: sBugAssignedToUsername,
+                    attachmentIds: aAttachmentIds.map(id => parseInt(id, 10))
+                })
+            }).done(function (oData) {
+                fnDone(oData);
+            }).fail(function (oJqXHR) {
+
+            })
+        }
 
     }
 });
