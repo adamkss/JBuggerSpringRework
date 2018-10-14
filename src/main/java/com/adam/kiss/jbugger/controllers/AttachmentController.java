@@ -1,11 +1,7 @@
 package com.adam.kiss.jbugger.controllers;
 
-import com.adam.kiss.jbugger.dtos.CreateBugDtoIn;
-import com.adam.kiss.jbugger.dtos.ViewBugOutDto;
 import com.adam.kiss.jbugger.entities.Attachment;
-import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.services.AttachmentService;
-import com.adam.kiss.jbugger.services.BugService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Optional;
 
 @RequestMapping("/attachments")
 @RestController

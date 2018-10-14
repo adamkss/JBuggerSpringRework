@@ -4,16 +4,17 @@ sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/model/json/JSONModel",
     "jbuggerSAPUI/service/BugsService",
-    "jbuggerSAPUI/service/UsersService"
-], function (Controller, MessageBox, MessageToast, JSONModel, BugsService, UsersService) {
+    "jbuggerSAPUI/service/UsersService",
+    "jbuggerSAPUI/model/CreateBugModel"
+], function (Controller, MessageBox, MessageToast, JSONModel, BugsService, UsersService,CreateBugModel) {
     "use strict";
-
+    
     return Controller.extend("jbuggerSAPUI.controller.CreateBug", {
-
+        
         /**
-         * Executed when controller is instantiated
-         * @public
-         */
+        * Executed when controller is instantiated
+        * @public
+        */
         onInit: function () {
             this._wizard = this.byId("CreateBugWizard");
             this._oNavContainer = this.byId("wizardNavContainer");
@@ -32,63 +33,53 @@ sap.ui.define([
             this._noOfFilesToUpload = 0;
             this._noOfFilesUploaded = 0;
             this._attachmentsNames = [];
-
-            var oModel = new JSONModel({
-                bugTitle: "",
-                bugTitleState: "None",
-                bugDescriptionState: "None",
-                bugDescription: "",
-                bugSeverity: undefined,
-                UsersWithNameAndUsername: [],
-                assignedToUsername: "",
-                bugTargetDate: "",
-                attachmentsNames: []
-            });
+            
+            var oModel = CreateBugModel.getCreateBugModel();
             this._oModel = oModel;
             this.getView().setModel(oModel);
-
+            
         },
-
+        
         generalInfoValidation: function () {
             var title = this._bugTitleInput.getValue();
             var description = this._bugDescriptionInput.getValue();
-
+            
             if (title.length < 3 && title !== "") {
                 this._oModel.setProperty("/bugTitleState", "Error");
             } else {
                 this._oModel.setProperty("/bugTitleState", "None");
             }
-
+            
             if (description.length < 10 && description !== "") {
                 this._oModel.setProperty("/bugDescriptionState", "Error");
             } else {
                 this._oModel.setProperty("/bugDescriptionState", "None");
             }
-
+            
             if (description.length >= 10 && title.length >= 3) {
                 this._wizard.validateStep(this.byId("GeneralInfoStep"));
             } else {
                 this._wizard.invalidateStep(this.byId("GeneralInfoStep"));
             }
         },
-
+        
         onGeneralInfoStepComplete: function () {
             this._bugTitleInput.setEnabled(false);
             this._bugDescriptionInput.setEnabled(false);
         },
-
+        
         onSeverityStepActivation: function () {
-
+            
         },
-
+        
         onSeveritySelectionChange: function (oEvent) {
             this._wizard.validateStep(this.byId("SeverityStep"));
         },
-
+        
         onSeverityStepComplete: function () {
             this._bugSeveritySelect.setEnabled(false);
         },
-
+        
         onAssignedToStepActivation: function () {
             UsersService.getUsersWithNameAndUsernameAndId(
                 (oData) => {
@@ -96,7 +87,7 @@ sap.ui.define([
                 }
             )
         },
-
+        
         onAssignedToComboboxSelectionChange: function () {
             let sAssignedToUsername = this.getView().getModel().getProperty("/assignedToUsername");
             if (sAssignedToUsername !== "") {
@@ -105,21 +96,21 @@ sap.ui.define([
                 this._wizard.invalidateStep(this.byId("AssignedToStep"));
             }
         },
-
+        
         onAssignedToSkipPressed: function () {
             this._wizard.nextStep();
         },
-
+        
         onAssignedToStepComplete: function () {
             this._assignedToComboBox.setEnabled(false);
             this._assignedToSkipButton.setVisible(false);
             this._assignedToSkipButton.setEnabled(false);
         },
-
+        
         onTargetDateStepActivation: function () {
-
+            
         },
-
+        
         onTargetDateValueChange: function (oEvent) {
             let sDateValue = oEvent.getParameter("value");
             if (sDateValue !== "") {
@@ -128,19 +119,19 @@ sap.ui.define([
                 this._wizard.invalidateStep(this.byId("TargetDateStep"));
             }
         },
-
+        
         onTargetDateSkipPressed: function () {
             this._wizard.nextStep();
         },
-
+        
         onTargetDateStepComplete: function () {
             this._targetDatePicker.setEnabled(false);
             this._targetDateSkipButton.setVisible(false);
             this._targetDateSkipButton.setEnabled(false);
             if (this._targetDatePicker.getValue() === "")
-                console.log("empty")
+            console.log("empty")
         },
-
+        
         wizardCompletedHandler: function () {
             this._fileUploaders.forEach(fileUploader => {
                 if (fileUploader.getValue() !== "") {
@@ -154,7 +145,7 @@ sap.ui.define([
             this.getView().getModel().setProperty("/attachmentsNames", this._attachmentsNames);
             this._oNavContainer.to(this._oWizardReviewPage);
         },
-
+        
         onAddOneMoreFileUploaderPress: function () {
             var oNewFileUploader = new sap.ui.unified.FileUploader(
                 {
@@ -164,82 +155,103 @@ sap.ui.define([
                     uploadUrl: "http://localhost:8080/attachments",
                     uploadComplete: this.handleUploadComplete.bind(this)
                 });
-            this._fileUploaders.push(oNewFileUploader);
-
-            this.byId("verticalLayoutForUploads").addContent(oNewFileUploader);
-        },
-
-        onRemoveOneFileUploaderPress: function () {
-            this.byId("verticalLayoutForUploads").removeContent(this._fileUploaders.pop());
-        },
-
-        handleUploadComplete: function (oEvent) {
-            var attachmentId = oEvent.getParameter("responseRaw");
-            this._attachmentsIds.push(attachmentId);
-            this._noOfFilesUploaded++;
-            if (this._noOfFilesToUpload === this._noOfFilesUploaded) {
-                this._saveNewBug();
-            }
-        },
-
-        onFileChanged: function (oEvent) {
-
-
-        },
-
-        _saveNewBug: function () {
-            var oModel = this.getView().getModel().getData();
-            BugsService.createBug(
-                oModel.bugTitle,
-                oModel.bugDescription,
-                oModel.bugSeverity,
-                oModel.bugTargetDate,
-                oModel.assignedToUsername,
-                this._attachmentsIds,
-                () => { MessageToast.show("Success") }
-            );
-        },
-
-        onFormSubmission: function () {
-            this._fileUploaders.forEach(fileUploader => {
-                if (fileUploader.getValue() !== "") {
-                    this._noOfFilesToUpload++;
-                    fileUploader.upload()
+                this._fileUploaders.push(oNewFileUploader);
+                
+                this.byId("verticalLayoutForUploads").addContent(oNewFileUploader);
+            },
+            
+            onRemoveOneFileUploaderPress: function () {
+                this.byId("verticalLayoutForUploads").removeContent(this._fileUploaders.pop());
+            },
+            
+            handleUploadComplete: function (oEvent) {
+                var attachmentId = oEvent.getParameter("responseRaw");
+                this._attachmentsIds.push(attachmentId);
+                this._noOfFilesUploaded++;
+                if (this._noOfFilesToUpload === this._noOfFilesUploaded) {
+                    this._saveNewBug();
                 }
-            })
-
-            if (this._noOfFilesToUpload === 0) {
-                this._saveNewBug();
-            }//else wait for _saveNewBug to be called at the end of the uploads
-        },
-        backToWizardContent : function () {
-			this._oNavContainer.backToPage(this._oWizardContentPage.getId());
-        },
-        
-        _handleNavigationToStep : function (iStepNumber) {
-			var fnAfterNavigate = function () {
-				this._wizard.goToStep(this._wizard.getSteps()[iStepNumber]);
-				this._oNavContainer.detachAfterNavigate(fnAfterNavigate);
-			}.bind(this);
-
-			this._oNavContainer.attachAfterNavigate(fnAfterNavigate);
-			this.backToWizardContent();
-        },
-        
-        _handleMessageBoxOpen : function (sMessage, sMessageBoxType) {
-			MessageBox[sMessageBoxType](sMessage, {
-				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-				onClose: function (oAction) {
-					if (oAction === MessageBox.Action.YES) {
-						this._handleNavigationToStep(0);
-						this._wizard.discardProgress(this._wizard.getSteps()[0]);
-					}
-				}.bind(this)
-			});
-        },
-        
-        handleWizardCancel : function () {
-			this._handleMessageBoxOpen("Are you sure you want to cancel your report?", "warning");
-		}
+            },
+            
+            onFileChanged: function (oEvent) {
+                
+                
+            },
+            
+            _saveNewBug: function () {
+                var oModel = this.getView().getModel().getData();
+                BugsService.createBug(
+                    oModel.bugTitle,
+                    oModel.bugDescription,
+                    oModel.bugSeverity,
+                    oModel.bugTargetDate,
+                    oModel.assignedToUsername,
+                    this._attachmentsIds,
+                    () => { MessageToast.show("Success") }
+                );
+            },
+            
+            onFormSubmission: function () {
+                this._fileUploaders.forEach(fileUploader => {
+                    if (fileUploader.getValue() !== "") {
+                        this._noOfFilesToUpload++;
+                        fileUploader.upload()
+                    }
+                })
+                
+                if (this._noOfFilesToUpload === 0) {
+                    this._saveNewBug();
+                }//else wait for _saveNewBug to be called at the end of the uploads
+            },
+            
+            backToWizardContent : function () {
+                this._oNavContainer.backToPage(this._oWizardContentPage.getId());
+            },
+            
+            _handleNavigationToStep : function (iStepNumber) {
+                var fnAfterNavigate = function () {
+                    this._wizard.goToStep(this._wizard.getSteps()[iStepNumber]);
+                    this._oNavContainer.detachAfterNavigate(fnAfterNavigate);
+                }.bind(this);
+                
+                this._oNavContainer.attachAfterNavigate(fnAfterNavigate);
+                this.backToWizardContent();
+            },
+            
+            _resetAllUserInputs: function(){
+                this._bugTitleInput.setEnabled(true);
+                this._bugDescriptionInput.setEnabled(true);
+                this._wizard.invalidateStep(this.byId("GeneralInfoStep"));
+                this._bugSeveritySelect.setEnabled(true);
+                this._assignedToComboBox.setEnabled(true);
+                this._assignedToSkipButton.setVisible(true);
+                this._assignedToSkipButton.setEnabled(true);
+                this._targetDateSkipButton.setVisible(true);
+                this._targetDateSkipButton.setEnabled(true);
+                this._targetDatePicker.setEnabled(true);
+                this._attachmentsNames = [];
+                this.byId("verticalLayoutForUploads").removeAllContent();
+                this._fileUploaders = [];
+                this.onAddOneMoreFileUploaderPress();
+                this._oModel = CreateBugModel.getCreateBugModel();
+                this.getView().setModel(this._oModel);
+            },
+            
+            _handleMessageBoxOpen : function (sMessage, sMessageBoxType) {
+                MessageBox[sMessageBoxType](sMessage, {
+                    actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                    onClose: function (oAction) {
+                        if (oAction === MessageBox.Action.YES) {
+                            this._handleNavigationToStep(0);
+                            this._wizard.discardProgress(this._wizard.getSteps()[0]);
+                            this._resetAllUserInputs();
+                        }
+                    }.bind(this)
+                });
+            },
+            
+            handleWizardCancel : function () {
+                this._handleMessageBoxOpen("Are you sure you want to cancel your report?", "warning");
+            }
+        });
     });
-});
