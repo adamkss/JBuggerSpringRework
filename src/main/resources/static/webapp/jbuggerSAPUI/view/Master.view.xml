@@ -1,14 +1,23 @@
 <core:View displayBlock="true" controllerName="jbuggerSAPUI.controller.Master" height="100%" 
 	xmlns="sap.m" 
 	xmlns:f="sap.f" 
+	xmlns:l="sap.ui.layout" 
 	xmlns:core="sap.ui.core">
 	<Page showHeader="false" class="sapUiResponsiveContentPadding">
+		<subHeader>
+		</subHeader>
 		<content>
-			<List id="BugsList" items="{/bugs}" mode="Single" includeItemInSelection="false" itemPress="onListItemPress">
-				<items>
-					<StandardListItem type="Active" title="{title}" description="{description}" />
-				</items>
-			</List>
+			<l:VerticalLayout width="100%" height="100%">
+				<Toolbar>
+					<SearchField search="onSearch"/>
+					<Button icon="sap-icon://add" tooltip="Create new bug" press="onCreateNewBugButtonPress"/>
+				</Toolbar>
+				<List id="BugsList" items="{viewBugsModel>/bugs}" mode="Single" includeItemInSelection="false" itemPress="onListItemPress">
+					<items>
+						<StandardListItem type="Active" title="{viewBugsModel>title}" description="{viewBugsModel>description}" info="Priority: {viewBugsModel>severity}"/>
+					</items>
+				</List>
+			</l:VerticalLayout>
 		</content>
 	</Page>
 </core:View>

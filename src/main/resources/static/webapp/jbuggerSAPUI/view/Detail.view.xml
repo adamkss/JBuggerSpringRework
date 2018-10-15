@@ -39,6 +39,10 @@
 									<m:Text text="{selectedBugModel>/revision}"/>
 									<m:Label text="Severity"/>
 									<m:Text text="{selectedBugModel>/severity}"/>
+									<m:Label text="Assigned to"/>
+									<m:Text text="{selectedBugModel>/assignedToName} - {selectedBugModel>/assignedToUsername}"/>
+									<m:Label text="Target date"/>
+									<m:Text text="{selectedBugModel>/targetDate}"/>
 									<m:Label text="Status"/>
 									<m:Text text="{selectedBugModel>/status}"/>
 								</form:content>

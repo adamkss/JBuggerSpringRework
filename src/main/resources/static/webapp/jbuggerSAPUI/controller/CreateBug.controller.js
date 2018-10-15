@@ -92,8 +92,10 @@ sap.ui.define([
             let sAssignedToUsername = this.getView().getModel().getProperty("/assignedToUsername");
             if (sAssignedToUsername !== "") {
                 this._wizard.validateStep(this.byId("AssignedToStep"));
+                this._assignedToSkipButton.setVisible(false);
             } else {
                 this._wizard.invalidateStep(this.byId("AssignedToStep"));
+                this._assignedToSkipButton.setVisible(true);
             }
         },
         
@@ -115,8 +117,10 @@ sap.ui.define([
             let sDateValue = oEvent.getParameter("value");
             if (sDateValue !== "") {
                 this._wizard.validateStep(this.byId("TargetDateStep"));
+                this._targetDateSkipButton.setVisible(false);
             } else {
                 this._wizard.invalidateStep(this.byId("TargetDateStep"));
+                this._targetDateSkipButton.setVisible(true);
             }
         },
         
@@ -128,8 +132,6 @@ sap.ui.define([
             this._targetDatePicker.setEnabled(false);
             this._targetDateSkipButton.setVisible(false);
             this._targetDateSkipButton.setEnabled(false);
-            if (this._targetDatePicker.getValue() === "")
-            console.log("empty")
         },
         
         wizardCompletedHandler: function () {
@@ -187,7 +189,14 @@ sap.ui.define([
                     oModel.bugTargetDate,
                     oModel.assignedToUsername,
                     this._attachmentsIds,
-                    () => { MessageToast.show("Success") }
+                    (oData) => { 
+                        MessageBox.success(
+                            `New bug created with the id ${oData.id}`
+                        );
+                        this._handleNavigationToStep(0);
+                        this._wizard.discardProgress(this._wizard.getSteps()[0]);
+                        this._resetAllUserInputs(); 
+                    }
                 );
             },
             
@@ -230,6 +239,9 @@ sap.ui.define([
                 this._targetDateSkipButton.setEnabled(true);
                 this._targetDatePicker.setEnabled(true);
                 this._attachmentsNames = [];
+                this._noOfFilesUploaded = 0;
+                this._noOfFilesToUpload = 0;
+                this._attachmentsIds = [];
                 this.byId("verticalLayoutForUploads").removeAllContent();
                 this._fileUploaders = [];
                 this.onAddOneMoreFileUploaderPress();

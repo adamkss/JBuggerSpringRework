@@ -15,11 +15,16 @@ sap.ui.define([
 		onInit: function () {
 			this.oRouter = this.getOwnerComponent().getRouter();
 			this._bDescendingSort = false;
+			this._updateTable("");
+		},
+
+		_updateTable: function (sFilter) {
 			BugsService.getBugsList(
+				sFilter,
 				(data) => {
 					var bugsJsonModel = ViewBugsModel.getBugsModel();
 					bugsJsonModel.setProperty("/bugs", data);
-					this.getView().setModel(bugsJsonModel);
+					this.getOwnerComponent().setModel(bugsJsonModel, "viewBugsModel");
 				},
 				(err) => {
 					console.log(err);
@@ -27,12 +32,19 @@ sap.ui.define([
 			)
 		},
 
-		onListItemPress: function(oEvent){
+		onListItemPress: function (oEvent) {
 			var oNextUIState = this.getOwnerComponent().getHelper().getNextUIState(1),
-				bugPath = oEvent.getParameter("listItem").getBindingContext().getPath(),
-				bugId = this.getView().getModel().getProperty(bugPath).id;
-				
-			this.oRouter.navTo("detail", {layout: oNextUIState.layout, bug: bugId});
+				bugPath = oEvent.getParameter("listItem").getBindingContext("viewBugsModel").getPath(),
+				bugPathComponents = bugPath.split("/");
+			this.oRouter.navTo("detail", { layout: oNextUIState.layout, bug: bugPathComponents[bugPathComponents.length-1] });
+		},
+
+		onCreateNewBugButtonPress: function () {
+			this.getOwnerComponent().getRouter().navTo("createBug");
+		},
+
+		onSearch: function (oEvent) {
+			this._updateTable(oEvent.getParameter("query"));
 		}
 	});
 }, true);

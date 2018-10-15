@@ -1,0 +1,115 @@
+<mvc:View
+	controllerName="jbuggerSAPUI.controller.ViewBugsTable"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns="sap.m">
+	<Table id="bugsTable"
+		inset="false"
+		items="{
+			path: '/bugs',
+			sorter: {
+				path: 'id'
+			}
+		}">
+		<headerToolbar>
+			<Toolbar>
+				<content>
+					<Title text="Bugs" level="H2"/>
+					<ToolbarSpacer />
+					<!-- <ComboBox id="idPopinLayout"
+						placeholder="Popin layout options"
+						change="onPopinLayoutChanged">
+						<items>
+							<core:Item  text="Block"
+								key="Block"/>
+							<core:Item  text="Grid Large"
+								key="GridLarge"/>
+							<core:Item  text="Grid Small"
+								key="GridSmall"/>
+						</items>
+					</ComboBox> -->
+					<!-- <MultiComboBox id="idSticky"
+						placeholder="Sticky options"
+						selectionFinish="onSelectionFinish"
+						width="15%">
+						<items>
+							<core:Item  text="Column headers"
+								key="ColumnHeaders"/>
+							<core:Item  text="Header Toolbar"
+								key="HeaderToolbar"/>
+							<core:Item  text="Info Toolbar"
+								key="InfoToolbar"/>
+						</items>
+					</MultiComboBox> -->
+					<Button id="addBugButton"
+						text="Create bug"
+						press="onCreateBugButtonPress" />
+				</content>
+			</Toolbar>
+		</headerToolbar>
+		<infoToolbar>
+			<Toolbar active="ture">
+				<Label text="Wide range of available products"/>
+			</Toolbar>
+		</infoToolbar>
+		<columns>
+			<Column
+				width="12em">
+				<Text text="Id" />
+			</Column>
+			<Column
+				minScreenWidth="Tablet"
+				demandPopin="true">
+				<Text text="Title" />
+			</Column>
+			<Column
+				minScreenWidth="Desktop"
+				demandPopin="true"
+				hAlign="Start">
+				<Text text="Description" />
+			</Column>
+			<Column
+				minScreenWidth="Desktop"
+				demandPopin="true"
+				hAlign="Center">
+				<Text text="Severity" />
+			</Column>
+			<!-- <Column
+				hAlign="End">
+				<Text text="Price" />
+			</Column> -->
+		</columns>
+		<items>
+			<ColumnListItem>
+				<cells>
+					<ObjectIdentifier
+						title="{title}"
+						text="{id}"/>
+					<Text
+						text="{title}" />
+					<Text
+						text="{description}" />
+					<Text
+						text="{severity}" />
+					<!-- <ObjectNumber
+						number="{WeightMeasure}"
+						unit="{WeightUnit}"
+						state="{
+							parts: [
+								{path: 'WeightMeasure'},
+								{path: 'WeightUnit'}
+							],
+							formatter: 'sap.m.sample.Table.Formatter.weightState'
+						}" />
+					<ObjectNumber
+							number="{
+								parts:[{path:'Price'},{path:'CurrencyCode'}],
+								type: 'sap.ui.model.type.Currency',
+								formatOptions: {showMeasure: false}
+							}"
+							unit="{CurrencyCode}" /> -->
+				</cells>
+			</ColumnListItem>
+		</items>
+	</Table>
+</mvc:View>

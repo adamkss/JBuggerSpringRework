@@ -3,8 +3,8 @@ sap.ui.define([], function () {
 
     return {
 
-        getBugsList: function (fnDone, fnFail) {
-            let sUrl = "http://localhost:8080/bugs";
+        getBugsList: function (sFilter, fnDone, fnFail) {
+            let sUrl = "http://localhost:8080/bugs" + "?filter=" + sFilter;
             jQuery.ajax({
                 url: sUrl,
                 type: "get",

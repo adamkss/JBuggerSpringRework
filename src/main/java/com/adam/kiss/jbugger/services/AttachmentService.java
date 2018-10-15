@@ -6,23 +6,37 @@ import com.adam.kiss.jbugger.repositories.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AttachmentService {
     private final AttachmentRepository attachmentRepository;
 
-    public Attachment createAttachment(Attachment attachment){
+    public Attachment createAttachment(Attachment attachment) {
         return attachmentRepository.save(attachment);
     }
 
-    public Optional<Attachment>  getAttachmentById(Integer id){
+    public Optional<Attachment> getAttachmentById(Integer id) {
         return attachmentRepository.findById(id);
     }
 
-    public void associateBugToAttachment(Bug bug, Attachment attachment){
+    public void associateBugToAttachment(Bug bug, Attachment attachment) {
         attachment.setBug(bug);
         attachmentRepository.save(attachment);
+    }
+
+    public void associateBugToAttachments(Bug bug, List<Attachment> attachments) {
+        attachments.forEach(attachment -> {
+            associateBugToAttachment(bug, attachment);
+        });
+    }
+
+    public List<Optional<Attachment>> getAttachmentsByIds(List<Integer> ids) {
+        return ids.stream()
+                .map(id -> attachmentRepository.findById(id))
+                .collect(Collectors.toList());
     }
 }

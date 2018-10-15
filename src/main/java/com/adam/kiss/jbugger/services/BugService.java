@@ -12,9 +12,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BugService {
     private final BugRepository bugRepository;
+    private final AttachmentService attachmentService;
 
-    public List<Bug> getAllBugs(){
-        return bugRepository.findAll();
+    public List<Bug> getAllBugs(String filter){
+        return bugRepository.findAllFiltered(filter);
     }
 
     public Optional<Bug> getBugById(Integer id){
@@ -22,6 +23,8 @@ public class BugService {
     }
 
     public Bug createBug(Bug bug){
-        return bugRepository.save(bug);
+        bugRepository.save(bug);
+        attachmentService.associateBugToAttachments(bug, bug.getAttachments());
+        return bug;
     }
 }

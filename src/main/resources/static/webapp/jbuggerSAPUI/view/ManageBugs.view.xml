@@ -23,6 +23,7 @@
 				<tnt:NavigationList id="navigationList">
 					<tnt:NavigationListItem id="viewBugsNavListItem" text="View bugs" icon="sap-icon://table-view" key="flexibleColumnLayout"/>
 					<tnt:NavigationListItem id="createBugNavListItem" text="Create bug" icon="sap-icon://add"/>
+					<tnt:NavigationListItem id="viewBugsTableNavListItem" text="View bugs table" icon="sap-icon://table-view"/>
 				</tnt:NavigationList>
 			</tnt:SideNavigation>
 		</tnt:sideContent>

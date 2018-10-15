@@ -25,4 +25,8 @@ public class UserService {
     public List<UserWithNameAndUsernameProjection> getAllUsersWithNamesAndUsernames(){
         return userRepository.findAllUsersWithNamesAndUsernamesProjectedBy();
     }
+
+    public User getUserByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
 }

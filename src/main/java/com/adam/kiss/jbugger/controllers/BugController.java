@@ -3,11 +3,15 @@ package com.adam.kiss.jbugger.controllers;
 import com.adam.kiss.jbugger.dtos.CreateBugDtoIn;
 import com.adam.kiss.jbugger.dtos.ViewBugOutDto;
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.mappers.BugMapper;
 import com.adam.kiss.jbugger.services.BugService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,10 +22,14 @@ import java.util.Optional;
 public class BugController {
 
     private final BugService bugService;
+    private final BugMapper bugMapper;
 
     @GetMapping
-    public List<ViewBugOutDto> getAllBugs() {
-        return ViewBugOutDto.mapToDtoList(bugService.getAllBugs());
+    public List<ViewBugOutDto> getAllBugs(
+            @RequestParam(
+                    name = "filter",
+                    defaultValue = "") String filter) {
+        return ViewBugOutDto.mapToDtoList(bugService.getAllBugs(filter));
     }
 
     @GetMapping("/bug/{id}")
@@ -38,8 +46,15 @@ public class BugController {
     }
 
     @PostMapping
+    @SneakyThrows
     public ResponseEntity<ViewBugOutDto> createBug(@RequestBody CreateBugDtoIn createBugDtoIn){
-        System.out.println(createBugDtoIn);
-        return null;
+        Bug mappedBug = bugMapper.mapCreateBugDtoInToBug(createBugDtoIn);
+        Bug savedBug = bugService.createBug(mappedBug);
+
+        ViewBugOutDto viewBugOutDto = ViewBugOutDto.mapToDto(savedBug);
+
+        return ResponseEntity.created(
+                new URI("/bug/" + URLEncoder.encode(String.valueOf(savedBug.getId()), "UTF-8"))
+        ).body(viewBugOutDto);
     }
 }

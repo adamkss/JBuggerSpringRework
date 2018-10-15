@@ -35,18 +35,23 @@ sap.ui.define([
 		},
 		_onProductMatched: function (oEvent) {
 			this._bug = oEvent.getParameter("arguments").bug || this._bug || "0";
-			BugsService.getBugById(
-				this._bug,
-				(bug) => {
-					this.getView().setModel(
-						new JSONModel(bug),
-						"selectedBugModel"
-					)
-				},
-				(err) => {
-					console.log(err)
-				}
-			)
+			var bug = this.getOwnerComponent().getModel("viewBugsModel").getProperty("/bugs/" + this._bug);
+			this.getView().setModel(
+				new JSONModel(bug),
+				"selectedBugModel"
+			);
+			// BugsService.getBugById(
+			// 	this._bug,
+			// 	(bug) => {
+			// 		this.getView().setModel(
+			// 			new JSONModel(bug),
+			// 			"selectedBugModel"
+			// 		)
+			// 	},
+			// 	(err) => {
+			// 		console.log(err)
+			// 	}
+			// )
 		}
 	});
 }, true);

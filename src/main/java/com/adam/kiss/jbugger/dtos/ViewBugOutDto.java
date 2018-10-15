@@ -33,7 +33,11 @@ public class ViewBugOutDto {
 
     private LocalDate targetDate;
 
-    private int assignedToUserId;
+    private Integer assignedToUserId;
+
+    private String assignedToName;
+
+    private String assignedToUsername;
 
     private List<Integer> attachmentsIds;
 
@@ -47,11 +51,14 @@ public class ViewBugOutDto {
                 .severity(bug.getSeverity())
                 .createdByUserId(bug.getCreatedBy().getId())
                 .status(bug.getStatus())
-                .assignedToUserId(bug.getAssignedTo().getId())
+                .assignedToUserId(bug.getAssignedTo() != null ? bug.getAssignedTo().getId() : null)
                 .attachmentsIds(
                         bug.getAttachments().stream().map(Attachment::getId).collect(Collectors.toList())
                 )
                 .targetDate(bug.getTargetDate())
+                .assignedToUserId(bug.getAssignedTo() != null ? bug.getAssignedTo().getId() : null)
+                .assignedToName(bug.getAssignedTo() != null ? bug.getAssignedTo().getName() : null)
+                .assignedToUsername(bug.getAssignedTo() != null ? bug.getAssignedTo().getUsername() : null)
                 .build();
     }
 

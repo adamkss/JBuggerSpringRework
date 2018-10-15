@@ -17,6 +17,7 @@ sap.ui.define([
             this._navigationList = this.getView().byId("navigationList");
             this._viewBugsNavListItem = this.getView().byId("viewBugsNavListItem");
             this._createBugNavListItem = this.getView().byId("createBugNavListItem");
+            this._viewBugsTableNavListItem = this.getView().byId("viewBugsTableNavListItem");
         },
 
 
@@ -31,6 +32,10 @@ sap.ui.define([
                     this.navigateToCreateBug();
                     break;
                 }
+                case "View bugs table": {
+                    this.navigateToViewBugsTable();
+                    break;
+                }
             }
         },
 
@@ -41,6 +46,10 @@ sap.ui.define([
         navigateToViewBugs: function () {
             var oNextUIState = this.getOwnerComponent().getHelper().getNextUIState(0);
             this.oRouter.navTo("viewBugsMaster", { layout: oNextUIState.layout });
+        },
+
+        navigateToViewBugsTable: function () {
+            this.oRouter.navTo("viewBugsTable");
         },
 
         onSideNavButtonPress: function () {
@@ -113,6 +122,19 @@ sap.ui.define([
                     sap.ui.getCore().byId(this.getView().getId() + "--pageContainer").to(this._createBugView.sId);
 
                     this._navigationList.setSelectedItem(this._createBugNavListItem);
+
+                    break;
+
+                case "viewBugsTable":
+                    if (!this._viewBugsTable) {
+                        this._viewBugsTable = this.getOwnerComponent().runAsOwner( () => {
+                            return sap.ui.xmlview("jbuggerSAPUI.view.ViewBugsTable")
+                        });
+                    }
+                    this.getView().byId("pageContainer").addPage(this._viewBugsTable);
+                    sap.ui.getCore().byId(this.getView().getId() + "--pageContainer").to(this._viewBugsTable.sId);
+
+                    this._navigationList.setSelectedItem(this._viewBugsTableNavListItem);
 
                     break;
             }

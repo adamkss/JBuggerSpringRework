@@ -43,6 +43,11 @@
 					"target": "createBug"
 				},
 				{
+					"pattern": "viewBugsTable",
+					"name": "viewBugsTable",
+					"target": "viewBugsTable"
+				},
+				{
 					"pattern": "viewBugs/:layout:",
 					"name": "viewBugsMaster",
 					"target": [
@@ -70,6 +75,9 @@
 			],
 			"targets": {
 				"createBug":{
+					"viewName":"ManageBugs"
+				},
+				"viewBugsTable":{
 					"viewName":"ManageBugs"
 				},
 				"viewBugsMaster": {
