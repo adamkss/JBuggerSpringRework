@@ -35,7 +35,7 @@ sap.ui.define([
 		},
 		_onProductMatched: function (oEvent) {
 			this._bug = oEvent.getParameter("arguments").bug || this._bug || "0";
-			var bug = this.getOwnerComponent().getModel("viewBugsModel").getProperty("/bugs/" + this._bug);
+			var bug = this.getOwnerComponent().getModel("viewBugsModel").getProperty("/bugs").filter(b => b.id == this._bug)[0];
 			this.getView().setModel(
 				new JSONModel(bug),
 				"selectedBugModel"

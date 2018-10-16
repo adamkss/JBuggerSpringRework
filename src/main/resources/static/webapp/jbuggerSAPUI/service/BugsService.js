@@ -8,7 +8,7 @@ sap.ui.define([], function () {
             jQuery.ajax({
                 url: sUrl,
                 type: "get",
-                async: true
+                async: false
             }).done(function (oData) {
                 fnDone(oData);
             }).fail(function (oJqXHR) {

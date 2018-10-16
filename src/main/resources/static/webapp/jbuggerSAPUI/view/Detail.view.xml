@@ -56,14 +56,14 @@
 				<subSections>
 					<ObjectPageSubSection>
 						<blocks>
-							<m:Table id="attachmentsTable" items="{path : 'products>/ProductCollectionStats/Filters/1/values'}">
+							<m:Table id="attachmentsTable" items="{path : 'selectedBugModel>/attachmentsInfo'}">
 								<m:columns>
 									<m:Column />
 								</m:columns>
 								<m:items>
-									<m:ColumnListItem type="Single" press="handleItemPress">
+									<m:ColumnListItem type="Active" press="handleItemPress">
 										<m:cells>
-											<m:ObjectIdentifier text="{products>text}" />
+											<m:ObjectIdentifier text="{selectedBugModel>name}" />
 										</m:cells>
 									</m:ColumnListItem>
 								</m:items>

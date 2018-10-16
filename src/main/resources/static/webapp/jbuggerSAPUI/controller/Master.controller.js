@@ -14,8 +14,10 @@ sap.ui.define([
 	return Controller.extend("jbuggerSAPUI.controller.Master", {
 		onInit: function () {
 			this.oRouter = this.getOwnerComponent().getRouter();
+			this.oRouter.getRoute("viewBugsMaster").attachPatternMatched(this._onMainColumnMatched, this);
+			this.oRouter.getRoute("detail").attachPatternMatched(this._onDetailColumnMatched, this);
 			this._bDescendingSort = false;
-			this._updateTable("");
+			this._isTableLoaded = false;
 		},
 
 		_updateTable: function (sFilter) {
@@ -35,8 +37,8 @@ sap.ui.define([
 		onListItemPress: function (oEvent) {
 			var oNextUIState = this.getOwnerComponent().getHelper().getNextUIState(1),
 				bugPath = oEvent.getParameter("listItem").getBindingContext("viewBugsModel").getPath(),
-				bugPathComponents = bugPath.split("/");
-			this.oRouter.navTo("detail", { layout: oNextUIState.layout, bug: bugPathComponents[bugPathComponents.length-1] });
+				bugId = this.getOwnerComponent().getModel("viewBugsModel").getProperty(bugPath).id;
+			this.oRouter.navTo("detail", { layout: oNextUIState.layout, bug: bugId });
 		},
 
 		onCreateNewBugButtonPress: function () {
@@ -45,6 +47,17 @@ sap.ui.define([
 
 		onSearch: function (oEvent) {
 			this._updateTable(oEvent.getParameter("query"));
+		},
+
+		_onMainColumnMatched: function (oEvent) {
+			this._updateTable("");
+			this._isTableLoaded = true;
+		},
+
+		_onDetailColumnMatched: function (oEvent) {
+			if(!this._isTableLoaded){
+				this._updateTable("");
+			}
 		}
 	});
 }, true);
