@@ -1,0 +1,11 @@
+.bugs-column{
+    background-color: #eeeeee;
+    border-radius: 5px;
+    height: 800px;
+    width:340px;
+    box-shadow: 2px 0px 4px 0px rgba(182, 182, 182, 0.75);
+}
+
+.divider {
+    margin-bottom: 10px;
+}

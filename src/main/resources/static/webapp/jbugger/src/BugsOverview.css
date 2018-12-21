@@ -1,0 +1,16 @@
+.bugsOverviewHeader{
+    display: flex;
+    flex-direction: row;
+    background-color:#ebe3e3cc;
+    padding: 10px;
+    height:55px;
+}
+
+.with-margin-left{
+    margin-left: 12px !important;
+}
+
+.bugs-overview{
+    width: 100% !important;
+    margin: 0 !important;
+}

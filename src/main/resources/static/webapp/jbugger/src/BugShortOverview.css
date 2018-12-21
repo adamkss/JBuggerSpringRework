@@ -1,0 +1,8 @@
+.bug-short-overview{
+    background-color: #ffffff;
+    border-radius:5px;
+    width: 325px;
+    box-shadow: 2px 0px 4px 0px rgba(182, 182, 182, 0.75);
+    padding: 15px;
+    cursor:pointer;
+}

@@ -1,0 +1,27 @@
+.flex-grow{
+    flex-grow: 1;
+}
+
+.NEW-bug-status-color{
+    background-color: #607d8b;
+}
+
+.IN_PROGRESS-bug-status-color{
+    background-color: #2196f3;
+}
+
+.REJECTED-bug-status-color{
+    background-color: #4caf50;
+}
+
+.CLOSED-bug-status-color{
+    background-color: #9c27b0;
+}
+
+.FIXED-bug-status-color{
+    background-color: #c51162;
+}
+
+.INFO_NEEDED-bug-status-color{
+    background-color: #ff8f00;
+}
