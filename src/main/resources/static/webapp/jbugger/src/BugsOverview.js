@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
-import Bug from './Bug';
 import StringFormatters from './utils/StringFormatters';
 import BugsColumn from './BugsColumn'
+import CreateBugPopover from './popovers/CreateBugPopover'
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import './BugsOverview.css';
-import { Divider, Button } from '@material-ui/core';
-import Popover from '@material-ui/core/Popover';
-import Typography from '@material-ui/core/Typography';
+import { Button } from '@material-ui/core';
+
+import {connect} from 'react-redux';
 
 const styles = theme => ({
   BugsOverview: {
@@ -70,20 +69,23 @@ const mapBugsToObjectByStatus = function (bugs) {
   return bugsByStatus;
 }
 
+const addBugByStatus = function (oldBugsByStatus, newBug){
+  let newBugByStatus = {...oldBugsByStatus};
+  newBugByStatus[newBug.status] = [...newBugByStatus[newBug.status], newBug];
+  return newBugByStatus;
+}
+
 class BugsOverview extends Component {
 
   state = {
     isLoading: false,
     bugs: [],
     bugsByStatus: {},
-    newBugPopoverAnchorEl: null
+    newBugPopoverAnchorEl: null,
+    newBugStatus: null
   }
 
-  componentDidMount() {
-    this.setState({
-      isLoading: true
-    })
-
+  loadAllBugs = () => {
     fetch('http://localhost:8080/bugs')
       .then((response) => response.json())
       .then((data) => {
@@ -93,6 +95,21 @@ class BugsOverview extends Component {
           isLoading: false
         })
       })
+  }
+
+  addNewBugToComponentState = newBug => {
+    this.setState(oldState => ({
+      bugs: [...oldState.bugs, newBug],
+      bugsByStatus: addBugByStatus(oldState.bugsByStatus, newBug)
+    }))
+  }
+
+  componentDidMount() {
+    this.setState({
+      isLoading: true
+    })
+
+    this.loadAllBugs();
   }
 
   handleNewBugPopoverClose = () => {
@@ -107,30 +124,40 @@ class BugsOverview extends Component {
     });
   };
 
+  openCreateNewBugPopover = (bugStatus, sourceElementForAnchor) => {
+    this.setState({
+      newBugPopoverAnchorEl: sourceElementForAnchor,
+      newBugStatus: bugStatus
+    });
+  }
+
+  createOnAddBugCallbackForStatus = bugStatus => event => {
+    this.openCreateNewBugPopover(bugStatus, event.currentTarget);
+  }
+
+  handleCreateNewBugFromPopover = (newBug) => {
+    let newBugWithStatus = {
+      ...newBug,
+      status: this.state.newBugStatus,
+      attachmentIds: []
+    };
+
+    fetch('http://localhost:8080/bugs', {
+      method: "POST",
+      body: JSON.stringify(newBugWithStatus),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+      .then((response) => response.json())
+      .then((createdBug) => this.addNewBugToComponentState(createdBug));
+    this.handleNewBugPopoverClose();
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
     const open = Boolean(newBugPopoverAnchorEl);
-
-    const newBugPopover = (
-      <Popover
-        id="new-bug-popover"
-        open={open}
-        anchorEl={newBugPopoverAnchorEl}
-        onClose={this.handleNewBugPopoverClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        <Typography className={classes.typography}>The content of the Popover.</Typography>
-      </Popover>
-    );
-
 
     return (
       <Grid
@@ -165,21 +192,31 @@ class BugsOverview extends Component {
             container
             spacing={16}
             direction="row"
-            wrap="wrap"
+            wrap="nowrap"
             className="bugs-overview"
-            justify="center"
+            justify=""
           >
             {Object.keys(this.state.bugsByStatus).map(bugStatus => (
               <Grid item key={bugStatus}>
-                <BugsColumn bugStatus={StringFormatters.ToNiceBugStatus(bugStatus)} headerColorClass={`${bugStatus}-bug-status-color`} bugs={this.state.bugsByStatus[bugStatus]} />
+                <BugsColumn bugStatus={StringFormatters.ToNiceBugStatus(bugStatus)} headerColorClass={`${bugStatus}-bug-status-color`} bugs={this.state.bugsByStatus[bugStatus]} onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)} />
               </Grid>
             )
             )}
           </Grid>
         </Grid>
-        {newBugPopover}
+        <CreateBugPopover
+          id="new-bug-popover"
+          open={open}
+          anchorEl={newBugPopoverAnchorEl}
+          onClose={this.handleNewBugPopoverClose}
+          handleCreateNewBug={this.handleCreateNewBugFromPopover} />
       </Grid>
     );
   }
 }
-export default withStyles(styles)(BugsOverview);
+
+const mapStateToProps = state => ({
+  // bugs: state.allBugs
+});
+
+export default withStyles(styles)(connect(mapStateToProps)(BugsOverview));

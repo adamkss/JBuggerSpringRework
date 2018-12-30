@@ -1,6 +1,7 @@
 package com.adam.kiss.jbugger.dtos;
 
 import com.adam.kiss.jbugger.enums.Severity;
+import com.adam.kiss.jbugger.enums.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class CreateBugDtoIn {
     private String title;
     private String description;
+    private Status status;
     private LocalDate targetDate;
     private Severity severity;
     private String createdByUsername;

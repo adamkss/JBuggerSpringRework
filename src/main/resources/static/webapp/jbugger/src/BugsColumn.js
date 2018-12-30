@@ -43,7 +43,7 @@ class BugsColumn extends Component {
           alignContent="center"
           className="bugsContainer">
           <Grid item className={classes.bugsColumnHeader}>
-            <BugsColumnHeader status={this.props.bugStatus} headerColorClass={this.props.headerColorClass}/>
+            <BugsColumnHeader status={this.props.bugStatus} headerColorClass={this.props.headerColorClass} onAddBug={this.props.onAddBug}/>
           </Grid>
           {this.props.bugs.map(
             (bug, index) =>
@@ -60,4 +60,5 @@ class BugsColumn extends Component {
 //bugStatus
 //bugs
 //headerColorClass
+//onAddBug
 export default withStyles(styles)(BugsColumn);

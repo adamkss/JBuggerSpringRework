@@ -25,3 +25,9 @@
 .INFO_NEEDED-bug-status-color{
     background-color: #ff8f00;
 }
+
+.text-field{
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+    width: 200px;
+}

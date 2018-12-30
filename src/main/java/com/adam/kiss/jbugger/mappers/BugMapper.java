@@ -43,7 +43,7 @@ public class BugMapper {
 
         //Fields not present in the DTO
         bug.setRevision("1.0");
-        bug.setStatus(Status.NEW);
+        bug.setStatus(createBugDtoIn.getStatus());
 
         return bug;
     }
