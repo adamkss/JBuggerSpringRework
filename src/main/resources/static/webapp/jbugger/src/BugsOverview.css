@@ -13,4 +13,5 @@
 .bugs-overview{
     width: 100% !important;
     margin: 0 !important;
+    overflow-x: scroll !important;
 }

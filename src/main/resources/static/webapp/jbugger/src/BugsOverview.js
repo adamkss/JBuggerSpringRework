@@ -10,6 +10,7 @@ import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 
 import {connect} from 'react-redux';
+import {getAllBugs, createBug} from './redux-stuff/actions/actionCreators';
 
 const styles = theme => ({
   BugsOverview: {
@@ -58,23 +59,6 @@ const styles = theme => ({
   }
 });
 
-const mapBugsToObjectByStatus = function (bugs) {
-  const bugsByStatus = {};
-  bugs.forEach(bug => {
-    if (!bugsByStatus[bug.status]) {
-      bugsByStatus[bug.status] = [];
-    }
-    bugsByStatus[bug.status].push(bug);
-  })
-  return bugsByStatus;
-}
-
-const addBugByStatus = function (oldBugsByStatus, newBug){
-  let newBugByStatus = {...oldBugsByStatus};
-  newBugByStatus[newBug.status] = [...newBugByStatus[newBug.status], newBug];
-  return newBugByStatus;
-}
-
 class BugsOverview extends Component {
 
   state = {
@@ -85,31 +69,12 @@ class BugsOverview extends Component {
     newBugStatus: null
   }
 
-  loadAllBugs = () => {
-    fetch('http://localhost:8080/bugs')
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({
-          bugs: data,
-          bugsByStatus: mapBugsToObjectByStatus(data),
-          isLoading: false
-        })
-      })
-  }
-
-  addNewBugToComponentState = newBug => {
-    this.setState(oldState => ({
-      bugs: [...oldState.bugs, newBug],
-      bugsByStatus: addBugByStatus(oldState.bugsByStatus, newBug)
-    }))
-  }
-
   componentDidMount() {
     this.setState({
       isLoading: true
     })
 
-    this.loadAllBugs();
+    this.props.dispatch(getAllBugs())
   }
 
   handleNewBugPopoverClose = () => {
@@ -142,15 +107,7 @@ class BugsOverview extends Component {
       attachmentIds: []
     };
 
-    fetch('http://localhost:8080/bugs', {
-      method: "POST",
-      body: JSON.stringify(newBugWithStatus),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-      .then((response) => response.json())
-      .then((createdBug) => this.addNewBugToComponentState(createdBug));
+    this.props.dispatch(createBug(newBugWithStatus));
     this.handleNewBugPopoverClose();
   }
 
@@ -196,9 +153,9 @@ class BugsOverview extends Component {
             className="bugs-overview"
             justify=""
           >
-            {Object.keys(this.state.bugsByStatus).map(bugStatus => (
+            {Object.keys(this.props.bugsByStatus).map(bugStatus => (
               <Grid item key={bugStatus}>
-                <BugsColumn bugStatus={StringFormatters.ToNiceBugStatus(bugStatus)} headerColorClass={`${bugStatus}-bug-status-color`} bugs={this.state.bugsByStatus[bugStatus]} onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)} />
+                <BugsColumn bugStatus={StringFormatters.ToNiceBugStatus(bugStatus)} headerColorClass={`${bugStatus}-bug-status-color`} bugs={this.props.bugsByStatus[bugStatus]} onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)} />
               </Grid>
             )
             )}
@@ -216,7 +173,8 @@ class BugsOverview extends Component {
 }
 
 const mapStateToProps = state => ({
-  // bugs: state.allBugs
+  bugs: state.allBugs,
+  bugsByStatus: state.bugsByStatus
 });
 
 export default withStyles(styles)(connect(mapStateToProps)(BugsOverview));

@@ -13,6 +13,7 @@
     "react-scripts": "2.0.5",
     "react-transition-group": "^2.5.0",
     "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
     "typeface-roboto": "0.0.54"
   },
   "scripts": {

@@ -46,7 +46,7 @@ class BugsColumn extends Component {
             <BugsColumnHeader status={this.props.bugStatus} headerColorClass={this.props.headerColorClass} onAddBug={this.props.onAddBug}/>
           </Grid>
           {this.props.bugs.map(
-            (bug, index) =>
+            (bug) =>
               <Grid item className={classes.bugGridItem} key={bug.id}>
                 <BugShortOverview title={bug.title} id={bug.id} />
               </Grid>
