@@ -1,27 +1,7 @@
 import React, { Component } from 'react';
 import './BugsColumn.css';
-import Bug from './Bug'
 import BugShortOverview from './BugShortOverview'
-import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { Divider } from '@material-ui/core';
 import BugsColumnHeader from './BugsColumnHeader';
-
-const styles = theme => ({
-
-  bugsContainer: {
-
-  },
-
-  bugGridItem: {
-    marginBottom: "10px"
-  },
-
-  bugsColumnHeader: {
-    marginBottom: "10px"
-  }
-})
 
 class BugsColumn extends Component {
 
@@ -33,25 +13,17 @@ class BugsColumn extends Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
       <div className="bugs-column">
-        <Grid
-          container
-          direction="column"
-          alignItems="center"
-          alignContent="center"
-          className="bugsContainer">
-          <Grid item className={classes.bugsColumnHeader}>
-            <BugsColumnHeader status={this.props.bugStatus} headerColorClass={this.props.headerColorClass} onAddBug={this.props.onAddBug}/>
-          </Grid>
-          {this.props.bugs.map(
-            (bug) =>
-              <Grid item className={classes.bugGridItem} key={bug.id}>
-                <BugShortOverview title={bug.title} id={bug.id} />
-              </Grid>
-          )}
-        </Grid>
+        <div className="flexbox-vertical-centered full-height full-width">
+          <BugsColumnHeader status={this.props.bugStatus} headerColorClass={this.props.headerColorClass} onAddBug={this.props.onAddBug} />
+          <div className="flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width">
+            {this.props.bugs.map(
+              (bug) =>
+                <BugShortOverview title={bug.title} id={bug.id} key={bug.id} />
+            )}
+          </div>
+        </div>
       </div>
     );
   }
@@ -61,4 +33,4 @@ class BugsColumn extends Component {
 //bugs
 //headerColorClass
 //onAddBug
-export default withStyles(styles)(BugsColumn);
+export default (BugsColumn);

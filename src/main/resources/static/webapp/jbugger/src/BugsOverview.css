@@ -1,9 +1,17 @@
-.bugsOverviewHeader{
+.parent-relative{
+    position: relative;
+}
+
+.bugs-overview-header{
     display: flex;
     flex-direction: row;
     background-color:#ebe3e3cc;
     padding: 10px;
     height:55px;
+    position: absolute;
+    top: 0;
+    left:0;
+    right:0;
 }
 
 .with-margin-left{
@@ -13,5 +21,9 @@
 .bugs-overview{
     width: 100% !important;
     margin: 0 !important;
-    overflow-x: scroll !important;
+    overflow-x: auto;
+    overflow-y: auto;
+    position: absolute;
+    top: 60px;
+    left: 0;
 }

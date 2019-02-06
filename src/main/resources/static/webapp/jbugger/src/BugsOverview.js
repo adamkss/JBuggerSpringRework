@@ -9,8 +9,8 @@ import InputBase from '@material-ui/core/InputBase';
 import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 
-import {connect} from 'react-redux';
-import {getAllBugs, createBug} from './redux-stuff/actions/actionCreators';
+import { connect } from 'react-redux';
+import { getAllBugs, createBug } from './redux-stuff/actions/actionCreators';
 
 const styles = theme => ({
   BugsOverview: {
@@ -117,49 +117,41 @@ class BugsOverview extends Component {
     const open = Boolean(newBugPopoverAnchorEl);
 
     return (
-      <Grid
-        container
-        direction="column"
-      >
-        <Grid item>
-          <div className="bugsOverviewHeader">
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
-              <InputBase
-                placeholder="Filter bugs..."
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-              />
+      <div className="parent-relative">
+        <div className="bugs-overview-header">
+          <div className={classes.search}>
+            <div className={classes.searchIcon}>
+              <SearchIcon />
             </div>
-            <Button
-              variant="contained"
-              color="primary"
-              className="with-margin-left"
-              onClick={this.handleClick}>
-              New bug
-            </Button>
+            <InputBase
+              placeholder="Filter bugs..."
+              classes={{
+                root: classes.inputRoot,
+                input: classes.inputInput,
+              }}
+            />
           </div>
-        </Grid>
-        <Grid item>
-          <Grid
-            container
-            spacing={16}
-            direction="row"
-            wrap="nowrap"
-            className="bugs-overview"
-            justify=""
-          >
-            {Object.keys(this.props.bugsByStatus).map(bugStatus => (
-              <Grid item key={bugStatus}>
-                <BugsColumn bugStatus={StringFormatters.ToNiceBugStatus(bugStatus)} headerColorClass={`${bugStatus}-bug-status-color`} bugs={this.props.bugsByStatus[bugStatus]} onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)} />
-              </Grid>
-            )
-            )}
-          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            className="with-margin-left"
+            onClick={this.handleClick}>
+            New bug
+            </Button>
+        </div>
+        <Grid
+          container
+          direction="row"
+          wrap="nowrap"
+          className="bugs-overview"
+          justify=""
+        >
+          {Object.keys(this.props.bugsByStatus).map(bugStatus => (
+            <Grid item key={bugStatus}>
+              <BugsColumn bugStatus={StringFormatters.ToNiceBugStatus(bugStatus)} headerColorClass={`${bugStatus}-bug-status-color`} bugs={this.props.bugsByStatus[bugStatus]} onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)} />
+            </Grid>
+          )
+          )}
         </Grid>
         <CreateBugPopover
           id="new-bug-popover"
@@ -167,7 +159,7 @@ class BugsOverview extends Component {
           anchorEl={newBugPopoverAnchorEl}
           onClose={this.handleNewBugPopoverClose}
           handleCreateNewBug={this.handleCreateNewBugFromPopover} />
-      </Grid>
+      </div>
     );
   }
 }

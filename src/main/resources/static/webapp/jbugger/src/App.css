@@ -31,3 +31,33 @@
     margin-right: 12px !important;
     width: 200px;
 }
+
+.flexbox-vertical-centered{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vertical-scroll-container:hover{
+    overflow-y: auto;
+}
+
+/* TODO: Hide when not on hover */
+
+.vertical-scroll-container{
+    overflow-y: auto;
+}
+
+.full-height{
+    height: 100%;
+}
+
+.full-width{
+    width: 100%;
+}
+
+.left-right-padded-container{
+    /* box-sizing: border-box;
+    padding-left: 16px;
+    padding-right: 16px; */
+}
