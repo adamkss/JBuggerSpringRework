@@ -16,15 +16,21 @@ export default class Droppable extends Component {
         event.preventDefault();
     }
 
+    onDragLeave = (event) => {
+        if(this.props.onDragLeave){
+            this.props.onDragLeave();
+        }
+    }
+
     onDrop = (event, category) => {
         if(this.props.onDrop)
             this.props.onDrop(event.dataTransfer.getData("text"));
     }
 
     render() {
-        const {children, onDragOver, onDrop, ...otherProps} = this.props;
+        const {children, onDragOver, onDragLeave, onDrop, ...otherProps} = this.props;
         return (
-            <div droppable onDragOver={this.onDragOver} onDrop={this.onDrop} {...otherProps}>
+            <div droppable onDragOver={this.onDragOver} onDragLeave={this.onDragLeave} onDrop={this.onDrop} {...otherProps}>
                 {children}
             </div>
         );

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import StringFormatters from './utils/StringFormatters';
 import BugsColumn from './BugsColumn'
 import CreateBugPopover from './popovers/CreateBugPopover'
 import { withStyles } from '@material-ui/core/styles';
@@ -66,7 +65,8 @@ class BugsOverview extends Component {
     bugs: [],
     bugsByStatus: {},
     newBugPopoverAnchorEl: null,
-    newBugStatus: null
+    newBugStatus: null,
+    draggingBugFromStatus: null
   }
 
   componentDidMount() {
@@ -115,6 +115,18 @@ class BugsOverview extends Component {
     this.props.dispatch(filterBugs(event.target.value));
   }
 
+  bugDragStarted = (status) => {
+    this.setState({
+      draggingBugFromStatus: status
+    })
+  }
+
+  bugDropped = () => {
+    this.setState({
+      draggingBugFromStatus: null
+    })
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -153,7 +165,14 @@ class BugsOverview extends Component {
         >
           {Object.keys(this.props.bugsByStatus).map(bugStatus => (
             <Grid item key={bugStatus}>
-              <BugsColumn bugStatus={StringFormatters.ToNiceBugStatus(bugStatus)} headerColorClass={`${bugStatus}-bug-status-color`} bugs={this.props.bugsByStatus[bugStatus]} onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)} />
+              <BugsColumn bugStatus={bugStatus}
+                headerColorClass={`${bugStatus}-bug-status-color`}
+                bugs={this.props.bugsByStatus[bugStatus]}
+                onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)}
+                bugDragStarted={this.bugDragStarted}
+                onBugDrop={this.bugDropped}
+                isPossibleDropTarget={this.state.draggingBugFromStatus && this.state.draggingBugFromStatus !== bugStatus}
+              />
             </Grid>
           )
           )}
