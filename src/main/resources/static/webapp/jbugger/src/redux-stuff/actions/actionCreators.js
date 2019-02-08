@@ -1,4 +1,4 @@
-import {SET_BUGS, ADD_BUG, FILTER_BUGS} from './actionTypes'
+import {SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG} from './actionTypes'
 
 export const setBugs = (bugs) => {
     return {
@@ -40,5 +40,16 @@ export const filterBugs = (filterString) => {
     return {
         type: FILTER_BUGS,
         filterString
+    }
+}
+
+export const moveBug = (bugId, oldStatus, newStatus) => {
+    return {
+        type: MOVE_BUG,
+        data: {
+            bugId,
+            oldStatus,
+            newStatus
+        }
     }
 }

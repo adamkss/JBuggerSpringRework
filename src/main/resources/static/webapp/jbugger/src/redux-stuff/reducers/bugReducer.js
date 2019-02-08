@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG } from '../actions/actionTypes'
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
@@ -25,11 +25,11 @@ const mapBugsToObjectByStatus = function (bugs) {
 }
 
 const filterBugs = function (bugs, filterString) {
-    if(!filterString || filterString === "")
+    if (!filterString || filterString === "")
         return bugs;
-        
+
     let filterStringUpperCase = filterString.toUpperCase();
-    return bugs.filter( bug => bug.title.toUpperCase().includes(filterStringUpperCase));
+    return bugs.filter(bug => bug.title.toUpperCase().includes(filterStringUpperCase));
 }
 
 const bugReducer = (state = initialState, action) => {
@@ -56,6 +56,10 @@ const bugReducer = (state = initialState, action) => {
                 bugsByStatus: mapBugsToObjectByStatus(filteredBugs),
                 filteredBugs
             }
+        }
+        case MOVE_BUG: {
+            console.log(action.data);
+            return state;
         }
         default:
             return state;
