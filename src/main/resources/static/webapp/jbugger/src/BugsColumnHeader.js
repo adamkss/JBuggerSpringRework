@@ -38,7 +38,8 @@ class BugsColumnHeader extends Component {
     return (
       <Grid
         container
-        direction="column">
+        direction="column"
+        className="header-parent">
         <Grid
           container
           direction="row"

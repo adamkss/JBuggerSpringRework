@@ -1,3 +1,7 @@
+.header-parent{
+    min-height:52px;
+}
+
 .headerGrid{
     width: 350px;
 }

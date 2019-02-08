@@ -1,4 +1,4 @@
-import {SET_BUGS, ADD_BUG} from './actionTypes'
+import {SET_BUGS, ADD_BUG, FILTER_BUGS} from './actionTypes'
 
 export const setBugs = (bugs) => {
     return {
@@ -33,5 +33,12 @@ export const createBug =  (newBugWithStatus) => {
         })
             .then((response) => response.json())
             .then((createdBug) => dispatch(addBug(createdBug)));
+    }
+}
+
+export const filterBugs = (filterString) => {
+    return {
+        type: FILTER_BUGS,
+        filterString
     }
 }

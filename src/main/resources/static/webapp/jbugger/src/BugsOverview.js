@@ -10,7 +10,7 @@ import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 
 import { connect } from 'react-redux';
-import { getAllBugs, createBug } from './redux-stuff/actions/actionCreators';
+import { getAllBugs, createBug, filterBugs } from './redux-stuff/actions/actionCreators';
 
 const styles = theme => ({
   BugsOverview: {
@@ -111,6 +111,10 @@ class BugsOverview extends Component {
     this.handleNewBugPopoverClose();
   }
 
+  onBugFilterInputChange = (event) => {
+    this.props.dispatch(filterBugs(event.target.value));
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -129,6 +133,7 @@ class BugsOverview extends Component {
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
+              onChange={this.onBugFilterInputChange}
             />
           </div>
           <Button
