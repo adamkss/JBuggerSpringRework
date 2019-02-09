@@ -29,7 +29,8 @@ class BugsColumn extends PureComponent {
   }
 
   onBugDragStart = () => {
-    if (this.props.bugDragStarted(this.props.bugStatus));
+    if (this.props.bugDragStarted)
+      this.props.bugDragStarted(this.props.bugStatus);
   }
 
   onDragOver = () => {
@@ -42,6 +43,10 @@ class BugsColumn extends PureComponent {
     this.setState({
       bugDragHoverOver: false
     })
+  }
+
+  onDragEnd = () => {
+    this.props.onBugDrop();
   }
 
   render() {
@@ -58,7 +63,11 @@ class BugsColumn extends PureComponent {
           <div className={"flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width full-height border-radius-bottom"}>
             {this.props.bugs.map(
               (bug) =>
-                <Draggable key={bug.id} transferData={bug.id + "-" + this.props.bugStatus} onDragStart={this.onBugDragStart}>
+                <Draggable
+                  key={bug.id}
+                  transferData={bug.id + "-" + this.props.bugStatus}
+                  onDragStart={this.onBugDragStart}
+                  onDragEnd={this.onDragEnd}>
                   <BugShortOverview title={bug.title} id={bug.id} />
                 </Draggable>
             )}
