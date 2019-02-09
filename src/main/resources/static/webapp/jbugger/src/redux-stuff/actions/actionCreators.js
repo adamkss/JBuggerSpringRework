@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -54,9 +54,15 @@ export const moveBugVisually = (bugId, oldStatus, newStatus) => {
         }
     }
 }
+export const waitingForBugUpdate = () => {
+    return {
+        type: WAITING_FOR_BUG_UPDATE
+    }
+}
 
 export const moveBug = (bugId, oldStatus, newStatus) => {
     return (dispatch) => {
+        dispatch(waitingForBugUpdate());
         axios.put(`http://localhost:8080/bugs/bug/${bugId}/status`, {
             newStatus
         }).then((result) => {

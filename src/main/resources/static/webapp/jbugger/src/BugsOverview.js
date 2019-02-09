@@ -7,6 +7,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import './BugsOverview.css';
 import { Button } from '@material-ui/core';
+import loadingSVG from './assets/loading.svg';
 
 import { connect } from 'react-redux';
 import { getAllBugs, createBug, filterBugs } from './redux-stuff/actions/actionCreators';
@@ -134,6 +135,16 @@ class BugsOverview extends Component {
 
     return (
       <div className="parent-relative">
+
+        {this.props.waitingForBugUpdate ? 
+          <div className="loadinge-image-wrapper">
+            <div class="loading-image-wrapper__background"/>
+            {/* <img className="loading-image" src={loadingSVG} /> */}
+          </div>
+          :
+          ""
+        }
+
         <div className="bugs-overview-header">
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -190,7 +201,8 @@ class BugsOverview extends Component {
 
 const mapStateToProps = state => ({
   bugs: state.allBugs,
-  bugsByStatus: state.bugsByStatus
+  bugsByStatus: state.bugsByStatus,
+  waitingForBugUpdate: state.waitingForBugUpdate
 });
 
 export default withStyles(styles)(connect(mapStateToProps)(BugsOverview));
