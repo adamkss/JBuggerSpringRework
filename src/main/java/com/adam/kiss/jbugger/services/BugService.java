@@ -1,6 +1,8 @@
 package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.enums.Status;
+import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
 import com.adam.kiss.jbugger.repositories.BugRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,5 +28,12 @@ public class BugService {
         bugRepository.save(bug);
         attachmentService.associateBugToAttachments(bug, bug.getAttachments());
         return bug;
+    }
+
+    public void updateBugStatus(Integer bugId, Status newStatus) throws BugNotFoundException {
+        Optional<Bug> bugToUpdateStatus = bugRepository.findById(bugId);
+        Bug bugToUpdate = bugToUpdateStatus.orElseThrow(() -> new BugNotFoundException());
+        bugToUpdate.setStatus(newStatus);
+        bugRepository.save(bugToUpdate);
     }
 }

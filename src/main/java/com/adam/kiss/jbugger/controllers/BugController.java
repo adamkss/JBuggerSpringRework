@@ -1,9 +1,12 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.CreateBugDtoIn;
+import com.adam.kiss.jbugger.dtos.UpdateBugStatusDTOIn;
 import com.adam.kiss.jbugger.dtos.ViewBugOutDto;
 import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.enums.Status;
+import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
+import com.adam.kiss.jbugger.exceptions.BugNotValidException;
 import com.adam.kiss.jbugger.mappers.BugMapper;
 import com.adam.kiss.jbugger.services.BugService;
 import com.adam.kiss.jbugger.services.UserService;
@@ -38,21 +41,21 @@ public class BugController {
     }
 
     @GetMapping("/bug/{id}")
-    public ResponseEntity<ViewBugOutDto> getBugById(@PathVariable(name ="id") Integer id){
+    public ResponseEntity<ViewBugOutDto> getBugById(@PathVariable(name = "id") Integer id) {
         Optional<Bug> bug = bugService.getBugById(id);
 
-        if(bug.isPresent()){
+        if (bug.isPresent()) {
             return ResponseEntity.ok(
                     ViewBugOutDto.mapToDto(bug.get())
             );
-        }else{
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping
     @SneakyThrows
-    public ResponseEntity<ViewBugOutDto> createBug(@RequestBody CreateBugDtoIn createBugDtoIn){
+    public ResponseEntity<ViewBugOutDto> createBug(@RequestBody CreateBugDtoIn createBugDtoIn) {
         //TODO: Temporary, just for testing UI. No security yet.
         createBugDtoIn.setCreatedByUsername(userService.getAllUsers().get(0).getUsername());
 
@@ -66,8 +69,14 @@ public class BugController {
     }
 
     @GetMapping("/bugStatuses")
-    public ResponseEntity<List<Status>> getAllBugStatuses(){
+    public ResponseEntity<List<Status>> getAllBugStatuses() {
         List<Status> bugStatuses = Arrays.asList(Status.values());
         return ResponseEntity.ok(bugStatuses);
+    }
+
+    @PutMapping("/bug/{bugId}/status")
+    public void updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
+                                @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn) throws BugNotFoundException {
+        bugService.updateBugStatus(bugId, Status.valueOf(updateBugStatusDTOIn.getNewStatus()));
     }
 }

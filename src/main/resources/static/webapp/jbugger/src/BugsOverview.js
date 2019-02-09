@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import StringFormatters from './utils/StringFormatters';
 import BugsColumn from './BugsColumn'
 import CreateBugPopover from './popovers/CreateBugPopover'
 import { withStyles } from '@material-ui/core/styles';
@@ -8,6 +7,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import './BugsOverview.css';
 import { Button } from '@material-ui/core';
+import loadingSVG from './assets/loading.svg';
 
 import { connect } from 'react-redux';
 import { getAllBugs, createBug, filterBugs } from './redux-stuff/actions/actionCreators';
@@ -66,7 +66,8 @@ class BugsOverview extends Component {
     bugs: [],
     bugsByStatus: {},
     newBugPopoverAnchorEl: null,
-    newBugStatus: null
+    newBugStatus: null,
+    draggingBugFromStatus: null
   }
 
   componentDidMount() {
@@ -115,6 +116,18 @@ class BugsOverview extends Component {
     this.props.dispatch(filterBugs(event.target.value));
   }
 
+  bugDragStarted = (status) => {
+    this.setState({
+      draggingBugFromStatus: status
+    })
+  }
+
+  bugDropped = () => {
+    this.setState({
+      draggingBugFromStatus: null
+    })
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -122,6 +135,16 @@ class BugsOverview extends Component {
 
     return (
       <div className="parent-relative">
+
+        {this.props.waitingForBugUpdate ? 
+          <div className="loadinge-image-wrapper">
+            <div class="loading-image-wrapper__background"/>
+            {/* <img className="loading-image" src={loadingSVG} /> */}
+          </div>
+          :
+          ""
+        }
+
         <div className="bugs-overview-header">
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -153,7 +176,14 @@ class BugsOverview extends Component {
         >
           {Object.keys(this.props.bugsByStatus).map(bugStatus => (
             <Grid item key={bugStatus}>
-              <BugsColumn bugStatus={StringFormatters.ToNiceBugStatus(bugStatus)} headerColorClass={`${bugStatus}-bug-status-color`} bugs={this.props.bugsByStatus[bugStatus]} onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)} />
+              <BugsColumn bugStatus={bugStatus}
+                headerColorClass={`${bugStatus}-bug-status-color`}
+                bugs={this.props.bugsByStatus[bugStatus]}
+                onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)}
+                bugDragStarted={this.bugDragStarted}
+                onBugDrop={this.bugDropped}
+                isPossibleDropTarget={this.state.draggingBugFromStatus && this.state.draggingBugFromStatus !== bugStatus}
+              />
             </Grid>
           )
           )}
@@ -171,7 +201,8 @@ class BugsOverview extends Component {
 
 const mapStateToProps = state => ({
   bugs: state.allBugs,
-  bugsByStatus: state.bugsByStatus
+  bugsByStatus: state.bugsByStatus,
+  waitingForBugUpdate: state.waitingForBugUpdate
 });
 
 export default withStyles(styles)(connect(mapStateToProps)(BugsOverview));

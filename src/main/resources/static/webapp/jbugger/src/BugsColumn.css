@@ -11,3 +11,16 @@
 .divider {
     margin-bottom: 10px;
 }
+
+.possible-drop-target{
+    opacity: 0.4;
+}
+
+.possible-drop-target-hover-over{
+    opacity: 1;
+}
+
+.border-radius-bottom{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}

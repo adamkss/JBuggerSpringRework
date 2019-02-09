@@ -1,10 +1,11 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE } from '../actions/actionTypes'
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
     allBugs: [],
     bugsByStatus: {},
-    filteredBugs: []
+    filteredBugs: [],
+    waitingForBugUpdate: false
 }
 
 const addBugByStatus = function (oldBugsByStatus, newBug) {
@@ -25,11 +26,11 @@ const mapBugsToObjectByStatus = function (bugs) {
 }
 
 const filterBugs = function (bugs, filterString) {
-    if(!filterString || filterString === "")
+    if (!filterString || filterString === "")
         return bugs;
-        
+
     let filterStringUpperCase = filterString.toUpperCase();
-    return bugs.filter( bug => bug.title.toUpperCase().includes(filterStringUpperCase));
+    return bugs.filter(bug => bug.title.toUpperCase().includes(filterStringUpperCase));
 }
 
 const bugReducer = (state = initialState, action) => {
@@ -55,6 +56,29 @@ const bugReducer = (state = initialState, action) => {
                 ...state,
                 bugsByStatus: mapBugsToObjectByStatus(filteredBugs),
                 filteredBugs
+            }
+        }
+        case WAITING_FOR_BUG_UPDATE: {
+            return {
+                ...state,
+                waitingForBugUpdate: true
+            }
+        }
+
+        case MOVE_BUG_VISUALLY: {
+            let allBugsWithoutModified = [...state.allBugs.filter(bug => bug.id != action.data.bugId)];
+            let modifiedBug = {
+                ...state.allBugs.filter(bug => bug.id == action.data.bugId)[0],
+                status: action.data.newStatus
+            };
+            let allBugs = [...allBugsWithoutModified, modifiedBug];
+            console.log(modifiedBug);
+            console.log(allBugs);
+            return {
+                ...state,
+                allBugs: allBugs,
+                bugsByStatus: mapBugsToObjectByStatus(allBugs),
+                waitingForBugUpdate: false
             }
         }
         default:
