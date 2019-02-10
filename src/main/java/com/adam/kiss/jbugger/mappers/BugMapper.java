@@ -3,15 +3,14 @@ package com.adam.kiss.jbugger.mappers;
 import com.adam.kiss.jbugger.dtos.CreateBugDtoIn;
 import com.adam.kiss.jbugger.entities.Attachment;
 import com.adam.kiss.jbugger.entities.Bug;
-import com.adam.kiss.jbugger.enums.Status;
+import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.services.AttachmentService;
-import com.adam.kiss.jbugger.services.BugService;
+import com.adam.kiss.jbugger.services.StatusService;
 import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,8 +20,9 @@ import java.util.stream.Collectors;
 public class BugMapper {
     private final AttachmentService attachmentService;
     private final UserService userService;
+    private final StatusService statusService;
 
-    public Bug mapCreateBugDtoInToBug(CreateBugDtoIn createBugDtoIn) {
+    public Bug mapCreateBugDtoInToBug(CreateBugDtoIn createBugDtoIn) throws StatusNotFoundException {
         List<Attachment> relatedAttachments = attachmentService.getAttachmentsByIds(createBugDtoIn.getAttachmentIds())
                 .stream()
                 .filter(Optional::isPresent)
@@ -43,7 +43,9 @@ public class BugMapper {
 
         //Fields not present in the DTO
         bug.setRevision("1.0");
-        bug.setStatus(createBugDtoIn.getStatus());
+
+        Status status = statusService.getStatusByStatusName(createBugDtoIn.getStatus());
+        bug.setStatus(status);
 
         return bug;
     }

@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -12,6 +12,24 @@ export const addBug = (newBug) => {
     return {
         type: ADD_BUG,
         newBug
+    }
+}
+
+export const setStatuses = (statuses) => {
+    return {
+        type: SET_STATUSES,
+        data: statuses
+    }
+}
+
+export const getAllStatuses = () => {
+    return (dispatch) => {
+        fetch('http://localhost:8080/statuses')
+        .then((response) => response.json())
+        .then((response) => {
+            dispatch(setStatuses(response))
+            dispatch(getAllBugs())
+        });
     }
 }
 

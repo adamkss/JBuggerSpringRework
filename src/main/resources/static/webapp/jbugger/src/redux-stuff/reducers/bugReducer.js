@@ -1,7 +1,8 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES } from '../actions/actionTypes'
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
+    statuses: [],
     allBugs: [],
     bugsByStatus: {},
     filteredBugs: [],
@@ -33,8 +34,23 @@ const filterBugs = function (bugs, filterString) {
     return bugs.filter(bug => bug.title.toUpperCase().includes(filterStringUpperCase));
 }
 
+const initializeBugMapFromArray = (statuses) => {
+    let map = {};
+    statuses.forEach(status => {
+        map[status.statusName] = [];
+    })
+    return map;
+}
+
 const bugReducer = (state = initialState, action) => {
     switch (action.type) {
+        case SET_STATUSES: {
+            return {
+                ...state,
+                statuses: action.data,
+                bugsByStatus: initializeBugMapFromArray(action.data)
+            }
+        }
         case SET_BUGS:
             return {
                 ...state,
@@ -72,8 +88,7 @@ const bugReducer = (state = initialState, action) => {
                 status: action.data.newStatus
             };
             let allBugs = [...allBugsWithoutModified, modifiedBug];
-            console.log(modifiedBug);
-            console.log(allBugs);
+           
             return {
                 ...state,
                 allBugs: allBugs,

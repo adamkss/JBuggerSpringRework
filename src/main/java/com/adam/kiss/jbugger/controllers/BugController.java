@@ -3,12 +3,14 @@ package com.adam.kiss.jbugger.controllers;
 import com.adam.kiss.jbugger.dtos.CreateBugDtoIn;
 import com.adam.kiss.jbugger.dtos.UpdateBugStatusDTOIn;
 import com.adam.kiss.jbugger.dtos.ViewBugOutDto;
+import com.adam.kiss.jbugger.dtos.ViewStatusDtoOut;
 import com.adam.kiss.jbugger.entities.Bug;
-import com.adam.kiss.jbugger.enums.Status;
+import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
-import com.adam.kiss.jbugger.exceptions.BugNotValidException;
+import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.mappers.BugMapper;
 import com.adam.kiss.jbugger.services.BugService;
+import com.adam.kiss.jbugger.services.StatusService;
 import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -17,10 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequestMapping("/bugs")
 @RestController
@@ -31,6 +33,7 @@ public class BugController {
     private final BugService bugService;
     private final BugMapper bugMapper;
     private final UserService userService;
+    private final StatusService statusService;
 
     @GetMapping
     public List<ViewBugOutDto> getAllBugs(
@@ -69,14 +72,18 @@ public class BugController {
     }
 
     @GetMapping("/bugStatuses")
-    public ResponseEntity<List<Status>> getAllBugStatuses() {
-        List<Status> bugStatuses = Arrays.asList(Status.values());
-        return ResponseEntity.ok(bugStatuses);
+    public ResponseEntity<List<ViewStatusDtoOut>> getAllBugStatuses() {
+        List<ViewStatusDtoOut> statusDtoOuts = statusService.getAllStatuses()
+                .stream()
+                .map(ViewStatusDtoOut::mapStatusToDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(statusDtoOuts);
     }
 
     @PutMapping("/bug/{bugId}/status")
     public void updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
-                                @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn) throws BugNotFoundException {
-        bugService.updateBugStatus(bugId, Status.valueOf(updateBugStatusDTOIn.getNewStatus()));
+                                @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn) throws BugNotFoundException, StatusNotFoundException {
+        bugService.updateBugStatus(bugId, statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus()));
     }
 }

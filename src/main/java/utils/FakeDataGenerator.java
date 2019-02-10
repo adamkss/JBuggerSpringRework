@@ -1,8 +1,8 @@
 package utils;
 
 import com.adam.kiss.jbugger.entities.*;
+import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.enums.Severity;
-import com.adam.kiss.jbugger.enums.Status;
 import com.adam.kiss.jbugger.exceptions.UserNotValidException;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -76,7 +76,7 @@ public class FakeDataGenerator {
         Random random = new Random();
         bug.setTitle(BUG_TITLES_PREFIX[random.nextInt(BUG_TITLES_PREFIX.length)]+BUG_TITLES_SUBJECT[random.nextInt(BUG_TITLES_SUBJECT.length)]);
         bug.setDescription(BUG_DESCRIPTIONS[random.nextInt(BUG_DESCRIPTIONS.length)]);
-        bug.setStatus(Status.values()[random.nextInt(Status.values().length)]);
+        bug.setStatus(Status.PredefinedStatuses.PREDEFINED_STATUSES.get(random.nextInt(Status.PredefinedStatuses.PREDEFINED_STATUSES.size())));
         bug.setSeverity(Severity.values()[random.nextInt(Severity.values().length)]);
         bug.setRevision(random.nextInt(10)+"."+random.nextInt(10));
         bug.setTargetDate(LocalDate.now().plusDays(random.nextInt(100)));

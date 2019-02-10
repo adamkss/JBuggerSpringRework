@@ -72,7 +72,7 @@ class BugsColumnHeader extends Component {
   }
 }
 
-//status
+//predefinedStatusNames
 //onAddBug
 //headerColorClass
 export default withStyles(styles, { withTheme: true })(BugsColumnHeader);

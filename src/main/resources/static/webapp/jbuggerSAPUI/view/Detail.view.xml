@@ -44,7 +44,7 @@
 									<m:Label text="Target date"/>
 									<m:Text text="{selectedBugModel>/targetDate}"/>
 									<m:Label text="Status"/>
-									<m:Text text="{selectedBugModel>/status}"/>
+									<m:Text text="{selectedBugModel>/predefinedStatusNames}"/>
 								</form:content>
 							</form:SimpleForm>
 						</blocks>

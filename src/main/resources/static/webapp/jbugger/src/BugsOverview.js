@@ -10,7 +10,7 @@ import { Button } from '@material-ui/core';
 import loadingSVG from './assets/loading.svg';
 
 import { connect } from 'react-redux';
-import { getAllBugs, createBug, filterBugs } from './redux-stuff/actions/actionCreators';
+import { getAllBugs, createBug, filterBugs, getAllStatuses } from './redux-stuff/actions/actionCreators';
 
 const styles = theme => ({
   BugsOverview: {
@@ -75,7 +75,7 @@ class BugsOverview extends Component {
       isLoading: true
     })
 
-    this.props.dispatch(getAllBugs())
+    this.props.dispatch(getAllStatuses());
   }
 
   handleNewBugPopoverClose = () => {
@@ -136,9 +136,9 @@ class BugsOverview extends Component {
     return (
       <div className="parent-relative">
 
-        {this.props.waitingForBugUpdate ? 
+        {this.props.waitingForBugUpdate ?
           <div className="loadinge-image-wrapper">
-            <div class="loading-image-wrapper__background"/>
+            <div className="loading-image-wrapper__background" />
             {/* <img className="loading-image" src={loadingSVG} /> */}
           </div>
           :
@@ -174,15 +174,15 @@ class BugsOverview extends Component {
           className="bugs-overview"
           justify=""
         >
-          {Object.keys(this.props.bugsByStatus).map(bugStatus => (
-            <Grid item key={bugStatus}>
-              <BugsColumn bugStatus={bugStatus}
-                headerColorClass={`${bugStatus}-bug-status-color`}
-                bugs={this.props.bugsByStatus[bugStatus]}
-                onAddBug={this.createOnAddBugCallbackForStatus(bugStatus)}
+          {this.props.statuses.map(bugStatus => (
+            <Grid item key={bugStatus.statusName}>
+              <BugsColumn bugStatus={bugStatus.statusName}
+                headerColorClass={`${bugStatus.statusName}-bug-status-color`}
+                bugs={this.props.bugsByStatus[bugStatus.statusName]}
+                onAddBug={this.createOnAddBugCallbackForStatus(bugStatus.statusName)}
                 bugDragStarted={this.bugDragStarted}
                 onBugDrop={this.bugDropped}
-                isPossibleDropTarget={this.state.draggingBugFromStatus && this.state.draggingBugFromStatus !== bugStatus}
+                isPossibleDropTarget={this.state.draggingBugFromStatus && this.state.draggingBugFromStatus !== bugStatus.statusName}
               />
             </Grid>
           )
@@ -200,6 +200,7 @@ class BugsOverview extends Component {
 }
 
 const mapStateToProps = state => ({
+  statuses: state.statuses,
   bugs: state.allBugs,
   bugsByStatus: state.bugsByStatus,
   waitingForBugUpdate: state.waitingForBugUpdate
