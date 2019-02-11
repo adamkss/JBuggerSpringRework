@@ -7,10 +7,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import './BugsOverview.css';
 import { Button } from '@material-ui/core';
-import loadingSVG from './assets/loading.svg';
-
+import BugDetailsModal from './BugDetailsModal';
 import { connect } from 'react-redux';
-import { getAllBugs, createBug, filterBugs, getAllStatuses } from './redux-stuff/actions/actionCreators';
+import { getAllBugs, createBug, filterBugs, getAllStatuses, closeModal } from './redux-stuff/actions/actionCreators';
 
 const styles = theme => ({
   BugsOverview: {
@@ -27,8 +26,7 @@ const styles = theme => ({
     [theme.breakpoints.up('sm')]: {
       // marginLeft: theme.spacing.unit * 3,
       width: 'auto',
-    },
-    flexGrow: 1
+    }
   },
   searchIcon: {
     width: theme.spacing.unit * 9,
@@ -128,13 +126,19 @@ class BugsOverview extends Component {
     })
   }
 
+  onKeyPressed = (event) => {
+    if(event.keyCode == 27 && this.props.activeBugToModifyID){
+      this.props.dispatch(closeModal());
+    }
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
     const open = Boolean(newBugPopoverAnchorEl);
 
     return (
-      <div className="parent-relative">
+      <div className="parent-relative" tabIndex="0" onKeyDown={this.onKeyPressed}>
 
         {this.props.waitingForBugUpdate ?
           <div className="loadinge-image-wrapper">
@@ -162,7 +166,7 @@ class BugsOverview extends Component {
           <Button
             variant="contained"
             color="primary"
-            className="with-margin-left"
+            className="with-margin-left-auto"
             onClick={this.handleClick}>
             New bug
             </Button>
@@ -188,12 +192,24 @@ class BugsOverview extends Component {
           )
           )}
         </Grid>
+        
         <CreateBugPopover
           id="new-bug-popover"
           open={open}
           anchorEl={newBugPopoverAnchorEl}
           onClose={this.handleNewBugPopoverClose}
           handleCreateNewBug={this.handleCreateNewBugFromPopover} />
+        
+        <BugDetailsModal
+          open={this.props.activeBugToModifyID}
+          bug={
+            {
+              title: 'asd',
+              id: 3
+            }
+          }
+          onClose={() => alert('as')}
+          />
       </div>
     );
   }
@@ -203,7 +219,8 @@ const mapStateToProps = state => ({
   statuses: state.statuses,
   bugs: state.allBugs,
   bugsByStatus: state.bugsByStatus,
-  waitingForBugUpdate: state.waitingForBugUpdate
+  waitingForBugUpdate: state.waitingForBugUpdate,
+  activeBugToModifyID: state.activeBugToModifyID
 });
 
 export default withStyles(styles)(connect(mapStateToProps)(BugsOverview));

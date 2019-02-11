@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL } from '../actions/actionTypes'
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
@@ -7,7 +7,8 @@ const initialState = {
     bugsByStatus: {},
     filteredBugs: [],
     waitingForBugUpdate: false,
-    filterString: null
+    filterString: null,
+    activeBugToModifyID: null
 }
 
 const addBugByStatus = function (oldBugsByStatus, newBug) {
@@ -85,18 +86,35 @@ const bugReducer = (state = initialState, action) => {
         }
 
         case MOVE_BUG_VISUALLY: {
+            if (action.data.oldStatus === action.data.newStatus)
+                return {
+                    ...state,
+                    waitingForBugUpdate: false
+                }
             let allBugsWithoutModified = [...state.allBugs.filter(bug => bug.id != action.data.bugId)];
             let modifiedBug = {
                 ...state.allBugs.filter(bug => bug.id == action.data.bugId)[0],
                 status: action.data.newStatus
             };
             let allBugs = [...allBugsWithoutModified, modifiedBug];
-           
+
             return {
                 ...state,
                 allBugs: allBugs,
                 bugsByStatus: mapBugsToObjectByStatus(filterBugs(allBugs, state.filterString)),
                 waitingForBugUpdate: false
+            }
+        }
+        case BUG_CLICKED: {
+            return {
+                ...state,
+                activeBugToModifyID: action.data
+            }
+        }
+        case CLOSE_MODAL: {
+            return {
+                ...state,
+                activeBugToModifyID: null
             }
         }
         default:
