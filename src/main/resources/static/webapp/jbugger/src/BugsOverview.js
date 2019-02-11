@@ -10,6 +10,7 @@ import { Button } from '@material-ui/core';
 import BugDetailsModal from './BugDetailsModal';
 import { connect } from 'react-redux';
 import { getAllBugs, createBug, filterBugs, getAllStatuses, closeModal } from './redux-stuff/actions/actionCreators';
+import GenericModal from './GenericModal';
 
 const styles = theme => ({
   BugsOverview: {
@@ -203,6 +204,7 @@ class BugsOverview extends Component {
         <BugDetailsModal
           open={this.props.activeBugToModifyID}
           />
+
       </div>
     );
   }

@@ -31,6 +31,7 @@ import BugsOverview from './BugsOverview';
 import { Switch, Route } from 'react-router-dom'
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
+import GenericModal from './GenericModal';
 
 const drawerWidth = 240;
 
@@ -319,6 +320,7 @@ class ResponsiveDrawer extends React.Component {
                     <Route exact path={`${this.props.match.path}`} component={BugsOverview} />
                     <Route path={`${this.props.match.path}bugs/bug/:bugId`} component={BugDetail} />
                 </main>
+                <GenericModal/>
             </div>
         );
     }
