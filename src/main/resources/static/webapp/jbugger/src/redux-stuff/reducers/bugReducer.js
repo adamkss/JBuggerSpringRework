@@ -6,7 +6,8 @@ const initialState = {
     allBugs: [],
     bugsByStatus: {},
     filteredBugs: [],
-    waitingForBugUpdate: false
+    waitingForBugUpdate: false,
+    filterString: null
 }
 
 const addBugByStatus = function (oldBugsByStatus, newBug) {
@@ -59,10 +60,11 @@ const bugReducer = (state = initialState, action) => {
                 filteredBugs: action.data
             }
         case ADD_BUG: {
+            let newAllBugs = [...state.allBugs, action.newBug];
             return {
                 ...state,
-                allBugs: [...state.allBugs, action.newBug],
-                bugsByStatus: addBugByStatus(state.bugsByStatus, action.newBug)
+                allBugs: newAllBugs,
+                bugsByStatus: mapBugsToObjectByStatus(filterBugs(newAllBugs, state.filterString)),
             }
         }
         case FILTER_BUGS: {
@@ -71,7 +73,8 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 bugsByStatus: mapBugsToObjectByStatus(filteredBugs),
-                filteredBugs
+                filteredBugs,
+                filterString: action.filterString
             }
         }
         case WAITING_FOR_BUG_UPDATE: {
@@ -92,7 +95,7 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 allBugs: allBugs,
-                bugsByStatus: mapBugsToObjectByStatus(allBugs),
+                bugsByStatus: mapBugsToObjectByStatus(filterBugs(allBugs, state.filterString)),
                 waitingForBugUpdate: false
             }
         }

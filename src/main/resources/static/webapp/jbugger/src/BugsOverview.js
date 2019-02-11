@@ -178,7 +178,7 @@ class BugsOverview extends Component {
             <Grid item key={bugStatus.statusName}>
               <BugsColumn bugStatus={bugStatus.statusName}
                 headerColorClass={`${bugStatus.statusName}-bug-status-color`}
-                bugs={this.props.bugsByStatus[bugStatus.statusName]}
+                bugs={this.props.bugsByStatus[bugStatus.statusName] ? this.props.bugsByStatus[bugStatus.statusName] : [] }
                 onAddBug={this.createOnAddBugCallbackForStatus(bugStatus.statusName)}
                 bugDragStarted={this.bugDragStarted}
                 onBugDrop={this.bugDropped}
