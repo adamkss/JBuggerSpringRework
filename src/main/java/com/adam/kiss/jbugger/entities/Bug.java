@@ -2,7 +2,6 @@ package com.adam.kiss.jbugger.entities;
 
 
 import com.adam.kiss.jbugger.enums.Severity;
-import com.adam.kiss.jbugger.enums.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -42,8 +41,7 @@ public class Bug {
     @ManyToOne
     private User createdBy;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
     private Status status;
 
     @ManyToOne
@@ -74,7 +72,7 @@ public class Bug {
         detailsBuilder.append("Target date: ").append(targetDate).append("\n");
         detailsBuilder.append("Severity: ").append(severity).append("\n");
         detailsBuilder.append("Created by: ").append(createdBy.getName()).append("\n");
-        detailsBuilder.append("Status: ").append(status).append("\n");
+        detailsBuilder.append("PredefinedStatusNames: ").append(status).append("\n");
         detailsBuilder.append("Assigned  to: ").append(assignedTo.getName()).append("\n");
         return detailsBuilder.toString();
     }

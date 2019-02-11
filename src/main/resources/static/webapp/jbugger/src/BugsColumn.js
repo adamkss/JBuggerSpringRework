@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from 'react';
+import React, {PureComponent } from 'react';
 import './BugsColumn.css';
 import StringFormatters from './utils/StringFormatters';
 import BugShortOverview from './BugShortOverview'
@@ -8,6 +8,7 @@ import Droppable from './d&d/Droppable';
 import { moveBug } from './redux-stuff/actions/actionCreators';
 
 import { connect } from 'react-redux';
+import InfoMessage from './InfoMessage';
 
 class BugsColumn extends PureComponent {
 
@@ -61,16 +62,20 @@ class BugsColumn extends PureComponent {
             headerColorClass={this.props.headerColorClass}
             onAddBug={this.props.onAddBug} />
           <div className={"flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width full-height border-radius-bottom"}>
-            {this.props.bugs.map(
-              (bug) =>
-                <Draggable
-                  key={bug.id}
-                  transferData={bug.id + "-" + this.props.bugStatus}
-                  onDragStart={this.onBugDragStart}
-                  onDragEnd={this.onDragEnd}>
-                  <BugShortOverview title={bug.title} id={bug.id} />
-                </Draggable>
-            )}
+            {this.props.bugs.length != 0 ?
+              this.props.bugs.map(
+                (bug) =>
+                  <Draggable
+                    key={bug.id}
+                    transferData={bug.id + "-" + this.props.bugStatus}
+                    onDragStart={this.onBugDragStart}
+                    onDragEnd={this.onDragEnd}>
+                    <BugShortOverview title={bug.title} id={bug.id} />
+                  </Draggable>
+              )
+              :
+              <InfoMessage message="No bugs here."/>
+            }
           </div>
         </div>
       </Droppable>

@@ -1,7 +1,8 @@
 package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.Bug;
-import com.adam.kiss.jbugger.enums.Status;
+import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
 import com.adam.kiss.jbugger.repositories.BugRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,10 @@ public class BugService {
         return bug;
     }
 
-    public void updateBugStatus(Integer bugId, Status newStatus) throws BugNotFoundException {
+    public void updateBugStatus(Integer bugId, Status status) throws BugNotFoundException {
         Optional<Bug> bugToUpdateStatus = bugRepository.findById(bugId);
-        Bug bugToUpdate = bugToUpdateStatus.orElseThrow(() -> new BugNotFoundException());
-        bugToUpdate.setStatus(newStatus);
+        Bug bugToUpdate = bugToUpdateStatus.orElseThrow(BugNotFoundException::new);
+        bugToUpdate.setStatus(status);
         bugRepository.save(bugToUpdate);
     }
 }

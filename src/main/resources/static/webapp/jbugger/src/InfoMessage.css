@@ -2,7 +2,6 @@
     flex-grow: 1;
 }
 
-
 .NEW-bug-status-color{
     background-color: #607d8b;
 }
@@ -55,8 +54,4 @@
 
 .full-width{
     width: 100%;
-}
-
-.padded-top{
-    padding-top: 10px;
 }

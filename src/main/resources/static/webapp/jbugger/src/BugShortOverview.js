@@ -5,10 +5,8 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { withRouter } from 'react-router-dom';
-
-const styles = theme => ({
-
-})
+import { connect } from 'react-redux';
+import { bugClicked } from './redux-stuff/actions/actionCreators';
 
 class BugShortOverview extends Component {
 
@@ -18,7 +16,8 @@ class BugShortOverview extends Component {
   }
 
   onBugClick() {
-    this.props.history.push(`/bugs/bug/${this.props.id}`);
+    // this.props.history.push(`/bugs/bug/${this.props.id}`);
+    this.props.dispatch(bugClicked(this.props.id));
   }
 
   state = {
@@ -29,7 +28,6 @@ class BugShortOverview extends Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
       <div className="bug-short-overview" onClick={this.onBugClick}>
         <Grid
@@ -55,4 +53,4 @@ class BugShortOverview extends Component {
 //id
 //severity
 
-export default withStyles(styles)(withRouter(BugShortOverview));
+export default connect()(withRouter(BugShortOverview));

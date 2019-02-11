@@ -1,5 +1,6 @@
 .parent-relative{
     position: relative;
+    height: calc(100vh - 64px);
 }
 
 .bugs-overview-header{
@@ -14,8 +15,8 @@
     right:0;
 }
 
-.with-margin-left{
-    margin-left: 12px !important;
+.with-margin-left-auto{
+    margin-left: auto !important;
 }
 
 .bugs-overview{
