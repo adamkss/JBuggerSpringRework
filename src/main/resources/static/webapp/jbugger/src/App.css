@@ -60,3 +60,12 @@
 .padded-top{
     padding-top: 10px;
 }
+
+.flexbox-horizontal{
+    display:flex;
+    flex-direction: row;
+}
+
+.with-margin-top{
+    margin-top: 12px;
+}

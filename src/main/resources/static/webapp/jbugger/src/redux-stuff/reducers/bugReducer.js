@@ -8,7 +8,9 @@ const initialState = {
     filteredBugs: [],
     waitingForBugUpdate: false,
     filterString: null,
-    activeBugToModifyID: null
+    activeBugToModifyID: null,
+    activeBugToModify: null,
+    bugsById: {}
 }
 
 const addBugByStatus = function (oldBugsByStatus, newBug) {
@@ -44,6 +46,20 @@ const initializeBugMapFromArray = (statuses) => {
     return map;
 }
 
+const mapBugsToIdMap = (bugs) => {
+    let bugsMap = {};
+    bugs.forEach((bug) => {
+        bugsMap[bug.id] = bug;
+    });
+    return bugsMap;
+}
+
+const getBugsMapWithNewBug = (oldBugsMap, bug) => {
+    let bugsMap = {...oldBugsMap};
+    bugsMap[bug.id] = bug;
+    return bugsMap;
+}
+
 const bugReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_STATUSES: {
@@ -58,7 +74,8 @@ const bugReducer = (state = initialState, action) => {
                 ...state,
                 allBugs: action.data,
                 bugsByStatus: mapBugsToObjectByStatus(action.data),
-                filteredBugs: action.data
+                filteredBugs: action.data,
+                bugsById: mapBugsToIdMap(action.data)
             }
         case ADD_BUG: {
             let newAllBugs = [...state.allBugs, action.newBug];
@@ -66,6 +83,7 @@ const bugReducer = (state = initialState, action) => {
                 ...state,
                 allBugs: newAllBugs,
                 bugsByStatus: mapBugsToObjectByStatus(filterBugs(newAllBugs, state.filterString)),
+                bugsById: getBugsMapWithNewBug(state.bugsById, action.newBug)
             }
         }
         case FILTER_BUGS: {
@@ -93,7 +111,7 @@ const bugReducer = (state = initialState, action) => {
                 }
             let allBugsWithoutModified = [...state.allBugs.filter(bug => bug.id != action.data.bugId)];
             let modifiedBug = {
-                ...state.allBugs.filter(bug => bug.id == action.data.bugId)[0],
+                ...state.bugsById[action.data.bugId],
                 status: action.data.newStatus
             };
             let allBugs = [...allBugsWithoutModified, modifiedBug];
@@ -102,13 +120,15 @@ const bugReducer = (state = initialState, action) => {
                 ...state,
                 allBugs: allBugs,
                 bugsByStatus: mapBugsToObjectByStatus(filterBugs(allBugs, state.filterString)),
+                bugsById: getBugsMapWithNewBug(state.bugsById, modifiedBug),
                 waitingForBugUpdate: false
             }
         }
         case BUG_CLICKED: {
             return {
                 ...state,
-                activeBugToModifyID: action.data
+                activeBugToModifyID: action.data,
+                activeBugToModify: state.bugsById[action.data]
             }
         }
         case CLOSE_MODAL: {

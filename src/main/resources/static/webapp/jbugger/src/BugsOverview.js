@@ -202,13 +202,6 @@ class BugsOverview extends Component {
         
         <BugDetailsModal
           open={this.props.activeBugToModifyID}
-          bug={
-            {
-              title: 'asd',
-              id: 3
-            }
-          }
-          onClose={() => alert('as')}
           />
       </div>
     );
