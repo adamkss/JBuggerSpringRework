@@ -115,7 +115,8 @@ class ResponsiveDrawer extends React.Component {
     state = {
         mobileOpen: false,
         mobileMoreAnchorEl: null,
-        anchorEl: null
+        anchorEl: null,
+        modalOpened: false
     };
 
     handleDrawerToggle = () => {
@@ -128,6 +129,9 @@ class ResponsiveDrawer extends React.Component {
 
     handleMenuClose = () => {
         this.setState({ anchorEl: null });
+        this.setState({
+            modalOpened: true
+        })
     };
 
     handleMobileMenuOpen = event => {
@@ -166,7 +170,7 @@ class ResponsiveDrawer extends React.Component {
                 onClose={this.handleMobileMenuClose}
             >
                 <MenuItem>
-                    <IconButton color="inherit">
+                    <IconButton color="inherit" >
                         <Badge badgeContent={4} color="secondary">
                             <MailIcon />
                         </Badge>
@@ -320,7 +324,11 @@ class ResponsiveDrawer extends React.Component {
                     <Route exact path={`${this.props.match.path}`} component={BugsOverview} />
                     <Route path={`${this.props.match.path}bugs/bug/:bugId`} component={BugDetail} />
                 </main>
-                <GenericModal/>
+                {this.state.modalOpened ? 
+                <GenericModal onClose={() => this.setState({
+                    modalOpened: false})}/>
+                :
+                ""}
             </div>
         );
     }

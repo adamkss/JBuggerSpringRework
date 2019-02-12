@@ -9,8 +9,13 @@ import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 import BugDetailsModal from './BugDetailsModal';
 import { connect } from 'react-redux';
-import { getAllBugs, createBug, filterBugs, getAllStatuses, closeModal } from './redux-stuff/actions/actionCreators';
-import GenericModal from './GenericModal';
+import { createBug, filterBugs, getAllStatuses, closeModal } from './redux-stuff/actions/actionCreators';
+import UnmountingDelayed from './UnmountingDelayed';
+
+function FirstChild(props) {
+  const childrenArray = React.Children.toArray(props.children);
+  return childrenArray[0] || null;
+}
 
 const styles = theme => ({
   BugsOverview: {
@@ -128,7 +133,7 @@ class BugsOverview extends Component {
   }
 
   onKeyPressed = (event) => {
-    if(event.keyCode == 27 && this.props.activeBugToModifyID){
+    if (event.keyCode == 27 && this.props.activeBugToModifyID) {
       this.props.dispatch(closeModal());
     }
   }
@@ -183,7 +188,7 @@ class BugsOverview extends Component {
             <Grid item key={bugStatus.statusName}>
               <BugsColumn bugStatus={bugStatus.statusName}
                 headerColorClass={`${bugStatus.statusName}-bug-status-color`}
-                bugs={this.props.bugsByStatus[bugStatus.statusName] ? this.props.bugsByStatus[bugStatus.statusName] : [] }
+                bugs={this.props.bugsByStatus[bugStatus.statusName] ? this.props.bugsByStatus[bugStatus.statusName] : []}
                 onAddBug={this.createOnAddBugCallbackForStatus(bugStatus.statusName)}
                 bugDragStarted={this.bugDragStarted}
                 onBugDrop={this.bugDropped}
@@ -193,17 +198,16 @@ class BugsOverview extends Component {
           )
           )}
         </Grid>
-        
+
         <CreateBugPopover
           id="new-bug-popover"
           open={open}
           anchorEl={newBugPopoverAnchorEl}
           onClose={this.handleNewBugPopoverClose}
           handleCreateNewBug={this.handleCreateNewBugFromPopover} />
-        
-        <BugDetailsModal
-          open={this.props.activeBugToModifyID}
-          />
+        <UnmountingDelayed show={this.props.activeBugToModifyID !== null} delay="300">
+          <BugDetailsModal mustClose={this.props.activeBugToModifyID == null}/>
+        </UnmountingDelayed>
 
       </div>
     );

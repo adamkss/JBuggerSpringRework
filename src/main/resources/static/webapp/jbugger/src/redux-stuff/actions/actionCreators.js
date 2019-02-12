@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, GET_USER_NAMES, SET_USER_NAMES } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -25,11 +25,11 @@ export const setStatuses = (statuses) => {
 export const getAllStatuses = () => {
     return (dispatch) => {
         fetch('http://localhost:8080/statuses')
-        .then((response) => response.json())
-        .then((response) => {
-            dispatch(setStatuses(response))
-            dispatch(getAllBugs())
-        });
+            .then((response) => response.json())
+            .then((response) => {
+                dispatch(setStatuses(response))
+                dispatch(getAllBugs())
+            });
     }
 }
 
@@ -92,14 +92,29 @@ export const moveBug = (bugId, oldStatus, newStatus) => {
 }
 
 export const bugClicked = (bugId) => {
-    return{
+    return {
         type: BUG_CLICKED,
         data: bugId
     }
 }
 
 export const closeModal = () => {
-    return{
+    return {
         type: CLOSE_MODAL
+    }
+}
+
+export const setUserNames = (usernames) => {
+    return {
+        type: SET_USER_NAMES,
+        data: usernames
+    }
+}
+
+export const getUserNames = () => {
+    return (dispatch) => {
+        fetch("http://localhost:8080/users/namesAndUsernames")
+            .then((response) => response.json())
+            .then((users) => dispatch(setUserNames(users)))
     }
 }

@@ -1,17 +1,18 @@
 .modal-parent{
     position: absolute;
-    width: 0;
+    width: 280px;
     background-color: #fff;
     top: 0;
     right: 0;
     height: 100%;
-    z-index: 6000;
-    transition: width 0.3s;
+    transition: all 0.3s;
+    transform: translateX(280px);
     box-shadow: -2px 0px 13px -2px rgba(155,155,163,1);
+    z-index: 1200;
 }
 
 .modal-expanded{
-    width: 280px;
+    transform: translateX(0);
 }
 
 .sidebar{
@@ -55,21 +56,4 @@
 
 aside main, aside section{
     width: 100%;
-}
-
-.sidebar__edit-button{
-    font-weight: 300;
-}
-
-.sidebar__edit-button:hover{
-    cursor: pointer;
-    text-decoration-line: underline;
-}
-
-.sidebar__detail-info{
-    color: rgba(64, 64, 64, 0.90) !important;
-    font-size: 0.855rem !important;
-    font-weight: 375 !important;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
-    margin-top: 6px !important;
 }
