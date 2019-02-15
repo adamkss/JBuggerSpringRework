@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, GET_USER_NAMES, SET_USER_NAMES } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, GET_USER_NAMES, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -19,6 +19,13 @@ export const setStatuses = (statuses) => {
     return {
         type: SET_STATUSES,
         data: statuses
+    }
+}
+
+export const setBugWithId = (modifedBug) => {
+    return {
+        type: SET_BUG,
+        data: modifedBug
     }
 }
 
@@ -116,5 +123,24 @@ export const getUserNames = () => {
         fetch("http://localhost:8080/users/namesAndUsernames")
             .then((response) => response.json())
             .then((users) => dispatch(setUserNames(users)))
+    }
+}
+
+export const updateCurrentlyActiveBug =(newBug) => {
+    return {
+        type: UPDATE_CURRENTLY_ACTIVE_BUG,
+        data: newBug
+    }
+}
+
+export const startUpdatingBug = (modifiedBug) => {
+    return (dispatch) => {
+        axios.put(`http://localhost:8080/bugs/bug/${modifiedBug.id}`, modifiedBug)
+            .then((result) => {
+                dispatch(setBugWithId(result.data));
+                dispatch(updateCurrentlyActiveBug(result.data))
+            }).catch((error) => {
+                console.log(error);
+            })
     }
 }

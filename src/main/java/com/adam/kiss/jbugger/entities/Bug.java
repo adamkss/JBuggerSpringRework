@@ -2,7 +2,9 @@ package com.adam.kiss.jbugger.entities;
 
 
 import com.adam.kiss.jbugger.enums.Severity;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -49,6 +51,10 @@ public class Bug {
 
     @OneToMany(mappedBy = "bug", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Attachment> attachments;
+
+    @ManyToMany
+    @EqualsAndHashCode.Exclude
+    private List<Label> labels;
 
     public Bug(String title, String description, String revision, String fixedInRevision, LocalDate targetDate, Severity severity, User createdBy, Status status, User assignedTo) {
         this.title = title;

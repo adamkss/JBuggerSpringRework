@@ -9,7 +9,7 @@ import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 import BugDetailsModal from './BugDetailsModal';
 import { connect } from 'react-redux';
-import { createBug, filterBugs, getAllStatuses, closeModal } from './redux-stuff/actions/actionCreators';
+import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug } from './redux-stuff/actions/actionCreators';
 import UnmountingDelayed from './UnmountingDelayed';
 
 function FirstChild(props) {
@@ -138,6 +138,10 @@ class BugsOverview extends Component {
     }
   }
 
+  onBugEditFromSidebar = (newBug) => {
+    this.props.dispatch(startUpdatingBug(newBug));
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -205,8 +209,9 @@ class BugsOverview extends Component {
           anchorEl={newBugPopoverAnchorEl}
           onClose={this.handleNewBugPopoverClose}
           handleCreateNewBug={this.handleCreateNewBugFromPopover} />
+
         <UnmountingDelayed show={this.props.activeBugToModifyID !== null} delay="300">
-          <BugDetailsModal mustClose={this.props.activeBugToModifyID == null}/>
+          <BugDetailsModal onBugEdit={this.onBugEditFromSidebar} mustClose={this.props.activeBugToModifyID == null}/>
         </UnmountingDelayed>
 
       </div>

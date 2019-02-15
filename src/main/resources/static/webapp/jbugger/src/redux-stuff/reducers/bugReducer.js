@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG } from '../actions/actionTypes'
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
@@ -11,7 +11,8 @@ const initialState = {
     activeBugToModifyID: null,
     activeBugToModify: null,
     bugsById: {},
-    usernames: []
+    usernames: [],
+    severities: ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
 }
 
 const addBugByStatus = function (oldBugsByStatus, newBug) {
@@ -56,9 +57,19 @@ const mapBugsToIdMap = (bugs) => {
 }
 
 const getBugsMapWithNewBug = (oldBugsMap, bug) => {
-    let bugsMap = {...oldBugsMap};
+    let bugsMap = { ...oldBugsMap };
     bugsMap[bug.id] = bug;
     return bugsMap;
+}
+
+const editBugById = (bugsArray, newBug) => {
+    let newBugs = [...bugsArray];
+    let bugToModify = newBugs.filter(bug => bug.id === newBug.id)[0];
+    newBugs[newBugs.indexOf(bugToModify)] = {
+        ...bugToModify,
+        ...newBug
+    };
+    return newBugs;
 }
 
 const bugReducer = (state = initialState, action) => {
@@ -142,6 +153,23 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 usernames: action.data
+            }
+        }
+        case SET_BUG: {
+            let newAllBugs = editBugById(state.allBugs, action.data);
+
+            return {
+                ...state,
+                allBugs: newAllBugs,
+                bugsByStatus: mapBugsToObjectByStatus(newAllBugs),
+                filteredBugs: mapBugsToObjectByStatus(filterBugs(newAllBugs, state.filterString)),
+                bugsById: mapBugsToIdMap(newAllBugs)
+            }
+        }
+        case UPDATE_CURRENTLY_ACTIVE_BUG: {
+            return {
+                ...state,
+                activeBugToModify: action.data
             }
         }
         default:

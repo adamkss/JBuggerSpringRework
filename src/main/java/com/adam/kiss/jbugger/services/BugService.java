@@ -21,8 +21,8 @@ public class BugService {
         return bugRepository.findAllFiltered(filter);
     }
 
-    public Optional<Bug> getBugById(Integer id){
-        return bugRepository.findById(id);
+    public Bug getBugById(Integer id) throws BugNotFoundException{
+        return bugRepository.findById(id).orElseThrow(BugNotFoundException::new);
     }
 
     public Bug createBug(Bug bug){
@@ -36,5 +36,9 @@ public class BugService {
         Bug bugToUpdate = bugToUpdateStatus.orElseThrow(BugNotFoundException::new);
         bugToUpdate.setStatus(status);
         bugRepository.save(bugToUpdate);
+    }
+
+    public Bug updateBug(Bug bugToUpdate){
+        return bugRepository.save(bugToUpdate);
     }
 }

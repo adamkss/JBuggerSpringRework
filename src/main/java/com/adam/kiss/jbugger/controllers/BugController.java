@@ -1,9 +1,6 @@
 package com.adam.kiss.jbugger.controllers;
 
-import com.adam.kiss.jbugger.dtos.CreateBugDtoIn;
-import com.adam.kiss.jbugger.dtos.UpdateBugStatusDTOIn;
-import com.adam.kiss.jbugger.dtos.ViewBugOutDto;
-import com.adam.kiss.jbugger.dtos.ViewStatusDtoOut;
+import com.adam.kiss.jbugger.dtos.*;
 import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
@@ -44,16 +41,9 @@ public class BugController {
     }
 
     @GetMapping("/bug/{id}")
-    public ResponseEntity<ViewBugOutDto> getBugById(@PathVariable(name = "id") Integer id) {
-        Optional<Bug> bug = bugService.getBugById(id);
-
-        if (bug.isPresent()) {
-            return ResponseEntity.ok(
-                    ViewBugOutDto.mapToDto(bug.get())
-            );
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ViewBugOutDto getBugById(@PathVariable(name = "id") Integer id) throws BugNotFoundException {
+        Bug bug = bugService.getBugById(id);
+        return ViewBugOutDto.mapToDto(bug);
     }
 
     @PostMapping
@@ -86,4 +76,13 @@ public class BugController {
                                 @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn) throws BugNotFoundException, StatusNotFoundException {
         bugService.updateBugStatus(bugId, statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus()));
     }
+
+    @PutMapping("/bug/{bugId}")
+    public ViewBugOutDto updateBug(@PathVariable(name = "bugId") Integer bugId,
+                                   @RequestBody UpdateBugInDto updateBugInDto) throws BugNotFoundException {
+        return ViewBugOutDto.mapToDto(
+                bugService.updateBug(bugMapper.mapUpdateBugInDtoToBug(bugId, updateBugInDto))
+        );
+    }
+
 }

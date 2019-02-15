@@ -1,17 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Typography, Input, Select, MenuItem } from '@material-ui/core';
+import { Typography, Input, Select, MenuItem, TextField } from '@material-ui/core';
 import './BugDetailsModal.css';
 import { closeModal, getUserNames } from './redux-stuff/actions/actionCreators';
 import BugDetailsSidebarSection from './BugDetailsSidebarSection';
 
 class BugDetailsModal extends PureComponent {
     state = {
-        assignedToEditMode: false,
-        age: 10,
-        assignableUsers: [],
+        assignedToUsernameNew: null,
+        severityNew: null,
+        revisionNew: null,
         open: false,
-        mustClose: false
+        mustClose: false,
+        targetDateNew: null,
+        descriptionNew: null
     }
 
     onModalClose = () => {
@@ -27,19 +29,62 @@ class BugDetailsModal extends PureComponent {
     }
 
     onAssignedToEditClick = () => {
-        this.setState({
-            assignedToEditMode: true
-        })
+
     }
 
-    handleChange = (event) => {
-        this.setState({
-            age: event.target.value
-        })
+    handleChange = (field) => {
+        return (event) => {
+            this.setState({
+                [field]: event.target.value
+            })
+        }
+
     }
 
     onEditClickAssignedTo = () => {
         this.props.dispatch(getUserNames());
+    }
+
+    onAssignedToSave = () => {
+        if (this.state.assignedToNew != null && this.state.assignedToNew !== this.props.bug.assignedToUsername) {
+            this.props.onBugEdit({
+                ...this.props.bug,
+                assignedToUsername: this.state.assignedToNew
+            })
+        }
+    }
+
+    onEditClickSeverity = () => {
+        // TODO: Maybe load severities async if they are not hardcoded anymore
+    }
+
+    onSeveritySave = () => {
+        if (this.state.severityNew != null && this.state.severityNew !== this.props.bug.severity) {
+            this.props.onBugEdit({
+                ...this.props.bug,
+                severity: this.state.severityNew
+            })
+        }
+    }
+
+    onRevisionSave = () => {
+        if (this.state.revisionNew != null && this.state.revisionNew !== this.props.bug.revision) {
+            this.props.onBugEdit({
+                ...this.props.bug,
+                revision: this.state.revisionNew
+            })
+        }
+    }
+
+    onSaveGeneral = (propertyName) => {
+        return () => {
+            if (this.state[propertyName + "New"] != null && this.state[propertyName + "New"] !== this.props.bug[propertyName]) {
+                this.props.onBugEdit({
+                    ...this.props.bug,
+                    [propertyName]: this.state[propertyName + "New"]
+                })
+            }
+        }
     }
 
     render() {
@@ -71,14 +116,15 @@ class BugDetailsModal extends PureComponent {
                                 sectionName="Assigned to"
                                 initialData={this.props.bug.assignedToName}
                                 onEditClick={this.onEditClickAssignedTo}
+                                onSave={this.onSaveGeneral('assignedToUsername')}
                                 renderEditControl={() => {
                                     return (
                                         <Select
-                                            value={this.state.age}
-                                            onChange={this.handleChange}
+                                            value={this.state.assignedToUsernameNew || this.props.bug.assignedToUsername}
+                                            onChange={this.handleChange('assignedToUsernameNew')}
                                         >
                                             {this.props.usernames.map(user =>
-                                                <MenuItem value={user.username}>{user.username}</MenuItem>
+                                                <MenuItem key={user.username} value={user.username}>{user.username + "-" + user.name}</MenuItem>
                                             )}
                                         </Select>
                                     )
@@ -87,36 +133,61 @@ class BugDetailsModal extends PureComponent {
                             <BugDetailsSidebarSection
                                 sectionName="Severity"
                                 initialData={this.props.bug.severity}
+                                onEditClick={this.onEditClickSeverity}
+                                onSave={this.onSaveGeneral('severity')}
                                 renderEditControl={() => {
                                     return (
-                                        <Input />
+                                        <Select
+                                            value={this.state.severityNew || this.props.bug.severity}
+                                            onChange={this.handleChange('severityNew')}
+                                        >
+                                            {this.props.severities.map(severity =>
+                                                <MenuItem key={severity} value={severity}>{severity}</MenuItem>
+                                            )}
+                                        </Select>
                                     )
                                 }} />
                             <div className="sidebar__horizontal-separator" />
                             <BugDetailsSidebarSection
                                 sectionName="Revision"
                                 initialData={this.props.bug.revision}
+                                onSave={this.onSaveGeneral('revision')}
                                 renderEditControl={() => {
                                     return (
-                                        <Input />
+                                        <Input
+                                        value={this.state.revisionNew || this.props.bug.revision}
+                                        onChange={this.handleChange('revisionNew')} />
                                     )
                                 }} />
                             <div className="sidebar__horizontal-separator" />
                             <BugDetailsSidebarSection
                                 sectionName="Target date"
                                 initialData={this.props.bug.targetDate}
+                                onSave={this.onSaveGeneral('targetDate')}
                                 renderEditControl={() => {
                                     return (
-                                        <Input />
+                                        <TextField
+                                            type="date"
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                            value={this.state.targetDateNew || this.props.bug.targetDate}
+                                            onChange={this.handleChange('targetDateNew')}
+                                        />
                                     )
                                 }} />
                             <div className="sidebar__horizontal-separator" />
                             <BugDetailsSidebarSection
                                 sectionName="Description"
                                 initialData={this.props.bug.description}
+                                onSave={this.onSaveGeneral('description')}
                                 renderEditControl={() => {
                                     return (
-                                        <Input />
+                                        <Input
+                                        className="full-width"
+                                        multiline
+                                        value={this.state.descriptionNew || this.props.bug.description}
+                                        onChange={this.handleChange('descriptionNew')} />
                                     )
                                 }} />
                             <div className="sidebar__horizontal-separator" />
@@ -139,7 +210,8 @@ class BugDetailsModal extends PureComponent {
 
 const mapStateToProps = state => ({
     bug: state.activeBugToModify,
-    usernames: state.usernames
+    usernames: state.usernames,
+    severities: state.severities
 });
 
 export default connect(mapStateToProps)(BugDetailsModal);
