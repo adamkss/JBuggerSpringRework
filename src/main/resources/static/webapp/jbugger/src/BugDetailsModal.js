@@ -2,8 +2,9 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Typography, Input, Select, MenuItem, TextField } from '@material-ui/core';
 import './BugDetailsModal.css';
-import { closeModal, getUserNames } from './redux-stuff/actions/actionCreators';
+import { closeModal, getUserNames, getLabels } from './redux-stuff/actions/actionCreators';
 import BugDetailsSidebarSection from './BugDetailsSidebarSection';
+import LabelShort from './LabelShort';
 
 class BugDetailsModal extends PureComponent {
     state = {
@@ -87,6 +88,10 @@ class BugDetailsModal extends PureComponent {
         }
     }
 
+    onLabelsEditClick = () => {
+        this.props.dispatch(getLabels());
+    }
+
     render() {
         let extraClassIfOpen = this.state.open && !this.props.mustClose ? " modal-expanded" : "";
         return (
@@ -155,8 +160,8 @@ class BugDetailsModal extends PureComponent {
                                 renderEditControl={() => {
                                     return (
                                         <Input
-                                        value={this.state.revisionNew || this.props.bug.revision}
-                                        onChange={this.handleChange('revisionNew')} />
+                                            value={this.state.revisionNew || this.props.bug.revision}
+                                            onChange={this.handleChange('revisionNew')} />
                                     )
                                 }} />
                             <div className="sidebar__horizontal-separator" />
@@ -184,22 +189,33 @@ class BugDetailsModal extends PureComponent {
                                 renderEditControl={() => {
                                     return (
                                         <Input
-                                        className="full-width"
-                                        multiline
-                                        value={this.state.descriptionNew || this.props.bug.description}
-                                        onChange={this.handleChange('descriptionNew')} />
+                                            className="full-width"
+                                            multiline
+                                            value={this.state.descriptionNew || this.props.bug.description}
+                                            onChange={this.handleChange('descriptionNew')} />
                                     )
                                 }} />
                             <div className="sidebar__horizontal-separator" />
-                            <section className="with-margin-top">
-                                <div className="flexbox-horizontal">
-                                    <Typography className="flex-grow" variant="subtitle2">Labels</Typography>
-                                    <Typography className="sidebar__edit-button" variant="subtitle2" onClick={this.onAssignedToEditClick}>Edit</Typography>
-                                </div>
-                                <Typography className="sidebar__detail-info">
-                                    {this.props.bug.assignedTo}
-                                </Typography>
-                            </section>
+                            <BugDetailsSidebarSection
+                                sectionName="Labels"
+                                onEditClick={this.onLabelsEditClick}
+                                onSave={this.onSaveGeneral('labels')}
+                                renderViewControl={() => {
+                                    return (
+                                        <div className="flexbox-horizontal small-margin-top">
+                                            {this.props.bug.labels.map(label =>
+                                                <LabelShort key={label.labelName} text={label.labelName} backgroundColor={label.backgroundColor} />)}
+                                        </div>
+                                    )
+                                }}
+                                renderEditControl={() => {
+                                    return (
+                                        <div className="flexbox-horizontal small-margin-top">
+                                            {this.props.labels.map(label =>
+                                                <LabelShort key={label.labelName} text={label.labelName} backgroundColor={label.backgroundColor} />)}
+                                        </div>
+                                    )
+                                }} />
                         </main>
                     </div>
                     : ""}
@@ -211,7 +227,8 @@ class BugDetailsModal extends PureComponent {
 const mapStateToProps = state => ({
     bug: state.activeBugToModify,
     usernames: state.usernames,
-    severities: state.severities
+    severities: state.severities,
+    labels: state.labels
 });
 
 export default connect(mapStateToProps)(BugDetailsModal);

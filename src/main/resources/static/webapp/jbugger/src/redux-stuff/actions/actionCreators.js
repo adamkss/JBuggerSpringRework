@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, GET_USER_NAMES, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, GET_USER_NAMES, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -79,6 +79,7 @@ export const moveBugVisually = (bugId, oldStatus, newStatus) => {
         }
     }
 }
+
 export const waitingForBugUpdate = () => {
     return {
         type: WAITING_FOR_BUG_UPDATE
@@ -126,7 +127,7 @@ export const getUserNames = () => {
     }
 }
 
-export const updateCurrentlyActiveBug =(newBug) => {
+export const updateCurrentlyActiveBug = (newBug) => {
     return {
         type: UPDATE_CURRENTLY_ACTIVE_BUG,
         data: newBug
@@ -142,5 +143,20 @@ export const startUpdatingBug = (modifiedBug) => {
             }).catch((error) => {
                 console.log(error);
             })
+    }
+}
+
+export const getLabels = () => {
+    return (dispatch) => {
+        fetch("http://localhost:8080/labels")
+            .then(response => response.json())
+            .then(responseJSON => dispatch(setLabels(responseJSON)));
+    }
+}
+
+export const setLabels = (labels) => {
+    return {
+        type: SET_LABELS,
+        data: labels
     }
 }

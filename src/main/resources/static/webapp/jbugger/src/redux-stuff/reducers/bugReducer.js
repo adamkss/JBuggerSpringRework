@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS } from '../actions/actionTypes'
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
@@ -12,7 +12,8 @@ const initialState = {
     activeBugToModify: null,
     bugsById: {},
     usernames: [],
-    severities: ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    severities: ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+    labels: []
 }
 
 const addBugByStatus = function (oldBugsByStatus, newBug) {
@@ -170,6 +171,12 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 activeBugToModify: action.data
+            }
+        }
+        case SET_LABELS: {
+            return {
+                ...state,
+                labels: action.data
             }
         }
         default:

@@ -23,9 +23,15 @@ public class SingletonInit {
     private final BugRepository bugRepository;
     private final NotificationRepository notificationRepository;
     private final StatusRepository statusRepository;
+    private final LabelRepository labelRepository;
 
     @PostConstruct
     private void init() {
+
+        labelRepository.save(new Label("Frontend","#ff0000"));
+        labelRepository.save(new Label("Backend","#00ff00"));
+        labelRepository.save(new Label("DevOps","#0000ff"));
+        labelRepository.save(new Label("Testing","#ff00ff"));
 
         Status.PredefinedStatuses.PREDEFINED_STATUSES.forEach(
                 (statusRepository::save)
