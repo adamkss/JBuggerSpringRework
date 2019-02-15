@@ -15,10 +15,13 @@ public class ViewLabelDtoOut {
 
     private String labelName;
 
+    private String backgroundColor;
+
     public static ViewLabelDtoOut mapLabelToDto(Label label){
         return ViewLabelDtoOut.builder()
                 .id(label.getId())
                 .labelName(label.getLabelName())
+                .backgroundColor(label.getBackgroundColor())
                 .build();
     }
 }

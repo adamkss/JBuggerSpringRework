@@ -40,6 +40,8 @@ public class ViewBugOutDto {
 
     private List<ViewAttachmentInfoDtoOut> attachmentsInfo;
 
+    private List<ViewLabelDtoOut> labels;
+
     public static ViewBugOutDto mapToDto(Bug bug) {
         return ViewBugOutDto.builder()
                 .id(bug.getId())
@@ -60,6 +62,7 @@ public class ViewBugOutDto {
                 .assignedToUserId(bug.getAssignedTo() != null ? bug.getAssignedTo().getId() : null)
                 .assignedToName(bug.getAssignedTo() != null ? bug.getAssignedTo().getName() : null)
                 .assignedToUsername(bug.getAssignedTo() != null ? bug.getAssignedTo().getUsername() : null)
+                .labels(bug.getLabels().stream().map(ViewLabelDtoOut::mapLabelToDto).collect(Collectors.toList()))
                 .build();
     }
 

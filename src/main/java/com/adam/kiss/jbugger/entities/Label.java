@@ -19,6 +19,8 @@ public class Label {
 
     private String labelName;
 
+    private String backgroundColor;
+
     @ManyToMany(mappedBy = "labels")
     private List<Bug> bugsWithThisLabel;
 }

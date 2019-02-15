@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bugClicked } from './redux-stuff/actions/actionCreators';
+import LabelShort from './LabelShort';
 
 class BugShortOverview extends Component {
 
@@ -43,7 +44,13 @@ class BugShortOverview extends Component {
               #{this.props.id}
             </Typography>
           </Grid>
+          <section className="labels">
+            {this.props.labels.map (label =>
+              <LabelShort key={label.labelName} text={label.labelName} backgroundColor={label.backgroundColor}/> 
+            )}
+          </section>
         </Grid>
+
       </div>
     );
   }

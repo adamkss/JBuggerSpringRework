@@ -70,7 +70,7 @@ class BugsColumn extends PureComponent {
                     transferData={bug.id + "-" + this.props.bugStatus}
                     onDragStart={this.onBugDragStart}
                     onDragEnd={this.onDragEnd}>
-                    <BugShortOverview title={bug.title} id={bug.id} />
+                    <BugShortOverview title={bug.title} id={bug.id} labels={bug.labels} />
                   </Draggable>
               )
               :
