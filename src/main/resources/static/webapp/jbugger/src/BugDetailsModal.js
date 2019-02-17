@@ -14,7 +14,8 @@ class BugDetailsModal extends PureComponent {
         open: false,
         mustClose: false,
         targetDateNew: null,
-        descriptionNew: null
+        descriptionNew: null,
+        labelsSelectionState: {}
     }
 
     onModalClose = () => {
@@ -90,6 +91,39 @@ class BugDetailsModal extends PureComponent {
 
     onLabelsEditClick = () => {
         this.props.dispatch(getLabels());
+    }
+
+    isLabelAlreadyOnBug(labelTitle) {
+        let nr = this.props.bug.labels.filter(label => label.labelName === labelTitle).length;
+        return nr === 1;
+    }
+
+    onLabelClick(labelName) {
+        return () => {
+            this.setState((currentState) => {
+                return {
+                    labelsSelectionState: {
+                        ...currentState.labelsSelectionState,
+                        [labelName]: !currentState.labelsSelectionState[labelName]
+                    }
+                }
+            })
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let labelsSelectionState = {};
+
+        if (nextProps.labels !== this.props.labels) {
+            nextProps.labels.forEach(label => {
+                labelsSelectionState[label.labelName] = this.isLabelAlreadyOnBug(label.labelName);
+            })
+            this.setState((oldState) => {
+                return {
+                    labelsSelectionState
+                }
+            })
+        }
     }
 
     render() {
@@ -211,8 +245,15 @@ class BugDetailsModal extends PureComponent {
                                 renderEditControl={() => {
                                     return (
                                         <div className="flexbox-horizontal small-margin-top">
-                                            {this.props.labels.map(label =>
-                                                <LabelShort key={label.labelName} text={label.labelName} backgroundColor={label.backgroundColor} />)}
+                                            {this.props.labels.map(label => {
+                                                return <LabelShort selectable
+                                                    selected={this.state.labelsSelectionState[label.labelName]}
+                                                    onClick={this.onLabelClick(label.labelName)}
+                                                    key={label.labelName}
+                                                    text={label.labelName}
+                                                    backgroundColor={label.backgroundColor} />
+                                            }
+                                            )}
                                         </div>
                                     )
                                 }} />

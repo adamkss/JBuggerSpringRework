@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const ParentDiv = styled.div`
+    height: 20px;
     border-radius: 7px;
     background-color: ${props => props.backgroundColor || "orange"};
     color: ${props => {
@@ -24,12 +25,20 @@ const ParentDiv = styled.div`
     padding-top: 1px;
     padding-bottom: 1px;
     margin-left: 3px;
+    cursor: ${props => props.selectable ? "pointer" : "initial"};
+    ${props => props.selected && "border: solid 2px #4a148c;"}
+    ${props => props.selected && "box-sizing: content-box;"}
 `;
 
-export default ({ text, backgroundColor }) => {
-    return (
-        <ParentDiv backgroundColor={backgroundColor}>
-            {text}
-        </ParentDiv>
-    )
+
+export default class LabelShort extends React.PureComponent {
+
+    render() {
+        const { text, ...restProps } = this.props;
+        return (
+            <ParentDiv {...restProps}>
+                {text}
+            </ParentDiv>
+        )
+    }
 }
