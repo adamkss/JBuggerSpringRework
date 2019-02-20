@@ -1,6 +1,7 @@
 package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.entities.Label;
 import com.adam.kiss.jbugger.entities.Status;
 import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
@@ -40,5 +41,12 @@ public class BugService {
 
     public Bug updateBug(Bug bugToUpdate){
         return bugRepository.save(bugToUpdate);
+    }
+
+    public Bug updateBugLabels(Integer bugId, List<Label> labels) throws BugNotFoundException {
+        Bug bug = bugRepository.findById(bugId).orElseThrow(BugNotFoundException::new);
+        bug.setLabels(labels);
+        bugRepository.save(bug);
+        return bug;
     }
 }

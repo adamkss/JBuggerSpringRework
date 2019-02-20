@@ -2,11 +2,14 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.*;
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.entities.Label;
 import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
+import com.adam.kiss.jbugger.exceptions.LabelNotFoundException;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.mappers.BugMapper;
 import com.adam.kiss.jbugger.services.BugService;
+import com.adam.kiss.jbugger.services.LabelService;
 import com.adam.kiss.jbugger.services.StatusService;
 import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,7 @@ public class BugController {
     private final BugMapper bugMapper;
     private final UserService userService;
     private final StatusService statusService;
+    private final LabelService labelService;
 
     @GetMapping
     public List<ViewBugOutDto> getAllBugs(
@@ -73,7 +78,8 @@ public class BugController {
 
     @PutMapping("/bug/{bugId}/status")
     public void updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
-                                @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn) throws BugNotFoundException, StatusNotFoundException {
+                                @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn) throws BugNotFoundException,
+            StatusNotFoundException {
         bugService.updateBugStatus(bugId, statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus()));
     }
 
@@ -85,4 +91,17 @@ public class BugController {
         );
     }
 
+    @PutMapping("/bug/{bugId}/labels")
+    public ViewBugOutDto updateBugLabels(@PathVariable(name = "bugId") Integer bugId,
+                                         @RequestBody UpdateBugLabelsInDto updateBugLabelsInDto) throws LabelNotFoundException, BugNotFoundException {
+        List<Label> newLabels = new ArrayList<>();
+        for (String labelName :
+                updateBugLabelsInDto.getLabelsName()) {
+            newLabels.add(labelService.getLabelByName(labelName));
+        }
+
+        return ViewBugOutDto.mapToDto(
+                bugService.updateBugLabels(bugId, newLabels)
+        );
+    }
 }

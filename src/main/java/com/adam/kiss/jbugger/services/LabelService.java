@@ -3,6 +3,7 @@ package com.adam.kiss.jbugger.services;
 import com.adam.kiss.jbugger.entities.Attachment;
 import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.entities.Label;
+import com.adam.kiss.jbugger.exceptions.LabelNotFoundException;
 import com.adam.kiss.jbugger.repositories.AttachmentRepository;
 import com.adam.kiss.jbugger.repositories.LabelRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,9 @@ public class LabelService {
 
     public List<Label> getAllLabels(){
         return labelRepository.findAll();
+    }
+
+    public Label getLabelByName(String name) throws LabelNotFoundException {
+        return labelRepository.findByLabelName(name).orElseThrow(LabelNotFoundException::new);
     }
 }

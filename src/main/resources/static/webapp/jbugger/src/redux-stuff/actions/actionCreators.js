@@ -146,6 +146,20 @@ export const startUpdatingBug = (modifiedBug) => {
     }
 }
 
+export const startUpdatingBugLabels = (bugId, aNewBugLabels) => {
+    return (dispatch) => {
+        axios.put(`http://localhost:8080/bugs/bug/${bugId}/labels`, {
+            labelsName: aNewBugLabels
+        })
+            .then((result) => {
+                dispatch(setBugWithId(result.data));
+                dispatch(updateCurrentlyActiveBug(result.data))
+            }).catch((error) => {
+                console.log(error);
+            })
+    }
+}
+
 export const getLabels = () => {
     return (dispatch) => {
         fetch("http://localhost:8080/labels")

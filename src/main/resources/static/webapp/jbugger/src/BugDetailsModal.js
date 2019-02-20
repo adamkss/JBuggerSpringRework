@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Typography, Input, Select, MenuItem, TextField } from '@material-ui/core';
 import './BugDetailsModal.css';
-import { closeModal, getUserNames, getLabels } from './redux-stuff/actions/actionCreators';
+import { closeModal, getUserNames, getLabels, startUpdatingBugLabels } from './redux-stuff/actions/actionCreators';
 import BugDetailsSidebarSection from './BugDetailsSidebarSection';
 import LabelShort from './LabelShort';
 
@@ -126,6 +126,16 @@ class BugDetailsModal extends PureComponent {
         }
     }
 
+    onSaveLabels = () => {
+        let newLabels = [];
+
+        Object.keys(this.state.labelsSelectionState).forEach(labelName => {
+            if(this.state.labelsSelectionState[labelName])
+                newLabels.push(labelName);
+        })
+        this.props.dispatch(startUpdatingBugLabels(this.props.bug.id, newLabels));
+    }
+
     render() {
         let extraClassIfOpen = this.state.open && !this.props.mustClose ? " modal-expanded" : "";
         return (
@@ -233,7 +243,7 @@ class BugDetailsModal extends PureComponent {
                             <BugDetailsSidebarSection
                                 sectionName="Labels"
                                 onEditClick={this.onLabelsEditClick}
-                                onSave={this.onSaveGeneral('labels')}
+                                onSave={this.onSaveLabels}
                                 renderViewControl={() => {
                                     return (
                                         <div className="flexbox-horizontal small-margin-top">
@@ -246,7 +256,8 @@ class BugDetailsModal extends PureComponent {
                                     return (
                                         <div className="flexbox-horizontal small-margin-top">
                                             {this.props.labels.map(label => {
-                                                return <LabelShort selectable
+                                                return <LabelShort
+                                                    selectable
                                                     selected={this.state.labelsSelectionState[label.labelName]}
                                                     onClick={this.onLabelClick(label.labelName)}
                                                     key={label.labelName}
