@@ -55,15 +55,15 @@ class BugsColumn extends PureComponent {
     extraStyle = this.props.isPossibleDropTarget && this.state.bugDragHoverOver ? " possible-drop-target-hover-over" : extraStyle;
     const { provided, innerRef } = this.props;
     return (
-      <div className="bugs-column" ref={innerRef} {...provided.draggableProps}>
+      <div className={"bugs-column" + extraStyle} ref={innerRef} {...provided.draggableProps}>
         <div className="flexbox-vertical-centered full-height full-width">
-          <BugsColumnHeader 
+          <BugsColumnHeader
             provided={provided}
             status={StringFormatters.ToNiceBugStatus(this.props.bugStatus)}
             statusColor={this.props.statusColor}
             onAddBug={this.props.onAddBug} />
           <Droppable onDrop={this.onDrop} onDragOver={this.onDragOver} onDragLeave={this.onDragLeave}
-            className={"flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width full-height border-radius-bottom" + extraStyle}>
+            className={"flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width full-height border-radius-bottom"}>
             {this.props.bugs.length != 0 ?
               this.props.bugs.map(
                 (bug) =>
