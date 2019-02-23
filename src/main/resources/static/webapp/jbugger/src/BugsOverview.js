@@ -9,8 +9,9 @@ import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 import BugDetailsModal from './BugDetailsModal';
 import { connect } from 'react-redux';
-import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug } from './redux-stuff/actions/actionCreators';
+import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug, reorderStatuses } from './redux-stuff/actions/actionCreators';
 import UnmountingDelayed from './UnmountingDelayed';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 function FirstChild(props) {
   const childrenArray = React.Children.toArray(props.children);
@@ -148,6 +149,14 @@ class BugsOverview extends Component {
       this.props.onModalOpenClick("createSwimlaneModal");
   }
 
+  onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    this.props.dispatch(reorderStatuses(result.source.index, result.destination.index));
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -194,28 +203,32 @@ class BugsOverview extends Component {
             New swimlane
             </Button>
         </div>
-        <Grid
-          container
-          direction="row"
-          wrap="nowrap"
-          className="bugs-overview"
-          justify=""
-        >
-          {this.props.statuses.map(bugStatus => (
-            <Grid item key={bugStatus.statusName}>
-              <BugsColumn
-                bugStatus={bugStatus.statusName}
-                statusColor={bugStatus.statusColor}
-                bugs={this.props.bugsByStatus[bugStatus.statusName] ? this.props.bugsByStatus[bugStatus.statusName] : []}
-                onAddBug={this.createOnAddBugCallbackForStatus(bugStatus.statusName)}
-                bugDragStarted={this.bugDragStarted}
-                onBugDrop={this.bugDropped}
-                isPossibleDropTarget={this.state.draggingBugFromStatus && this.state.draggingBugFromStatus !== bugStatus.statusName}
-              />
-            </Grid>
-          )
-          )}
-        </Grid>
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <Droppable droppableId="droppable" direction="horizontal">
+            {(provided, snapshot) => (
+              <div className="bugs-overview" ref={provided.innerRef} {...provided.droppableProps}>
+                {this.props.statuses.map((bugStatus, index) => (
+                  <Draggable key={bugStatus.statusName} draggableId={bugStatus.statusName} index={index}>
+                    {(provided, snapshot) => (
+                      <BugsColumn
+                        innerRef={provided.innerRef}
+                        provided={provided}
+                        bugStatus={bugStatus.statusName}
+                        statusColor={bugStatus.statusColor}
+                        bugs={this.props.bugsByStatus[bugStatus.statusName] ? this.props.bugsByStatus[bugStatus.statusName] : []}
+                        onAddBug={this.createOnAddBugCallbackForStatus(bugStatus.statusName)}
+                        bugDragStarted={this.bugDragStarted}
+                        onBugDrop={this.bugDropped}
+                        isPossibleDropTarget={this.state.draggingBugFromStatus && this.state.draggingBugFromStatus !== bugStatus.statusName}
+                      />
+                    )}
+                  </Draggable>
+                )
+                )}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
 
         <CreateBugPopover
           id="new-bug-popover"

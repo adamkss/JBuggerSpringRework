@@ -1,4 +1,4 @@
-import React, {PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import './BugsColumn.css';
 import StringFormatters from './utils/StringFormatters';
 import BugShortOverview from './BugShortOverview'
@@ -53,15 +53,17 @@ class BugsColumn extends PureComponent {
   render() {
     let extraStyle = this.props.isPossibleDropTarget && !this.state.bugDragHoverOver ? " possible-drop-target" : "";
     extraStyle = this.props.isPossibleDropTarget && this.state.bugDragHoverOver ? " possible-drop-target-hover-over" : extraStyle;
-
+    const { provided, innerRef } = this.props;
     return (
-      <Droppable onDrop={this.onDrop} className={"bugs-column" + extraStyle} onDragOver={this.onDragOver} onDragLeave={this.onDragLeave}>
+      <div className={"bugs-column" + extraStyle} ref={innerRef} {...provided.draggableProps}>
         <div className="flexbox-vertical-centered full-height full-width">
           <BugsColumnHeader
+            provided={provided}
             status={StringFormatters.ToNiceBugStatus(this.props.bugStatus)}
             statusColor={this.props.statusColor}
             onAddBug={this.props.onAddBug} />
-          <div className={"flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width full-height border-radius-bottom"}>
+          <Droppable onDrop={this.onDrop} onDragOver={this.onDragOver} onDragLeave={this.onDragLeave}
+            className={"flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width full-height border-radius-bottom"}>
             {this.props.bugs.length != 0 ?
               this.props.bugs.map(
                 (bug) =>
@@ -74,11 +76,11 @@ class BugsColumn extends PureComponent {
                   </Draggable>
               )
               :
-              <InfoMessage message="No bugs here."/>
+              <InfoMessage message="No bugs here." />
             }
-          </div>
+          </Droppable>
         </div>
-      </Droppable>
+      </div>
     );
   }
 }

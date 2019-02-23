@@ -28,6 +28,8 @@
     top: 60px;
     left: 0;
     height: calc(100vh - 124px);
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 .loadinge-image-wrapper{

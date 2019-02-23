@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES } from '../actions/actionTypes'
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
@@ -71,6 +71,14 @@ const editBugById = (bugsArray, newBug) => {
         ...newBug
     };
     return newBugs;
+}
+
+const moveElementFromTo = (array, fromIndex, toIndex) => {
+    const result = Array.from(array);
+    const [removed] = result.splice(fromIndex, 1);
+    result.splice(toIndex, 0, removed);
+
+    return result;
 }
 
 const bugReducer = (state = initialState, action) => {
@@ -183,6 +191,12 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 statuses: [...state.statuses, action.data]
+            }
+        }
+        case REORDER_STATUSES: {
+            return {
+                ...state,
+                statuses: moveElementFromTo(state.statuses, action.data.fromIndex, action.data.toIndex)
             }
         }
         default:

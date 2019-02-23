@@ -1,5 +1,7 @@
 .header-parent{
-    min-height:52px;
+    min-height: 52px;
+    display: flex;
+    flex-direction: column;
 }
 
 .headerGrid{
