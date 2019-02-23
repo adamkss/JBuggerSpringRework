@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -50,11 +51,11 @@ public class Bug {
     private User assignedTo;
 
     @OneToMany(mappedBy = "bug", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<Attachment> attachments;
+    private List<Attachment> attachments = new ArrayList<>();
 
     @ManyToMany
     @EqualsAndHashCode.Exclude
-    private List<Label> labels;
+    private List<Label> labels = new ArrayList<>();
 
     public Bug(String title, String description, String revision, String fixedInRevision, LocalDate targetDate, Severity severity, User createdBy, Status status, User assignedTo) {
         this.title = title;

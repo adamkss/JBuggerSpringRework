@@ -2,7 +2,6 @@ package com.adam.kiss.jbugger.dtos;
 
 import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.enums.Severity;
-import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import lombok.Builder;
 import lombok.Data;
 
@@ -55,7 +54,7 @@ public class ViewBugOutDto {
                 .assignedToUserId(bug.getAssignedTo() != null ? bug.getAssignedTo().getId() : null)
                 .attachmentsInfo(
                         bug.getAttachments().stream().map(attachment ->
-                             new ViewAttachmentInfoDtoOut(attachment.getId(),attachment.getName())
+                                new ViewAttachmentInfoDtoOut(attachment.getId(), attachment.getName())
                         ).collect(Collectors.toList())
                 )
                 .targetDate(bug.getTargetDate())
