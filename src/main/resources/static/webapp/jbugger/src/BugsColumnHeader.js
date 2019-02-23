@@ -36,12 +36,10 @@ class BugsColumnHeader extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, provided } = this.props;
     return (
-      <Grid
-        container
-        direction="column"
-        className="header-parent">
+      <div
+        className="header-parent" {...provided.dragHandleProps} >
         <Grid
           container
           direction="row"
@@ -68,8 +66,7 @@ class BugsColumnHeader extends Component {
         <Grid item>
           <Divider />
         </Grid>
-      </Grid>
-
+      </div>
     );
   }
 }

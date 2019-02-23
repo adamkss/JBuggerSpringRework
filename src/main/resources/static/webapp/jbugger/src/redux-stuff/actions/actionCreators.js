@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, GET_USER_NAMES, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, GET_USER_NAMES, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -196,5 +196,15 @@ export const createNewSwimlane = (newSwimLane) => {
     return {
         type: CREATE_SWIMLANE,
         data: newSwimLane
+    }
+}
+
+export const reorderStatuses = (fromIndex, toIndex) => {
+    return {
+        type: REORDER_STATUSES,
+        data: {
+            fromIndex,
+            toIndex
+        }
     }
 }
