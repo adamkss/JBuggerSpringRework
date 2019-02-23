@@ -32,6 +32,9 @@ import { Switch, Route } from 'react-router-dom'
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import GenericModal from './GenericModal';
+import CreateSwimLaneModalContent from './CreateSwimLaneModalContent';
+import { connect } from 'react-redux';
+import {startCreatingNewSwimLane} from './redux-stuff/actions/actionCreators';
 
 const drawerWidth = 240;
 
@@ -116,7 +119,8 @@ class ResponsiveDrawer extends React.Component {
         mobileOpen: false,
         mobileMoreAnchorEl: null,
         anchorEl: null,
-        modalOpened: false
+        modalOpened: false,
+        modalType: null
     };
 
     handleDrawerToggle = () => {
@@ -141,6 +145,28 @@ class ResponsiveDrawer extends React.Component {
     handleMobileMenuClose = () => {
         this.setState({ mobileMoreAnchorEl: null });
     };
+
+    renderModalWithCustomContent = (fContentCreator) => {
+
+    }
+
+    onGenericModalClose = () => {
+        this.setState({
+            modalOpened: false
+        })
+    }
+
+    onModalOpenClick = (modalType) => {
+        this.setState({
+            modalType,
+            modalOpened: true
+        })
+    }
+
+    onNewSwimLaneDone = (newSwimLane) => {
+        this.onGenericModalClose();
+        this.props.dispatch(startCreatingNewSwimLane(newSwimLane));
+    }
 
     render() {
         const { classes, theme } = this.props;
@@ -318,17 +344,23 @@ class ResponsiveDrawer extends React.Component {
                         {drawer}
                     </Drawer>
                 </Hidden>
-                
+
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    <Route exact path={`${this.props.match.path}`} component={BugsOverview} />
+                    <Route exact path={`${this.props.match.path}`} render={() => <BugsOverview onModalOpenClick={this.onModalOpenClick} />} />
                     <Route path={`${this.props.match.path}bugs/bug/:bugId`} component={BugDetail} />
                 </main>
-                {this.state.modalOpened ? 
-                <GenericModal onClose={() => this.setState({
-                    modalOpened: false})}/>
-                :
-                ""}
+                {this.state.modalOpened ?
+                    <GenericModal onClose={this.onGenericModalClose}>
+
+                        {this.state.modalType === "createSwimlaneModal" ?
+                            <CreateSwimLaneModalContent onNewSwimLaneDone={this.onNewSwimLaneDone}/>
+                            :
+                            ""}
+
+                    </GenericModal>
+                    :
+                    ""}
             </div>
         );
     }
@@ -342,4 +374,4 @@ ResponsiveDrawer.propTypes = {
     theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(withRouter(ResponsiveDrawer));
+export default withStyles(styles, { withTheme: true })(withRouter(connect()(ResponsiveDrawer)));

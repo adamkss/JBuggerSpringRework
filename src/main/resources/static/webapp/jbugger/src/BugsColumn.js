@@ -59,7 +59,7 @@ class BugsColumn extends PureComponent {
         <div className="flexbox-vertical-centered full-height full-width">
           <BugsColumnHeader
             status={StringFormatters.ToNiceBugStatus(this.props.bugStatus)}
-            headerColorClass={this.props.headerColorClass}
+            statusColor={this.props.statusColor}
             onAddBug={this.props.onAddBug} />
           <div className={"flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width full-height border-radius-bottom"}>
             {this.props.bugs.length != 0 ?

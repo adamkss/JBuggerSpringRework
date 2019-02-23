@@ -71,7 +71,8 @@ class BugsOverview extends Component {
     bugsByStatus: {},
     newBugPopoverAnchorEl: null,
     newBugStatus: null,
-    draggingBugFromStatus: null
+    draggingBugFromStatus: null,
+    genericModalOpened: false
   }
 
   componentDidMount() {
@@ -142,6 +143,11 @@ class BugsOverview extends Component {
     this.props.dispatch(startUpdatingBug(newBug));
   }
 
+  onNewSwimlaneClick = () => {
+    if (this.props.onModalOpenClick)
+      this.props.onModalOpenClick("createSwimlaneModal");
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -180,6 +186,13 @@ class BugsOverview extends Component {
             onClick={this.handleClick}>
             New bug
             </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            className="margin-left"
+            onClick={this.onNewSwimlaneClick}>
+            New swimlane
+            </Button>
         </div>
         <Grid
           container
@@ -190,8 +203,9 @@ class BugsOverview extends Component {
         >
           {this.props.statuses.map(bugStatus => (
             <Grid item key={bugStatus.statusName}>
-              <BugsColumn bugStatus={bugStatus.statusName}
-                headerColorClass={`${bugStatus.statusName}-bug-status-color`}
+              <BugsColumn
+                bugStatus={bugStatus.statusName}
+                statusColor={bugStatus.statusColor}
                 bugs={this.props.bugsByStatus[bugStatus.statusName] ? this.props.bugsByStatus[bugStatus.statusName] : []}
                 onAddBug={this.createOnAddBugCallbackForStatus(bugStatus.statusName)}
                 bugDragStarted={this.bugDragStarted}
@@ -211,9 +225,8 @@ class BugsOverview extends Component {
           handleCreateNewBug={this.handleCreateNewBugFromPopover} />
 
         <UnmountingDelayed show={this.props.activeBugToModifyID !== null} delay="300">
-          <BugDetailsModal onBugEdit={this.onBugEditFromSidebar} mustClose={this.props.activeBugToModifyID == null}/>
+          <BugDetailsModal onBugEdit={this.onBugEditFromSidebar} mustClose={this.props.activeBugToModifyID == null} />
         </UnmountingDelayed>
-
       </div>
     );
   }

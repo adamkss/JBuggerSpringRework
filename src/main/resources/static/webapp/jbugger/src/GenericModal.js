@@ -34,7 +34,7 @@ export default class GenericModal extends PureComponent {
                             </svg>
                         </a>
                     </header>
-                    {/* {this.props.render()} */}
+                    {this.props.children}
                 </main>
             </div>
         )

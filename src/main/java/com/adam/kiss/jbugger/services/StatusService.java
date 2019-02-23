@@ -22,8 +22,8 @@ public class StatusService {
         return statusRepository.findAll();
     }
 
-    public Status createStatus(String statusName){
-        return statusRepository.save(new Status(statusName));
+    public Status createStatus(String statusName, String backgroundColor){
+        return statusRepository.save(new Status(statusName, backgroundColor));
     }
 
     public Status getStatusByStatusName(String statusName) throws StatusNotFoundException {

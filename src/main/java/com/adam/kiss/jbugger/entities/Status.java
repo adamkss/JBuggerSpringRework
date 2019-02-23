@@ -15,6 +15,11 @@ public class Status {
         this.statusName = statusName;
     }
 
+    public Status(String statusName, String statusColor) {
+        this.statusName = statusName;
+        this.statusColor = statusColor;
+    }
+
     public Status() {
     }
 
@@ -24,6 +29,8 @@ public class Status {
 
     @Column(name = "statusName")
     private String statusName;
+
+    private String statusColor;
 
     @OneToMany(mappedBy = "status")
     @JsonIgnore

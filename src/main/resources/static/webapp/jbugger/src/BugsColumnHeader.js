@@ -9,15 +9,17 @@ import AddIcon from '@material-ui/icons/Add';
 import 'typeface-roboto';
 import classNames from 'classnames';
 import { purple, indigo, blueGrey } from '@material-ui/core/colors';
+import styled from 'styled-components';
 
-const styles = theme => ({
-  coloredHeaderLine: {
-    width: "340px",
-    height: "3px",
-    borderTopLeftRadius: "5px",
-    borderTopRightRadius: "5px"
-  }
-})
+const ColoredHeaderLine = styled.div`
+  width: 340px;
+  height: 3px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: ${props => props.color}
+`;
+
+
 
 class BugsColumnHeader extends Component {
 
@@ -26,7 +28,7 @@ class BugsColumnHeader extends Component {
   }
 
   state = {
-     
+
   }
 
   componentDidMount() {
@@ -46,7 +48,7 @@ class BugsColumnHeader extends Component {
           className="headerGrid"
           alignItems="center">
           <Grid item>
-            <div className={classNames(classes.coloredHeaderLine, this.props.headerColorClass)} />
+            <ColoredHeaderLine color={this.props.statusColor} />
           </Grid>
           <Grid item className="flex-grow left-subtitle">
             <Typography variant="subtitle2" color="inherit" >
@@ -75,4 +77,4 @@ class BugsColumnHeader extends Component {
 //predefinedStatusNames
 //onAddBug
 //headerColorClass
-export default withStyles(styles, { withTheme: true })(BugsColumnHeader);
+export default BugsColumnHeader;
