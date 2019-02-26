@@ -12,6 +12,7 @@
     "material-ui-pickers": "^2.2.1",
     "react": "^16.6.0",
     "react-addons-transition-group": "^15.6.2",
+    "react-beautiful-dnd": "^10.0.4",
     "react-dom": "^16.6.0",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
