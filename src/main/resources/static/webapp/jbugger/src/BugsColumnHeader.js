@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import './BugsColumnHeader.css';
-import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import { Divider, IconButton } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import 'typeface-roboto';
-import classNames from 'classnames';
-import { purple, indigo, blueGrey } from '@material-ui/core/colors';
 import styled from 'styled-components';
 
 const ColoredHeaderLine = styled.div`
@@ -56,10 +53,20 @@ class BugsColumnHeader extends Component {
           <Grid item>
             <IconButton
               color="inherit"
-              aria-label="Open drawer"
+              aria-label="Add bug"
               onClick={this.props.onAddBug}
             >
               <AddIcon />
+            </IconButton>
+          </Grid>
+          <Grid item>
+            <IconButton
+              className="small-custom-padding-left-right"
+              color="inherit"
+              aria-label="Other"
+              onClick={this.props.onMoreOptions}
+            >
+              <MoreVertIcon />
             </IconButton>
           </Grid>
         </Grid>

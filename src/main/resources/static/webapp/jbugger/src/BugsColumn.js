@@ -61,7 +61,8 @@ class BugsColumn extends PureComponent {
             provided={provided}
             status={StringFormatters.ToNiceBugStatus(this.props.bugStatus)}
             statusColor={this.props.statusColor}
-            onAddBug={this.props.onAddBug} />
+            onAddBug={this.props.onAddBug}
+            onMoreOptions={this.props.onMoreOptions} />
           <Droppable onDrop={this.onDrop} onDragOver={this.onDragOver} onDragLeave={this.onDragLeave}
             className={"flexbox-vertical-centered vertical-scroll-container left-right-padded-container full-width full-height border-radius-bottom"}>
             {this.props.bugs.length != 0 ?

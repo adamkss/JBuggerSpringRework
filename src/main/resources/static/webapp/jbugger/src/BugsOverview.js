@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import BugsColumn from './BugsColumn'
 import CreateBugPopover from './popovers/CreateBugPopover'
+import MoreBugColumnOptionsPopover from './popovers/MoreBugColumnOptionsPopover'
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import './BugsOverview.css';
@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug, reorderStatuses } from './redux-stuff/actions/actionCreators';
 import UnmountingDelayed from './UnmountingDelayed';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import ConfirmBugColumnDeletionDialog from './popovers/ConfirmBugColumnDeletionDialog';
 
 function FirstChild(props) {
   const childrenArray = React.Children.toArray(props.children);
@@ -71,7 +72,10 @@ class BugsOverview extends Component {
     bugs: [],
     bugsByStatus: {},
     newBugPopoverAnchorEl: null,
+    moreBugColumnOptionsAnchorEL: null,
     newBugStatus: null,
+    columnToModifyName: null,
+    isConfirmationNeededForBugColumnDeletion: false,
     draggingBugFromStatus: null,
     genericModalOpened: false
   }
@@ -90,6 +94,13 @@ class BugsOverview extends Component {
     });
   }
 
+  handleMoreBugColumnOptionsPopoverClose = () => {
+    this.setState({
+      moreBugColumnOptionsAnchorEL: null,
+      columnToModifyName: null
+    });
+  }
+
   handleClick = event => {
     this.setState({
       newBugPopoverAnchorEl: event.currentTarget,
@@ -105,6 +116,13 @@ class BugsOverview extends Component {
 
   createOnAddBugCallbackForStatus = bugStatus => event => {
     this.openCreateNewBugPopover(bugStatus, event.currentTarget);
+  }
+
+  createOnMoreOptionsCallbackForStatus = bugStatus => event => {
+    this.setState({
+      moreBugColumnOptionsAnchorEL: event.currentTarget,
+      columnToModifyName: bugStatus
+    });
   }
 
   handleCreateNewBugFromPopover = (newBug) => {
@@ -157,10 +175,31 @@ class BugsOverview extends Component {
     this.props.dispatch(reorderStatuses(result.source.index, result.destination.index));
   }
 
+  onDeleteSwimlaneIntention = () => {
+    this.setState({
+      isConfirmationNeededForBugColumnDeletion: true
+    });
+  }
+
+  onConfirmBugDeletionDialogCancel = () => {
+    this.setState({
+      isConfirmationNeededForBugColumnDeletion: false
+    });
+    this.handleMoreBugColumnOptionsPopoverClose();
+  }
+  
+  onConfirmBugDeletionDialogConfirm = () => {
+   
+  }
+  
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
-    const open = Boolean(newBugPopoverAnchorEl);
+    const isNewBugPopoverOpen = Boolean(newBugPopoverAnchorEl);
+
+    const { moreBugColumnOptionsAnchorEL } = this.state;
+    const isMoreBugColumnOptionsOpen = Boolean(moreBugColumnOptionsAnchorEL);
+
 
     return (
       <div className="parent-relative" tabIndex="0" onKeyDown={this.onKeyPressed}>
@@ -217,6 +256,7 @@ class BugsOverview extends Component {
                         statusColor={bugStatus.statusColor}
                         bugs={this.props.bugsByStatus[bugStatus.statusName] ? this.props.bugsByStatus[bugStatus.statusName] : []}
                         onAddBug={this.createOnAddBugCallbackForStatus(bugStatus.statusName)}
+                        onMoreOptions={this.createOnMoreOptionsCallbackForStatus(bugStatus.statusName)}
                         bugDragStarted={this.bugDragStarted}
                         onBugDrop={this.bugDropped}
                         isPossibleDropTarget={this.state.draggingBugFromStatus && this.state.draggingBugFromStatus !== bugStatus.statusName}
@@ -232,14 +272,29 @@ class BugsOverview extends Component {
 
         <CreateBugPopover
           id="new-bug-popover"
-          open={open}
+          open={isNewBugPopoverOpen}
           anchorEl={newBugPopoverAnchorEl}
           onClose={this.handleNewBugPopoverClose}
           handleCreateNewBug={this.handleCreateNewBugFromPopover} />
 
+        <MoreBugColumnOptionsPopover
+          id="more-bug-column-options-popover"
+          open={isMoreBugColumnOptionsOpen}
+          anchorEl={moreBugColumnOptionsAnchorEL}
+          onClose={this.handleMoreBugColumnOptionsPopoverClose}
+          onDeleteSwimlaneIntention={this.onDeleteSwimlaneIntention} />
+
         <UnmountingDelayed show={this.props.activeBugToModifyID !== null} delay="300">
-          <BugDetailsModal onBugEdit={this.onBugEditFromSidebar} mustClose={this.props.activeBugToModifyID == null} />
+          <BugDetailsModal
+            onBugEdit={this.onBugEditFromSidebar}
+            mustClose={this.props.activeBugToModifyID == null} />
         </UnmountingDelayed>
+
+        <ConfirmBugColumnDeletionDialog
+          open={this.state.isConfirmationNeededForBugColumnDeletion}
+          statusName={this.state.columnToModifyName}
+          onCancel={this.onConfirmBugDeletionDialogCancel}
+          onConfirm={this.onConfirmBugDeletionDialogConfirm} />
       </div>
     );
   }

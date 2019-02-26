@@ -22,3 +22,7 @@
 .form-control{
     min-width: 120px;
 }
+
+.small-custom-padding-left-right{
+    padding: 3px !important;
+}
