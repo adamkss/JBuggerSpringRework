@@ -9,10 +9,11 @@ import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 import BugDetailsModal from './BugDetailsModal';
 import { connect } from 'react-redux';
-import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug, reorderStatuses } from './redux-stuff/actions/actionCreators';
+import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug, reorderStatuses, startDeletingSwimlane } from './redux-stuff/actions/actionCreators';
 import UnmountingDelayed from './UnmountingDelayed';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import ConfirmBugColumnDeletionDialog from './popovers/ConfirmBugColumnDeletionDialog';
+import StringFormatters from './utils/StringFormatters';
 
 function FirstChild(props) {
   const childrenArray = React.Children.toArray(props.children);
@@ -175,23 +176,33 @@ class BugsOverview extends Component {
     this.props.dispatch(reorderStatuses(result.source.index, result.destination.index));
   }
 
-  onDeleteSwimlaneIntention = () => {
+  openConfirmBugColumnCreationDialog = () => {
     this.setState({
       isConfirmationNeededForBugColumnDeletion: true
     });
   }
 
-  onConfirmBugDeletionDialogCancel = () => {
+  closeConfirmBugColumnCreationDialog = () => {
     this.setState({
       isConfirmationNeededForBugColumnDeletion: false
     });
+  }
+
+  onDeleteSwimlaneIntention = () => {
+    this.openConfirmBugColumnCreationDialog();
+  }
+
+  onConfirmBugDeletionDialogCancel = () => {
+    this.closeConfirmBugColumnCreationDialog();
     this.handleMoreBugColumnOptionsPopoverClose();
   }
-  
+
   onConfirmBugDeletionDialogConfirm = () => {
-   
+    this.props.dispatch(startDeletingSwimlane(this.state.columnToModifyName));
+    this.closeConfirmBugColumnCreationDialog();
+    this.handleMoreBugColumnOptionsPopoverClose();
   }
-  
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -290,11 +301,15 @@ class BugsOverview extends Component {
             mustClose={this.props.activeBugToModifyID == null} />
         </UnmountingDelayed>
 
-        <ConfirmBugColumnDeletionDialog
-          open={this.state.isConfirmationNeededForBugColumnDeletion}
-          statusName={this.state.columnToModifyName}
-          onCancel={this.onConfirmBugDeletionDialogCancel}
-          onConfirm={this.onConfirmBugDeletionDialogConfirm} />
+        {this.state.isConfirmationNeededForBugColumnDeletion ?
+          <ConfirmBugColumnDeletionDialog
+            open={true}
+            statusName={StringFormatters.ToNiceBugStatus(this.state.columnToModifyName)}
+            onCancel={this.onConfirmBugDeletionDialogCancel}
+            onConfirm={this.onConfirmBugDeletionDialogConfirm} />
+          :
+          null}
+
       </div>
     );
   }

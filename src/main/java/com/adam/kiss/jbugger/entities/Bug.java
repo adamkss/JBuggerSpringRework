@@ -2,7 +2,6 @@ package com.adam.kiss.jbugger.entities;
 
 
 import com.adam.kiss.jbugger.enums.Severity;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

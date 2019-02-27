@@ -32,7 +32,7 @@ public class Status {
 
     private String statusColor;
 
-    @OneToMany(mappedBy = "status")
+    @OneToMany(mappedBy = "status", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonIgnore
     private List<Bug> bugsWithThisStatus;
 

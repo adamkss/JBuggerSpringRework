@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS } from '../actions/actionTypes'
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
@@ -79,6 +79,27 @@ const moveElementFromTo = (array, fromIndex, toIndex) => {
     result.splice(toIndex, 0, removed);
 
     return result;
+}
+
+const deleteBugsWithStatus = (bugs, statusName) => {
+    return bugs.filter(bug => bug.status !== statusName);
+}
+
+const deleteKeyFromObject = (obj, key) => {
+    let objNew = { ...obj };
+    delete objNew.key;
+    return objNew;
+}
+
+const deleteBugsWithStatusFromMap = (bugsMap, statusName) => {
+    let bugsMapNew = { ...bugsMap };
+
+    Object.keys(bugsMap).forEach(key => {
+        if (bugsMap[key].status === statusName) {
+            delete bugsMapNew[key];
+        }
+    })
+    return bugsMapNew;
 }
 
 const bugReducer = (state = initialState, action) => {
@@ -197,6 +218,16 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 statuses: moveElementFromTo(state.statuses, action.data.fromIndex, action.data.toIndex)
+            }
+        }
+        case DELETE_SWIMLANE_WITH_BUGS: {
+            let statusName = action.data;
+            return {
+                ...state,
+                allBugs: deleteBugsWithStatus(state.allBugs, statusName),
+                bugsByStatus: deleteKeyFromObject(state.bugsByStatus, statusName),
+                bugsById: deleteBugsWithStatusFromMap(state.bugsById, statusName),
+                statuses: state.statuses.filter(status => status.statusName !== statusName)
             }
         }
         default:

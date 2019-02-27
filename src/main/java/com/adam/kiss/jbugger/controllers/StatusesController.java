@@ -2,6 +2,7 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.CreateStatusDtoIn;
 import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.services.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,5 +25,10 @@ public class StatusesController {
     @PostMapping
     public Status createStatus(@RequestBody CreateStatusDtoIn createStatusDtoIn) {
         return statusService.createStatus(createStatusDtoIn.getStatusName(), createStatusDtoIn.getStatusColor());
+    }
+
+    @DeleteMapping("/{statusName}")
+    public void deleteStatus(@PathVariable(name = "statusName") String statusName) throws StatusNotFoundException {
+        statusService.deleteStatusWithBugs(statusName);
     }
 }
