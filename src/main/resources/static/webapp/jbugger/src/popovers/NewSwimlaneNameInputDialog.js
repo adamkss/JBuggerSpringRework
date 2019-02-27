@@ -4,11 +4,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
-import {Typography, Input} from '@material-ui/core';
+import { Typography, Input } from '@material-ui/core';
 
 class NewSwimlaneNameInputDialog extends React.Component {
-  state = {
-    newSwimLaneName: null
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      newSwimLaneName: this.props.initialSwimlaneName
+    }
   }
 
   handleCancel = () => {

@@ -339,7 +339,8 @@ class BugsOverview extends Component {
         {this.state.isInputNeededForBugColumnRenaming ?
           <NewSwimlaneNameInputDialog
             onCancel={this.onRenameBugColumnDialogCancel}
-            onConfirm={this.onRenameBugColumnDialogConfirm} />
+            onConfirm={this.onRenameBugColumnDialogConfirm}
+            initialSwimlaneName={StringFormatters.ToNiceBugStatus(this.state.columnToModifyName)} />
           :
           null
         }
