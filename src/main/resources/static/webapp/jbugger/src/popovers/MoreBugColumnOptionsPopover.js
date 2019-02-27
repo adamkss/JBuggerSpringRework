@@ -43,7 +43,7 @@ export default class MoreBugColumnOptionsPopover extends Component {
             >
                 <MenuList>
                     <MenuItem onClick={this.onDeleteClick}>Delete swimlane...</MenuItem>
-                    <MenuItem onClick={this.onChangeNameClick}>Change name</MenuItem>
+                    <MenuItem onClick={this.props.onRenameSwimlaneIntention}>Change name</MenuItem>
                     <MenuItem onClick={this.onChangeColorClick}>Change color</MenuItem>
                 </MenuList>
             </Popover>

@@ -1,4 +1,5 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME } from '../actions/actionTypes'
+import BugShortOverview from '../../BugShortOverview';
 
 // TODO: do we really need filteredbugs to be a separate entity?
 const initialState = {
@@ -100,6 +101,39 @@ const deleteBugsWithStatusFromMap = (bugsMap, statusName) => {
         }
     })
     return bugsMapNew;
+}
+
+const updateStatusNameOfBugs = (bugs, oldStatusName, newStatusName) => {
+    let newBugsArray = [...bugs];
+    bugs.forEach(bug => {
+        if (bug.status === oldStatusName) {
+            bug.status = newStatusName;
+        }
+    });
+    return newBugsArray;
+}
+
+const updateBugsByStatusNameOfStatus = (bugsByStatusOld, oldStatusName, newStatusName) => {
+    let newBugsByStatus = { ...bugsByStatusOld };
+    newBugsByStatus[newStatusName] = [...newBugsByStatus[oldStatusName]];
+    delete newBugsByStatus[oldStatusName];
+    return newBugsByStatus;
+}
+
+const updateStatusesWithNewStatusName = (oldStatuses, oldStatusName, newStatusName) => {
+    let newStatuses = [...oldStatuses];
+    newStatuses.find(status => status.statusName === oldStatusName).statusName = newStatusName;
+    return newStatuses;
+}
+
+const updateStatusNameOfBugsById = (oldBugsById, oldStatusName, newStatusName) => {
+    let newBugsById = { ...oldBugsById };
+    Object.keys(newBugsById).forEach(key => {
+        if (newBugsById[key].status === oldStatusName) {
+            newBugsById[key].status = newStatusName;
+        }
+    });
+    return newBugsById;
 }
 
 const bugReducer = (state = initialState, action) => {
@@ -228,6 +262,16 @@ const bugReducer = (state = initialState, action) => {
                 bugsByStatus: deleteKeyFromObject(state.bugsByStatus, statusName),
                 bugsById: deleteBugsWithStatusFromMap(state.bugsById, statusName),
                 statuses: state.statuses.filter(status => status.statusName !== statusName)
+            }
+        }
+        case UPDATE_SWIMLANE_NAME: {
+            let { oldSwimLaneName, newSwimLaneName } = action.data;
+            return {
+                ...state,
+                allBugs: updateStatusNameOfBugs(state.allBugs, oldSwimLaneName, newSwimLaneName),
+                bugsByStatus: updateBugsByStatusNameOfStatus(state.bugsByStatus, oldSwimLaneName, newSwimLaneName),
+                bugsById: updateStatusNameOfBugsById(state.bugsById, oldSwimLaneName, newSwimLaneName),
+                statuses: updateStatusesWithNewStatusName(state.statuses, oldSwimLaneName, newSwimLaneName)
             }
         }
         default:

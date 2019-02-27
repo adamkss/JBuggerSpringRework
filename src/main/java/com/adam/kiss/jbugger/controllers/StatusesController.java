@@ -1,6 +1,7 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.CreateStatusDtoIn;
+import com.adam.kiss.jbugger.dtos.UpdateStatusNameDtoIn;
 import com.adam.kiss.jbugger.entities.Status;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.services.StatusService;
@@ -30,5 +31,11 @@ public class StatusesController {
     @DeleteMapping("/{statusName}")
     public void deleteStatus(@PathVariable(name = "statusName") String statusName) throws StatusNotFoundException {
         statusService.deleteStatusWithBugs(statusName);
+    }
+
+    @PutMapping("/{statusName}")
+    public void updateStatusName(@PathVariable(name = "statusName") String statusNameOld,
+                                 @RequestBody UpdateStatusNameDtoIn updateStatusNameDtoIn) throws StatusNotFoundException {
+        statusService.updateStatusName(statusNameOld, updateStatusNameDtoIn.getStatusName());
     }
 }

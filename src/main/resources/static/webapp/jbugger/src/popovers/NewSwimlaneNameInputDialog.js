@@ -4,16 +4,26 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
+import {Typography, Input} from '@material-ui/core';
 
-class ConfirmBugColumnDeletionDialog extends React.Component {
+class NewSwimlaneNameInputDialog extends React.Component {
+  state = {
+    newSwimLaneName: null
+  }
 
   handleCancel = () => {
     this.props.onCancel();
   };
 
   handleOk = () => {
-    this.props.onConfirm();
+    this.props.onConfirm(this.state.newSwimLaneName);
   };
+
+  handleInputChange = (event) => {
+    this.setState({
+      newSwimLaneName: event.target.value
+    })
+  }
 
   render() {
 
@@ -25,9 +35,16 @@ class ConfirmBugColumnDeletionDialog extends React.Component {
         aria-labelledby="confirmation-dialog-title"
         open={true}
       >
-        <DialogTitle id="confirmation-dialog-title">Confirmation</DialogTitle>
+        <DialogTitle id="confirmation-dialog-title">New name</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete "{this.props.statusName}" swimlane and all its bugs?
+          <div className="flexbox-vertical-centered">
+            <Typography>
+              asd
+          </Typography>
+            <Input
+              value={this.state.newSwimLaneName}
+              onChange={this.handleInputChange} />
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={this.handleCancel} color="primary">
@@ -42,4 +59,4 @@ class ConfirmBugColumnDeletionDialog extends React.Component {
   }
 }
 
-export default ConfirmBugColumnDeletionDialog;
+export default NewSwimlaneNameInputDialog;

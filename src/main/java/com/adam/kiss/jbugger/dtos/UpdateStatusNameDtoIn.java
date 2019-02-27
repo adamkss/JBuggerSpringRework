@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateStatusDtoIn {
+public class UpdateStatusNameDtoIn {
     private String statusName;
-    private String statusColor;
 }

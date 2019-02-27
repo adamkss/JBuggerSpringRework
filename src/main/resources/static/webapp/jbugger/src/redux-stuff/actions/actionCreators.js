@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -221,5 +221,25 @@ export const deleteSwimLane = (statusName) => {
     return {
         type: DELETE_SWIMLANE_WITH_BUGS,
         data: statusName
+    }
+}
+
+export const startUpdatingSwimlaneName = (oldSwimLaneName, newSwimLaneName) => {
+    return (dispatch) => {
+        axios.put(`http://localhost:8080/statuses/${oldSwimLaneName}`, {
+            statusName: newSwimLaneName
+        }).then(() => {
+            dispatch(updateSwimLaneName(oldSwimLaneName, newSwimLaneName))
+        })
+    }
+}
+
+export const updateSwimLaneName = (oldSwimLaneName, newSwimLaneName) => {
+    return {
+        type: UPDATE_SWIMLANE_NAME,
+        data: {
+            oldSwimLaneName,
+            newSwimLaneName
+        }
     }
 }

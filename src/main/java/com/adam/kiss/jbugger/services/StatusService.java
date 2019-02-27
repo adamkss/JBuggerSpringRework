@@ -26,8 +26,14 @@ public class StatusService {
     }
 
     public void deleteStatusWithBugs(String statusName) throws StatusNotFoundException {
-        Status statusToDelete = statusRepository.findByStatusName(statusName).orElseThrow(StatusNotFoundException::new);
+        Status statusToDelete = getStatusByStatusName(statusName);
         statusRepository.delete(statusToDelete);
+    }
+
+    public void updateStatusName(String oldStatusName, String newStatusName) throws StatusNotFoundException {
+        Status statusToUpdate = getStatusByStatusName(oldStatusName);
+        statusToUpdate.setStatusName(newStatusName);
+        statusRepository.save(statusToUpdate);
     }
 
 }

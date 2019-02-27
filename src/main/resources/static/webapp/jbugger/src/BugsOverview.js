@@ -9,11 +9,12 @@ import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 import BugDetailsModal from './BugDetailsModal';
 import { connect } from 'react-redux';
-import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug, reorderStatuses, startDeletingSwimlane } from './redux-stuff/actions/actionCreators';
+import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug, reorderStatuses, startDeletingSwimlane, startUpdatingSwimlaneName } from './redux-stuff/actions/actionCreators';
 import UnmountingDelayed from './UnmountingDelayed';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import ConfirmBugColumnDeletionDialog from './popovers/ConfirmBugColumnDeletionDialog';
 import StringFormatters from './utils/StringFormatters';
+import NewSwimlaneNameInputDialog from './popovers/NewSwimlaneNameInputDialog';
 
 function FirstChild(props) {
   const childrenArray = React.Children.toArray(props.children);
@@ -78,7 +79,8 @@ class BugsOverview extends Component {
     columnToModifyName: null,
     isConfirmationNeededForBugColumnDeletion: false,
     draggingBugFromStatus: null,
-    genericModalOpened: false
+    genericModalOpened: false,
+    isInputNeededForBugColumnRenaming: false
   }
 
   componentDidMount() {
@@ -203,6 +205,29 @@ class BugsOverview extends Component {
     this.handleMoreBugColumnOptionsPopoverClose();
   }
 
+  onRenameSwimlaneIntention = () => {
+    this.setState({
+      isInputNeededForBugColumnRenaming: true
+    })
+  }
+
+  closeBugColumnRenameDialog = () => {
+    this.setState({
+      isInputNeededForBugColumnRenaming: false
+    })
+  }
+
+  onRenameBugColumnDialogCancel = () => {
+    this.closeBugColumnRenameDialog();
+    this.handleMoreBugColumnOptionsPopoverClose();
+  }
+
+  onRenameBugColumnDialogConfirm = (newSwimLaneName) => {
+    this.props.dispatch(startUpdatingSwimlaneName(this.state.columnToModifyName, newSwimLaneName));
+    this.closeBugColumnRenameDialog();
+    this.handleMoreBugColumnOptionsPopoverClose();
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -293,7 +318,9 @@ class BugsOverview extends Component {
           open={isMoreBugColumnOptionsOpen}
           anchorEl={moreBugColumnOptionsAnchorEL}
           onClose={this.handleMoreBugColumnOptionsPopoverClose}
-          onDeleteSwimlaneIntention={this.onDeleteSwimlaneIntention} />
+          onDeleteSwimlaneIntention={this.onDeleteSwimlaneIntention}
+          onRenameSwimlaneIntention={this.onRenameSwimlaneIntention}
+        />
 
         <UnmountingDelayed show={this.props.activeBugToModifyID !== null} delay="300">
           <BugDetailsModal
@@ -303,13 +330,19 @@ class BugsOverview extends Component {
 
         {this.state.isConfirmationNeededForBugColumnDeletion ?
           <ConfirmBugColumnDeletionDialog
-            open={true}
             statusName={StringFormatters.ToNiceBugStatus(this.state.columnToModifyName)}
             onCancel={this.onConfirmBugDeletionDialogCancel}
             onConfirm={this.onConfirmBugDeletionDialogConfirm} />
           :
           null}
 
+        {this.state.isInputNeededForBugColumnRenaming ?
+          <NewSwimlaneNameInputDialog
+            onCancel={this.onRenameBugColumnDialogCancel}
+            onConfirm={this.onRenameBugColumnDialogConfirm} />
+          :
+          null
+        }
       </div>
     );
   }
