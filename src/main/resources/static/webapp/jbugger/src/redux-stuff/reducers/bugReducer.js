@@ -23,14 +23,25 @@ const addBugByStatus = function (oldBugsByStatus, newBug) {
     return newBugByStatus;
 }
 
-const mapBugsToObjectByStatus = function (bugs) {
+const mapBugsToObjectByStatus = function (statuses, bugs) {
     const bugsByStatus = {};
+
+    statuses.forEach(status => {
+        bugsByStatus[status.statusName] = [];
+    });
+
     bugs.forEach(bug => {
-        if (!bugsByStatus[bug.status]) {
-            bugsByStatus[bug.status] = [];
-        }
         bugsByStatus[bug.status].push(bug);
-    })
+    });
+
+    return bugsByStatus;
+}
+
+const addBugToBugsByStatus = function (oldBugsByStatus, newBug) {
+    const bugsByStatus = { ...oldBugsByStatus };
+
+    bugsByStatus[newBug.status] = [...bugsByStatus[newBug.status], newBug];
+
     return bugsByStatus;
 }
 
@@ -149,7 +160,7 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 allBugs: action.data,
-                bugsByStatus: mapBugsToObjectByStatus(action.data),
+                bugsByStatus: mapBugsToObjectByStatus(state.statuses, action.data),
                 filteredBugs: action.data,
                 bugsById: mapBugsToIdMap(action.data)
             }
@@ -158,7 +169,7 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 allBugs: newAllBugs,
-                bugsByStatus: mapBugsToObjectByStatus(filterBugs(newAllBugs, state.filterString)),
+                bugsByStatus: addBugToBugsByStatus(state.bugsByStatus, action.newBug),
                 bugsById: getBugsMapWithNewBug(state.bugsById, action.newBug)
             }
         }
@@ -167,7 +178,7 @@ const bugReducer = (state = initialState, action) => {
 
             return {
                 ...state,
-                bugsByStatus: mapBugsToObjectByStatus(filteredBugs),
+                bugsByStatus: mapBugsToObjectByStatus(state.statuses, filteredBugs),
                 filteredBugs,
                 filterString: action.filterString
             }
@@ -195,7 +206,7 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 allBugs: allBugs,
-                bugsByStatus: mapBugsToObjectByStatus(filterBugs(allBugs, state.filterString)),
+                bugsByStatus: mapBugsToObjectByStatus(state.statuses, filterBugs(allBugs, state.filterString)),
                 bugsById: getBugsMapWithNewBug(state.bugsById, modifiedBug),
                 waitingForBugUpdate: false
             }
@@ -225,8 +236,8 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 allBugs: newAllBugs,
-                bugsByStatus: mapBugsToObjectByStatus(newAllBugs),
-                filteredBugs: mapBugsToObjectByStatus(filterBugs(newAllBugs, state.filterString)),
+                bugsByStatus: mapBugsToObjectByStatus(state.statuses, newAllBugs),
+                filteredBugs: mapBugsToObjectByStatus(state.statuses, filterBugs(newAllBugs, state.filterString)),
                 bugsById: mapBugsToIdMap(newAllBugs)
             }
         }
@@ -245,7 +256,11 @@ const bugReducer = (state = initialState, action) => {
         case CREATE_SWIMLANE: {
             return {
                 ...state,
-                statuses: [...state.statuses, action.data]
+                statuses: [...state.statuses, action.data],
+                bugsByStatus: {
+                    ...state.bugsByStatus,
+                    [action.data.statusName]: []
+                }
             }
         }
         case REORDER_STATUSES: {
