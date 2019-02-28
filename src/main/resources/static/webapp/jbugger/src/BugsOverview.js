@@ -9,12 +9,13 @@ import './BugsOverview.css';
 import { Button } from '@material-ui/core';
 import BugDetailsModal from './BugDetailsModal';
 import { connect } from 'react-redux';
-import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug, reorderStatuses, startDeletingSwimlane, startUpdatingSwimlaneName } from './redux-stuff/actions/actionCreators';
+import { createBug, filterBugs, getAllStatuses, closeModal, setBugs, setBugWithId, startUpdatingBug, reorderStatuses, startDeletingSwimlane, startUpdatingSwimlaneName, startUpdatingSwimlaneColor } from './redux-stuff/actions/actionCreators';
 import UnmountingDelayed from './UnmountingDelayed';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import ConfirmBugColumnDeletionDialog from './popovers/ConfirmBugColumnDeletionDialog';
 import StringFormatters from './utils/StringFormatters';
 import NewSwimlaneNameInputDialog from './popovers/NewSwimlaneNameInputDialog';
+import RecolorSwimlaneInputDialog from './popovers/RecolorSwimlaneInputDialog';
 
 function FirstChild(props) {
   const childrenArray = React.Children.toArray(props.children);
@@ -77,10 +78,12 @@ class BugsOverview extends Component {
     moreBugColumnOptionsAnchorEL: null,
     newBugStatus: null,
     columnToModifyName: null,
+    columnToModifyColor: null,
     isConfirmationNeededForBugColumnDeletion: false,
     draggingBugFromStatus: null,
     genericModalOpened: false,
-    isInputNeededForBugColumnRenaming: false
+    isInputNeededForBugColumnRenaming: false,
+    isInputNeededForBugColumnRecoloring: false
   }
 
   componentDidMount() {
@@ -121,10 +124,11 @@ class BugsOverview extends Component {
     this.openCreateNewBugPopover(bugStatus, event.currentTarget);
   }
 
-  createOnMoreOptionsCallbackForStatus = bugStatus => event => {
+  createOnMoreOptionsCallbackForStatus = (bugStatus, bugStatusColor) => event => {
     this.setState({
       moreBugColumnOptionsAnchorEL: event.currentTarget,
-      columnToModifyName: bugStatus
+      columnToModifyName: bugStatus,
+      columnToModifyColor: bugStatusColor
     });
   }
 
@@ -228,6 +232,29 @@ class BugsOverview extends Component {
     this.handleMoreBugColumnOptionsPopoverClose();
   }
 
+  onRecolorSwimlaneIntention = () => {
+    this.setState({
+      isInputNeededForBugColumnRecoloring: true
+    })
+  }
+
+  closeBugColumnRecolorDialog = () => {
+    this.setState({
+      isInputNeededForBugColumnRecoloring: false
+    })
+  }
+
+  onRecolorBugColumnDialogCancel = () => {
+    this.closeBugColumnRecolorDialog();
+    this.handleMoreBugColumnOptionsPopoverClose();
+  }
+
+  onRecolorBugColumnDialogConfirm = (newSwimLaneColor) => {
+    this.props.dispatch(startUpdatingSwimlaneColor(this.state.columnToModifyName, newSwimLaneColor));
+    this.closeBugColumnRecolorDialog();
+    this.handleMoreBugColumnOptionsPopoverClose();
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -292,7 +319,7 @@ class BugsOverview extends Component {
                         statusColor={bugStatus.statusColor}
                         bugs={this.props.bugsByStatus[bugStatus.statusName] ? this.props.bugsByStatus[bugStatus.statusName] : []}
                         onAddBug={this.createOnAddBugCallbackForStatus(bugStatus.statusName)}
-                        onMoreOptions={this.createOnMoreOptionsCallbackForStatus(bugStatus.statusName)}
+                        onMoreOptions={this.createOnMoreOptionsCallbackForStatus(bugStatus.statusName, bugStatus.statusColor)}
                         bugDragStarted={this.bugDragStarted}
                         onBugDrop={this.bugDropped}
                         isPossibleDropTarget={this.state.draggingBugFromStatus && this.state.draggingBugFromStatus !== bugStatus.statusName}
@@ -320,6 +347,7 @@ class BugsOverview extends Component {
           onClose={this.handleMoreBugColumnOptionsPopoverClose}
           onDeleteSwimlaneIntention={this.onDeleteSwimlaneIntention}
           onRenameSwimlaneIntention={this.onRenameSwimlaneIntention}
+          onRecolorSwimlaneIntention={this.onRecolorSwimlaneIntention}
         />
 
         <UnmountingDelayed show={this.props.activeBugToModifyID !== null} delay="300">
@@ -341,6 +369,15 @@ class BugsOverview extends Component {
             onCancel={this.onRenameBugColumnDialogCancel}
             onConfirm={this.onRenameBugColumnDialogConfirm}
             initialSwimlaneName={StringFormatters.ToNiceBugStatus(this.state.columnToModifyName)} />
+          :
+          null
+        }
+
+        {this.state.isInputNeededForBugColumnRecoloring ?
+          <RecolorSwimlaneInputDialog
+            onCancel={this.onRecolorBugColumnDialogCancel}
+            onConfirm={this.onRecolorBugColumnDialogConfirm}
+            initialSwimlaneColor={this.state.columnToModifyColor} />
           :
           null
         }

@@ -17,14 +17,6 @@ export default class MoreBugColumnOptionsPopover extends Component {
         this.props.onDeleteSwimlaneIntention();
     }
 
-    onChangeNameClick = () => {
-
-    }
-
-    onChangeColorClick = () => {
-
-    }
-
     render() {
         return (
             <Popover
@@ -44,7 +36,7 @@ export default class MoreBugColumnOptionsPopover extends Component {
                 <MenuList>
                     <MenuItem onClick={this.onDeleteClick}>Delete swimlane...</MenuItem>
                     <MenuItem onClick={this.props.onRenameSwimlaneIntention}>Change name</MenuItem>
-                    <MenuItem onClick={this.onChangeColorClick}>Change color</MenuItem>
+                    <MenuItem onClick={this.props.onRecolorSwimlaneIntention}>Change color</MenuItem>
                 </MenuList>
             </Popover>
         )

@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR } from '../actions/actionTypes'
 import BugShortOverview from '../../BugShortOverview';
 
 // TODO: do we really need filteredbugs to be a separate entity?
@@ -132,9 +132,21 @@ const updateBugsByStatusNameOfStatus = (bugsByStatusOld, oldStatusName, newStatu
 }
 
 const updateStatusesWithNewStatusName = (oldStatuses, oldStatusName, newStatusName) => {
-    let newStatuses = [...oldStatuses];
-    newStatuses.find(status => status.statusName === oldStatusName).statusName = newStatusName;
-    return newStatuses;
+    let statusToReplace = oldStatuses.find(status => status.statusName === oldStatusName);
+    let indexOfStatusToReplace = oldStatuses.indexOf(statusToReplace);
+
+    return oldStatuses.map((status, index) => {
+        if (index !== indexOfStatusToReplace) {
+            // This isn't the item we care about - keep it as-is
+            return status
+        }
+
+        // Otherwise, this is the one we want - return an updated value
+        return {
+            ...status,
+            statusName: newStatusName
+        }
+    })
 }
 
 const updateStatusNameOfBugsById = (oldBugsById, oldStatusName, newStatusName) => {
@@ -145,6 +157,24 @@ const updateStatusNameOfBugsById = (oldBugsById, oldStatusName, newStatusName) =
         }
     });
     return newBugsById;
+}
+
+const updateStatusesWithNewStatusColor = (oldStatuses, statusName, newStatusColor) => {
+    let statusToReplace = oldStatuses.find(status => status.statusName === statusName);
+    let indexOfStatusToReplace = oldStatuses.indexOf(statusToReplace);
+
+    return oldStatuses.map((status, index) => {
+        if (index !== indexOfStatusToReplace) {
+            // This isn't the item we care about - keep it as-is
+            return status
+        }
+
+        // Otherwise, this is the one we want - return an updated value
+        return {
+            ...status,
+            statusColor: newStatusColor
+        }
+    })
 }
 
 const bugReducer = (state = initialState, action) => {
@@ -287,6 +317,13 @@ const bugReducer = (state = initialState, action) => {
                 bugsByStatus: updateBugsByStatusNameOfStatus(state.bugsByStatus, oldSwimLaneName, newSwimLaneName),
                 bugsById: updateStatusNameOfBugsById(state.bugsById, oldSwimLaneName, newSwimLaneName),
                 statuses: updateStatusesWithNewStatusName(state.statuses, oldSwimLaneName, newSwimLaneName)
+            }
+        }
+        case UPDATE_SWIMLANE_COLOR: {
+            let { swimlaneName, newSwimlaneColor } = action.data;
+            return {
+                ...state,
+                statuses: updateStatusesWithNewStatusColor(state.statuses, swimlaneName, newSwimlaneColor)
             }
         }
         default:

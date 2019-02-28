@@ -36,4 +36,10 @@ public class StatusService {
         statusRepository.save(statusToUpdate);
     }
 
+    public void updateStatusColor(String statusName, String newStatusColor) throws StatusNotFoundException {
+        Status statusToUpdate = getStatusByStatusName(statusName);
+        statusToUpdate.setStatusColor(newStatusColor);
+        statusRepository.save(statusToUpdate);
+    }
+
 }

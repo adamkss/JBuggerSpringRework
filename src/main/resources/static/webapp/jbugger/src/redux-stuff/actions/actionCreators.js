@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -226,7 +226,7 @@ export const deleteSwimLane = (statusName) => {
 
 export const startUpdatingSwimlaneName = (oldSwimLaneName, newSwimLaneName) => {
     return (dispatch) => {
-        axios.put(`http://localhost:8080/statuses/${oldSwimLaneName}`, {
+        axios.put(`http://localhost:8080/statuses/${oldSwimLaneName}/name`, {
             statusName: newSwimLaneName
         }).then(() => {
             dispatch(updateSwimLaneName(oldSwimLaneName, newSwimLaneName))
@@ -240,6 +240,26 @@ export const updateSwimLaneName = (oldSwimLaneName, newSwimLaneName) => {
         data: {
             oldSwimLaneName,
             newSwimLaneName
+        }
+    }
+}
+
+export const startUpdatingSwimlaneColor = (swimlaneName, newSwimlaneColor) => {
+    return (dispatch) => {
+        axios.put(`http://localhost:8080/statuses/${swimlaneName}/color`, {
+            statusColor: newSwimlaneColor
+        }).then(() => {
+            dispatch(updateSwimlaneColor(swimlaneName, newSwimlaneColor))
+        })
+    }
+}
+
+export const updateSwimlaneColor = (swimlaneName, newSwimlaneColor) => {
+    return {
+        type: UPDATE_SWIMLANE_COLOR,
+        data: {
+            swimlaneName,
+            newSwimlaneColor
         }
     }
 }
