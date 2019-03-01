@@ -20,8 +20,12 @@ class BugDetailsModal extends PureComponent {
         targetDateNew: null,
         descriptionNew: null,
         labelsSelectionState: {},
-        isAttachmentUploadIntention: false,
         isUploadInProgress: false
+    }
+
+    constructor(props) {
+        super(props);
+        this.inputOpenFileRef = React.createRef();
     }
 
     onModalClose = () => {
@@ -155,9 +159,7 @@ class BugDetailsModal extends PureComponent {
     }
 
     onAddAttachmentToCurrentBug = () => {
-        this.setState({
-            isAttachmentUploadIntention: true
-        })
+        this.inputOpenFileRef.current.click();
     }
 
     onAttachmentInputSelected = (event) => {
@@ -169,7 +171,6 @@ class BugDetailsModal extends PureComponent {
                 })
             });
         this.setState({
-            isAttachmentUploadIntention: false,
             isUploadInProgress: true
         })
     }
@@ -320,6 +321,7 @@ class BugDetailsModal extends PureComponent {
                                     return (
                                         this.props.bug.attachmentsInfo.map(attachmentInfo =>
                                             <AttachmentShortOverview
+                                                key={attachmentInfo.id}
                                                 attachmentName={attachmentInfo.name}
                                                 attachmentId={attachmentInfo.id}
                                                 onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)} />
@@ -331,6 +333,7 @@ class BugDetailsModal extends PureComponent {
                                         <>
                                             {this.props.bug.attachmentsInfo.map(attachmentInfo =>
                                                 <AttachmentShortOverview
+                                                    key={attachmentInfo.id}
                                                     attachmentName={attachmentInfo.name}
                                                     attachmentId={attachmentInfo.id}
                                                     onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)}
@@ -344,11 +347,12 @@ class BugDetailsModal extends PureComponent {
                                                     <AddIcon />
                                                 </IconButton>
                                             </div>
-                                            {this.state.isAttachmentUploadIntention ?
-                                                <Input type="file" onChange={this.onAttachmentInputSelected} />
-                                                :
-                                                null
-                                            }
+                                            <input
+                                                type="file"
+                                                onChange={this.onAttachmentInputSelected}
+                                                ref={this.inputOpenFileRef}
+                                                style={{ display: "none" }}
+                                            />
                                             {this.state.isUploadInProgress ?
                                                 <div className="full-width flexbox-horizontal flexbox-justify-center">
                                                     <CircularProgress
