@@ -70,6 +70,10 @@
     align-items: center;
 }
 
+.flexbox-justify-center{
+    justify-content: center;
+}
+
 .justify-flex-end{
     justify-content: flex-end;
 }
@@ -88,4 +92,11 @@
 
 .small-padding-all-over{
     padding: 3px !important;
+}
+
+.progress-circular{
+    color: '#6798e5';
+    animation-duration: '550ms';
+    position: 'absolute';
+    left: 0;
 }

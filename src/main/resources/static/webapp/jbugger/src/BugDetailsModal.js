@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Typography, Input, Select, MenuItem, TextField, IconButton } from '@material-ui/core';
+import { Typography, Input, Select, MenuItem, TextField, IconButton, CircularProgress } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import './BugDetailsModal.css';
-import { closeModal, getUserNames, getLabels, startUpdatingBugLabels, startDownloadingFile, startDeletingAttachment } from './redux-stuff/actions/actionCreators';
+import { closeModal, getUserNames, getLabels, startUpdatingBugLabels, startDownloadingFile, startDeletingAttachment, addAttachmentInfo } from './redux-stuff/actions/actionCreators';
 import BugDetailsSidebarSection from './BugDetailsSidebarSection';
 import LabelShort from './LabelShort';
 import AttachmentShortOverview from './AttachmentShortOverview';
@@ -20,7 +20,8 @@ class BugDetailsModal extends PureComponent {
         targetDateNew: null,
         descriptionNew: null,
         labelsSelectionState: {},
-        isAttachmentUploadIntention: false
+        isAttachmentUploadIntention: false,
+        isUploadInProgress: false
     }
 
     onModalClose = () => {
@@ -160,7 +161,17 @@ class BugDetailsModal extends PureComponent {
     }
 
     onAttachmentInputSelected = (event) => {
-        // uploadFile(event.target.files[0]);
+        uploadFile(event.target.files[0], `http://localhost:8080/attachments/attachment/upload/${this.props.bug.id}`,
+            (newAttachmentInfo) => {
+                this.props.dispatch(addAttachmentInfo(this.props.bug.id, newAttachmentInfo));
+                this.setState({
+                    isUploadInProgress: false
+                })
+            });
+        this.setState({
+            isAttachmentUploadIntention: false,
+            isUploadInProgress: true
+        })
     }
 
     render() {
@@ -338,6 +349,18 @@ class BugDetailsModal extends PureComponent {
                                                 :
                                                 null
                                             }
+                                            {this.state.isUploadInProgress ?
+                                                <div className="full-width flexbox-horizontal flexbox-justify-center">
+                                                    <CircularProgress
+                                                        variant="indeterminate"
+                                                        disableShrink
+                                                        className="progress-circular"
+                                                        size={24}
+                                                        thickness={4}
+                                                    />
+                                                </div>
+                                                :
+                                                null}
                                         </>
                                     )
                                 }} />
