@@ -44,8 +44,15 @@ class BugDetailsSidebarSection extends React.PureComponent {
 
                     {this.state.editMode ?
                         <React.Fragment>
-                            <Typography className="sidebar__edit-button slight-padding-right" variant="subtitle2" onClick={this.onSave}>Save</Typography>
-                            <Typography className="sidebar__edit-button" variant="subtitle2" onClick={this.onCancelEdit}>Cancel</Typography>
+                            {
+                                this.props.doneInsteadOfSaveAndCancel ?
+                                    <Typography className="sidebar__edit-button slight-padding-right" variant="subtitle2" onClick={this.onCancelEdit}>Done</Typography>
+                                    :
+                                    <>
+                                        <Typography className="sidebar__edit-button slight-padding-right" variant="subtitle2" onClick={this.onSave}>Save</Typography>
+                                        <Typography className="sidebar__edit-button" variant="subtitle2" onClick={this.onCancelEdit}>Cancel</Typography>
+                                    </>
+                            }
                         </React.Fragment>
                         :
                         <Typography className="sidebar__edit-button" variant="subtitle2" onClick={this.onEditClick}>Edit</Typography>

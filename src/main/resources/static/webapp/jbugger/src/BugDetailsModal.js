@@ -316,7 +316,7 @@ class BugDetailsModal extends PureComponent {
                             <BugDetailsSidebarSection
                                 sectionName="Attachments"
                                 initialData={this.props.bug.description}
-                                onSave={this.onSaveGeneral('description')}
+                                doneInsteadOfSaveAndCancel
                                 renderViewControl={() => {
                                     return (
                                         this.props.bug.attachmentsInfo.map(attachmentInfo =>
