@@ -40,6 +40,7 @@ const ParentDiv = styled.div`
     padding-bottom: 1px;
     margin-left: 3px;
     cursor: ${props => props.selectable ? "pointer" : "initial"};
+    ${props => props.smallMarginBottom ? "margin-bottom: 6px" : null}
 `;
 
 

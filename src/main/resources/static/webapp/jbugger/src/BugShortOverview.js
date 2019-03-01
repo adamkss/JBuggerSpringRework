@@ -45,8 +45,12 @@ class BugShortOverview extends Component {
             </Typography>
           </Grid>
           <section className="labels">
-            {this.props.labels.map (label =>
-              <LabelShort key={label.labelName} text={label.labelName} backgroundColor={label.backgroundColor}/> 
+            {this.props.labels.map(label =>
+              <LabelShort
+                key={label.labelName}
+                text={label.labelName}
+                backgroundColor={label.backgroundColor}
+                smallMarginBottom />
             )}
           </section>
         </Grid>

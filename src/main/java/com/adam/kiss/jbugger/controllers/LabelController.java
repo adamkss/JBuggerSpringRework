@@ -1,7 +1,9 @@
 package com.adam.kiss.jbugger.controllers;
 
+import com.adam.kiss.jbugger.dtos.CreateLabelDtoIn;
 import com.adam.kiss.jbugger.dtos.ViewLabelDtoOut;
 import com.adam.kiss.jbugger.dtos.ViewUserDtoOut;
+import com.adam.kiss.jbugger.entities.Label;
 import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.projections.UserWithNameAndUsernameProjection;
 import com.adam.kiss.jbugger.services.LabelService;
@@ -22,10 +24,21 @@ public class LabelController {
     private final LabelService labelService;
 
     @GetMapping
-    public List<ViewLabelDtoOut> getAllLabels(){
+    public List<ViewLabelDtoOut> getAllLabels() {
         return labelService.getAllLabels()
                 .stream()
                 .map(ViewLabelDtoOut::mapLabelToDto)
                 .collect(Collectors.toList());
+    }
+
+    @PostMapping
+    public ViewLabelDtoOut createLabel(@RequestBody CreateLabelDtoIn createLabelDtoIn) {
+        Label labelToCreate = new Label();
+        labelToCreate.setBackgroundColor(createLabelDtoIn.getLabelColor());
+        labelToCreate.setLabelName(createLabelDtoIn.getLabelName());
+
+        return ViewLabelDtoOut.mapLabelToDto(
+                labelService.createLabel(labelToCreate)
+        );
     }
 }

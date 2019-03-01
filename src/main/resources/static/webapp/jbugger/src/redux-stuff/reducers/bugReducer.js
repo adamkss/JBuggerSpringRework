@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR, CREATE_LABEL } from '../actions/actionTypes'
 import BugShortOverview from '../../BugShortOverview';
 
 // TODO: do we really need filteredbugs to be a separate entity?
@@ -324,6 +324,12 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 statuses: updateStatusesWithNewStatusColor(state.statuses, swimlaneName, newSwimlaneColor)
+            }
+        }
+        case CREATE_LABEL: {
+            return {
+                ...state,
+                labels: [...state.labels, action.data]
             }
         }
         default:

@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR, CREATE_LABEL } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -261,5 +261,29 @@ export const updateSwimlaneColor = (swimlaneName, newSwimlaneColor) => {
             swimlaneName,
             newSwimlaneColor
         }
+    }
+}
+
+export const startCreatingNewLabel = (newLabelName, newLabelColor) => {
+    return (dispatch) => {
+        fetch('http://localhost:8080/labels', {
+            method: "POST",
+            body: JSON.stringify({
+                labelName: newLabelName,
+                labelColor: newLabelColor
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then((response) => response.json())
+            .then((newLabel) => dispatch(createNewLabel(newLabel)));
+    }
+}
+
+export const createNewLabel = (newLabel) => {
+    return {
+        type: CREATE_LABEL,
+        data: newLabel
     }
 }

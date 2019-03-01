@@ -34,7 +34,8 @@ import Grid from '@material-ui/core/Grid';
 import GenericModal from './GenericModal';
 import CreateSwimLaneModalContent from './CreateSwimLaneModalContent';
 import { connect } from 'react-redux';
-import {startCreatingNewSwimLane} from './redux-stuff/actions/actionCreators';
+import { startCreatingNewSwimLane, getLabels } from './redux-stuff/actions/actionCreators';
+import ProjectSettings from './ProjectSettings';
 
 const drawerWidth = 240;
 
@@ -122,6 +123,10 @@ class ResponsiveDrawer extends React.Component {
         modalOpened: false,
         modalType: null
     };
+
+    componentDidMount() {
+        this.props.dispatch(getLabels());
+    }
 
     handleDrawerToggle = () => {
         this.setState(state => ({ mobileOpen: !state.mobileOpen }));
@@ -225,13 +230,17 @@ class ResponsiveDrawer extends React.Component {
                     container>
                     <Grid item>
                         <List>
-                            <ListItem button key="bugsOverViewListItem">
+                            <ListItem button key="bugsOverViewListItem" onClick={() => this.props.history.push("/")}>
                                 <ListItemIcon> <InboxIcon /></ListItemIcon>
                                 <ListItemText primary="Bugs Overview" />
                             </ListItem>
                             <ListItem button key="statisticsListItem">
                                 <ListItemIcon> <InboxIcon /></ListItemIcon>
                                 <ListItemText primary="Statistics" />
+                            </ListItem>
+                            <ListItem button key="projectSettingsListItem" onClick={() => this.props.history.push("/projectSettings")}>
+                                <ListItemIcon> <InboxIcon /></ListItemIcon>
+                                <ListItemText primary="Project settings" />
                             </ListItem>
                         </List>
                     </Grid>
@@ -250,7 +259,6 @@ class ResponsiveDrawer extends React.Component {
                 <CssBaseline />
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
-
                         <Hidden mdUp implementation="css">
                             <IconButton
                                 color="inherit"
@@ -347,17 +355,26 @@ class ResponsiveDrawer extends React.Component {
 
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    <Route exact path={`${this.props.match.path}`} render={() => <BugsOverview onModalOpenClick={this.onModalOpenClick} />} />
-                    <Route path={`${this.props.match.path}bugs/bug/:bugId`} component={BugDetail} />
+                    <Route
+                        exact
+                        path={`${this.props.match.path}`}
+                        render={() => <BugsOverview onModalOpenClick={this.onModalOpenClick} />}
+                    />
+                    <Route
+                        path={`${this.props.match.path}bugs/bug/:bugId`}
+                        component={BugDetail} />
+                    <Route
+                        exact
+                        path={`${this.props.match.path}projectSettings`}
+                        component={ProjectSettings} />
                 </main>
+
                 {this.state.modalOpened ?
                     <GenericModal onClose={this.onGenericModalClose}>
-
                         {this.state.modalType === "createSwimlaneModal" ?
-                            <CreateSwimLaneModalContent onNewSwimLaneDone={this.onNewSwimLaneDone}/>
+                            <CreateSwimLaneModalContent onNewSwimLaneDone={this.onNewSwimLaneDone} />
                             :
                             ""}
-
                     </GenericModal>
                     :
                     ""}

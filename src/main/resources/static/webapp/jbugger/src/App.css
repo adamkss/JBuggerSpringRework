@@ -66,6 +66,10 @@
     flex-direction: row;
 }
 
+.flex-wrap{
+    flex-wrap: wrap;
+}
+
 .with-margin-top{
     margin-top: 12px !important;
 }

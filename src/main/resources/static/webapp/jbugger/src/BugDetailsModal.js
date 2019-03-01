@@ -130,7 +130,7 @@ class BugDetailsModal extends PureComponent {
         let newLabels = [];
 
         Object.keys(this.state.labelsSelectionState).forEach(labelName => {
-            if(this.state.labelsSelectionState[labelName])
+            if (this.state.labelsSelectionState[labelName])
                 newLabels.push(labelName);
         })
         this.props.dispatch(startUpdatingBugLabels(this.props.bug.id, newLabels));
@@ -246,15 +246,19 @@ class BugDetailsModal extends PureComponent {
                                 onSave={this.onSaveLabels}
                                 renderViewControl={() => {
                                     return (
-                                        <div className="flexbox-horizontal small-margin-top">
+                                        <div className="flexbox-horizontal flex-wrap small-margin-top">
                                             {this.props.bug.labels.map(label =>
-                                                <LabelShort key={label.labelName} text={label.labelName} backgroundColor={label.backgroundColor} />)}
+                                                <LabelShort
+                                                    key={label.labelName}
+                                                    text={label.labelName}
+                                                    backgroundColor={label.backgroundColor}
+                                                    smallMarginBottom />)}
                                         </div>
                                     )
                                 }}
                                 renderEditControl={() => {
                                     return (
-                                        <div className="flexbox-horizontal small-margin-top">
+                                        <div className="flexbox-horizontal flex-wrap small-margin-top">
                                             {this.props.labels.map(label => {
                                                 return <LabelShort
                                                     selectable
@@ -262,7 +266,8 @@ class BugDetailsModal extends PureComponent {
                                                     onClick={this.onLabelClick(label.labelName)}
                                                     key={label.labelName}
                                                     text={label.labelName}
-                                                    backgroundColor={label.backgroundColor} />
+                                                    backgroundColor={label.backgroundColor}
+                                                    smallMarginBottom />
                                             }
                                             )}
                                         </div>

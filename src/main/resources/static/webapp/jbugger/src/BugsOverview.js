@@ -17,6 +17,9 @@ import StringFormatters from './utils/StringFormatters';
 import NewSwimlaneNameInputDialog from './popovers/NewSwimlaneNameInputDialog';
 import RecolorSwimlaneInputDialog from './popovers/RecolorSwimlaneInputDialog';
 
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import {IconButton} from '@material-ui/core';
+
 function FirstChild(props) {
   const childrenArray = React.Children.toArray(props.children);
   return childrenArray[0] || null;
