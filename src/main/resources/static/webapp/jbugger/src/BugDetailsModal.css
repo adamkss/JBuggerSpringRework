@@ -9,6 +9,7 @@
     transform: translateX(280px);
     box-shadow: -2px 0px 13px -2px rgba(155,155,163,1);
     z-index: 1200;
+    overflow-y: auto;
 }
 
 .modal-expanded{

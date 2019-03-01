@@ -2,6 +2,7 @@ package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.Attachment;
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.exceptions.AttachmentNotFoundException;
 import com.adam.kiss.jbugger.repositories.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,5 +39,9 @@ public class AttachmentService {
         return ids.stream()
                 .map(id -> attachmentRepository.findById(id))
                 .collect(Collectors.toList());
+    }
+
+    public void deleteAttachmentById(Integer id) throws AttachmentNotFoundException {
+        attachmentRepository.delete(getAttachmentById(id).orElseThrow(AttachmentNotFoundException::new));
     }
 }

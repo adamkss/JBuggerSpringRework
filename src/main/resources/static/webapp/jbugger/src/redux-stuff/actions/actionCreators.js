@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR, CREATE_LABEL } from './actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, GET_LABELS, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR, CREATE_LABEL, DELETE_ATTACHMENT } from './actionTypes'
 import axios from 'axios';
 
 export const setBugs = (bugs) => {
@@ -285,5 +285,23 @@ export const createNewLabel = (newLabel) => {
     return {
         type: CREATE_LABEL,
         data: newLabel
+    }
+}
+
+export const startDeletingAttachment = (bugId, attachmentId) => {
+    return (dispatch) => {
+        axios.delete(`http://localhost:8080/attachments/attachment/${attachmentId}`)
+            .then(() => dispatch(deleteAttachment(bugId, attachmentId)))
+            .catch(() => { });
+    }
+}
+
+export const deleteAttachment = (bugId, attachmentId) => {
+    return {
+        type: DELETE_ATTACHMENT,
+        data: {
+            bugId,
+            attachmentId
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.entities.Attachment;
+import com.adam.kiss.jbugger.exceptions.AttachmentNotFoundException;
 import com.adam.kiss.jbugger.services.AttachmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -34,5 +35,15 @@ public class AttachmentController {
     @GetMapping("/attachment/{id}")
     public Attachment getAttachmentById(@PathVariable Integer id) {
         return attachmentService.getAttachmentById(id).get();
+    }
+
+    @GetMapping("attachment/{id}/blob")
+    public byte[] getAttachmentBlobById(@PathVariable Integer id) throws AttachmentNotFoundException {
+        return attachmentService.getAttachmentById(id).orElseThrow(AttachmentNotFoundException::new).getContent();
+    }
+
+    @DeleteMapping("/attachment/{id}")
+    public void deleteAttachment(@PathVariable Integer id) throws AttachmentNotFoundException {
+        attachmentService.deleteAttachmentById(id);
     }
 }

@@ -1,10 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Typography, Input, Select, MenuItem, TextField } from '@material-ui/core';
+import { Typography, Input, Select, MenuItem, TextField, IconButton } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import './BugDetailsModal.css';
-import { closeModal, getUserNames, getLabels, startUpdatingBugLabels } from './redux-stuff/actions/actionCreators';
+import { closeModal, getUserNames, getLabels, startUpdatingBugLabels, startDownloadingFile, startDeletingAttachment } from './redux-stuff/actions/actionCreators';
 import BugDetailsSidebarSection from './BugDetailsSidebarSection';
 import LabelShort from './LabelShort';
+import AttachmentShortOverview from './AttachmentShortOverview';
+import { downloadFile } from './utils/DownloadHelper';
+import { uploadFile } from './utils/UploadHelper';
 
 class BugDetailsModal extends PureComponent {
     state = {
@@ -15,7 +19,8 @@ class BugDetailsModal extends PureComponent {
         mustClose: false,
         targetDateNew: null,
         descriptionNew: null,
-        labelsSelectionState: {}
+        labelsSelectionState: {},
+        isAttachmentUploadIntention: false
     }
 
     onModalClose = () => {
@@ -134,6 +139,28 @@ class BugDetailsModal extends PureComponent {
                 newLabels.push(labelName);
         })
         this.props.dispatch(startUpdatingBugLabels(this.props.bug.id, newLabels));
+    }
+
+    startDownloadingAttachment = (attachmentInfo) => {
+        return () => {
+            downloadFile(attachmentInfo.name, `http://localhost:8080/attachments/attachment/${attachmentInfo.id}/blob`)
+        }
+    }
+
+    onRemoveAttachment = (bugId, attachmentId) => {
+        return () => {
+            this.props.dispatch(startDeletingAttachment(bugId, attachmentId));
+        }
+    }
+
+    onAddAttachmentToCurrentBug = () => {
+        this.setState({
+            isAttachmentUploadIntention: true
+        })
+    }
+
+    onAttachmentInputSelected = (event) => {
+        // uploadFile(event.target.files[0]);
     }
 
     render() {
@@ -271,6 +298,47 @@ class BugDetailsModal extends PureComponent {
                                             }
                                             )}
                                         </div>
+                                    )
+                                }} />
+                            <div className="sidebar__horizontal-separator" />
+                            <BugDetailsSidebarSection
+                                sectionName="Attachments"
+                                initialData={this.props.bug.description}
+                                onSave={this.onSaveGeneral('description')}
+                                renderViewControl={() => {
+                                    return (
+                                        this.props.bug.attachmentsInfo.map(attachmentInfo =>
+                                            <AttachmentShortOverview
+                                                attachmentName={attachmentInfo.name}
+                                                attachmentId={attachmentInfo.id}
+                                                onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)} />
+                                        )
+                                    )
+                                }}
+                                renderEditControl={() => {
+                                    return (
+                                        <>
+                                            {this.props.bug.attachmentsInfo.map(attachmentInfo =>
+                                                <AttachmentShortOverview
+                                                    attachmentName={attachmentInfo.name}
+                                                    attachmentId={attachmentInfo.id}
+                                                    onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)}
+                                                    showRemoveIcon
+                                                    onClickRemoveAttachment={this.onRemoveAttachment(this.props.bug.id, attachmentInfo.id)} />
+                                            )}
+                                            <div className="flexbox-horizontal justify-flex-end">
+                                                <IconButton
+                                                    className="small-padding-all-over"
+                                                    onClick={this.onAddAttachmentToCurrentBug}>
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </div>
+                                            {this.state.isAttachmentUploadIntention ?
+                                                <Input type="file" onChange={this.onAttachmentInputSelected} />
+                                                :
+                                                null
+                                            }
+                                        </>
                                     )
                                 }} />
                         </main>

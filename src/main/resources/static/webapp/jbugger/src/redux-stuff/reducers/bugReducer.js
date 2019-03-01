@@ -1,4 +1,4 @@
-import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR, CREATE_LABEL } from '../actions/actionTypes'
+import { SET_BUGS, ADD_BUG, FILTER_BUGS, MOVE_BUG_VISUALLY, WAITING_FOR_BUG_UPDATE, SET_STATUSES, BUG_CLICKED, CLOSE_MODAL, SET_USER_NAMES, SET_BUG, UPDATE_CURRENTLY_ACTIVE_BUG, SET_LABELS, CREATE_SWIMLANE, REORDER_STATUSES, DELETE_SWIMLANE_WITH_BUGS, UPDATE_SWIMLANE_NAME, UPDATE_SWIMLANE_COLOR, CREATE_LABEL, DELETE_ATTACHMENT } from '../actions/actionTypes'
 import BugShortOverview from '../../BugShortOverview';
 
 // TODO: do we really need filteredbugs to be a separate entity?
@@ -177,6 +177,20 @@ const updateStatusesWithNewStatusColor = (oldStatuses, statusName, newStatusColo
     })
 }
 
+const deleteAttachmentFromAllBugs = (oldAllBugs, bugId, attachmentId) => {
+    return oldAllBugs.map(bug => {
+        if (bug.id != bugId)
+            return bug;
+
+        return {
+            ...bug,
+            attachmentsInfo: bug.attachmentsInfo.filter(
+                attachmentInfo => attachmentInfo.id != attachmentId
+            )
+        }
+    })
+}
+
 const bugReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_STATUSES: {
@@ -330,6 +344,20 @@ const bugReducer = (state = initialState, action) => {
             return {
                 ...state,
                 labels: [...state.labels, action.data]
+            }
+        }
+        case DELETE_ATTACHMENT: {
+            const newAllBugs = deleteAttachmentFromAllBugs(state.allBugs, action.data.bugId, action.data.attachmentId);
+            return {
+                ...state,
+                allBugs: newAllBugs,
+                bugsByStatus: mapBugsToObjectByStatus(state.statuses, newAllBugs),
+                bugsById: mapBugsToIdMap(newAllBugs),
+                activeBugToModify: {
+                    ...state.activeBugToModify,
+                    attachmentsInfo: state.activeBugToModify.attachmentsInfo.filter(attachmentInfo => attachmentInfo.id != action.data.attachmentId)
+                }
+
             }
         }
         default:
