@@ -8,7 +8,7 @@ import './Statistics.css';
 import ProjectSettingsSection from './ProjectSettingsSection';
 
 const LabelOpacityController = styled.div`
-    opacity: ${props => props.isActive ? "1" : "0.4"};
+    opacity: ${props => props.isActive ? "1" : "0.5"};
     transition: opacity 0.2s;
     cursor: pointer;
 `;
@@ -76,7 +76,7 @@ export default class Statistics extends PureComponent {
                                         <div className="color-indicator" style={{ backgroundColor: element.color }} />
                                         <div className="with-margin-left">
                                             <span>
-                                                {element.title}
+                                                {`${element.title}: ${element.value}`}
                                             </span>
                                         </div>
                                     </div>
