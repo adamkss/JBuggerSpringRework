@@ -36,6 +36,7 @@ import CreateSwimLaneModalContent from './CreateSwimLaneModalContent';
 import { connect } from 'react-redux';
 import { startCreatingNewSwimLane, getLabels } from './redux-stuff/actions/actionCreators';
 import ProjectSettings from './ProjectSettings';
+import Statistics from './Statistics';
 
 const drawerWidth = 240;
 
@@ -234,7 +235,7 @@ class ResponsiveDrawer extends React.Component {
                                 <ListItemIcon> <InboxIcon /></ListItemIcon>
                                 <ListItemText primary="Bugs Overview" />
                             </ListItem>
-                            <ListItem button key="statisticsListItem">
+                            <ListItem button key="statisticsListItem" onClick={() => this.props.history.push("/statistics")}>
                                 <ListItemIcon> <InboxIcon /></ListItemIcon>
                                 <ListItemText primary="Statistics" />
                             </ListItem>
@@ -363,6 +364,10 @@ class ResponsiveDrawer extends React.Component {
                     <Route
                         path={`${this.props.match.path}bugs/bug/:bugId`}
                         component={BugDetail} />
+                    <Route
+                        exact
+                        path={`${this.props.match.path}statistics`}
+                        component={Statistics} />
                     <Route
                         exact
                         path={`${this.props.match.path}projectSettings`}

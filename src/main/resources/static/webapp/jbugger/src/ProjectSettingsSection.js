@@ -11,7 +11,13 @@ export default class ProjectSettingsSection extends Component {
                     {this.props.sectionName}
                 </Typography>
                 <Divider />
-                {this.props.children}
+                {this.props.horizontalContent ?
+                    <div className="flexbox-horizontal">
+                        {this.props.children}
+                    </div>
+                    :
+                    this.props.children
+                }
             </section>
         )
     }
