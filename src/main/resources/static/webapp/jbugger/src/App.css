@@ -66,6 +66,11 @@
     flex-direction: row;
 }
 
+.flexbox-vertical{
+    display:flex;
+    flex-direction: column;
+}
+
 .flexbox-align-items-center{
     align-items: center;
 }
@@ -88,6 +93,18 @@
 
 .small-margin-top{
     margin-top: 6px;
+}
+
+.small-margin-bottom{
+    margin-top: 6px;
+}
+
+.with-margin-left{
+    margin-left: 12px !important;
+}
+
+.with-big-margin-left{
+    margin-left: 35px !important;
 }
 
 .small-padding-all-over{

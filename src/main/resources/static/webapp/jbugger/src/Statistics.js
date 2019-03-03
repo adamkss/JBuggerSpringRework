@@ -1,10 +1,17 @@
 import React, { PureComponent } from 'react'
 import BarChart from './BarChart';
 import PieChart from './PieChart/index';
+import styled from 'styled-components';
 
 import './Statistics.css';
 
 import ProjectSettingsSection from './ProjectSettingsSection';
+
+const LabelOpacityController = styled.div`
+    opacity: ${props => props.isActive ? "1" : "0.4"};
+    transition: opacity 0.2s;
+    cursor: pointer;
+`;
 
 export default class Statistics extends PureComponent {
 
@@ -46,19 +53,36 @@ export default class Statistics extends PureComponent {
                             expandOnHover
                             expandSize={2}
                             expandedIndex={this.state.activeLabelIndex}
-                            controlledFromExterior={this.state.statisticsByLabels !== null} />
+                            controlledFromExterior={this.state.statisticsByLabels !== null}
+                            onSectorHover={(d, i, e) => {
+                                if (d) {
+                                    this.setState({
+                                        activeLabelIndex: i
+                                    })
+                                } else {
+                                    this.setState({
+                                        activeLabelIndex: null
+                                    })
+                                }
+                            }} />
                     </section>
-                    <section>
-                        <div className="flexbox-vertical">
-                            {this.state.statisticsByLabels.map((element, index) => {
-                                return (
-                                    <div onMouseOver={this.onMouseOverLabelName(element.title, index)} onMouseLeave={this.onMouseLeaveLabel}><span>
-                                        {element.title}
-                                    </span>
+                    <section className="flexbox-vertical flexbox-justify-center with-big-margin-left">
+                        {this.state.statisticsByLabels.map((element, index) => {
+                            return (
+                                <LabelOpacityController isActive={this.state.activeLabelIndex === index} key={element.title}>
+                                    <div className="flexbox-horizontal small-margin-bottom"
+                                        onMouseOver={this.onMouseOverLabelName(element.title, index)}
+                                        onMouseLeave={this.onMouseLeaveLabel}>
+                                        <div className="color-indicator" style={{ backgroundColor: element.color }} />
+                                        <div className="with-margin-left">
+                                            <span>
+                                                {element.title}
+                                            </span>
+                                        </div>
                                     </div>
-                                )
-                            })}
-                        </div>
+                                </LabelOpacityController>
+                            )
+                        })}
                     </section>
                 </ProjectSettingsSection>
 
