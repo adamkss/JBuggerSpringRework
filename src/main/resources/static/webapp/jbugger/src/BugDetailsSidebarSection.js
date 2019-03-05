@@ -4,7 +4,6 @@ import './BugDetailsSidebarSection.css';
 
 class BugDetailsSidebarSection extends React.PureComponent {
     state = {
-        editMode: false
     }
 
     componentDidMount() {
@@ -14,9 +13,7 @@ class BugDetailsSidebarSection extends React.PureComponent {
     onEditClick = () => {
         if (this.props.onEditClick)
             this.props.onEditClick();
-        this.setState({
-            editMode: true
-        })
+        
     }
 
     onCancelEdit = () => {
@@ -31,9 +28,7 @@ class BugDetailsSidebarSection extends React.PureComponent {
     }
 
     endEditMode = () => {
-        this.setState({
-            editMode: false
-        })
+       this.props.onEndEditMode();
     }
 
     render() {
@@ -42,7 +37,7 @@ class BugDetailsSidebarSection extends React.PureComponent {
                 <div className="flexbox-horizontal">
                     <Typography className="flex-grow" variant="subtitle2">{this.props.sectionName}</Typography>
 
-                    {this.state.editMode ?
+                    {this.props.isInEditMode ?
                         <React.Fragment>
                             {
                                 this.props.doneInsteadOfSaveAndCancel ?
@@ -58,7 +53,7 @@ class BugDetailsSidebarSection extends React.PureComponent {
                         <Typography className="sidebar__edit-button" variant="subtitle2" onClick={this.onEditClick}>Edit</Typography>
                     }
                 </div>
-                {this.state.editMode ?
+                {this.props.isInEditMode ?
                     this.props.renderEditControl()
                     :
                     this.props.renderViewControl ?

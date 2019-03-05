@@ -20,7 +20,14 @@ class BugDetailsModal extends PureComponent {
         targetDateNew: null,
         descriptionNew: null,
         labelsSelectionState: {},
-        isUploadInProgress: false
+        isUploadInProgress: false,
+        isAssignedToInEditMode: false,
+        isSeverityInEditMode: false,
+        isRevisionInEditMode: false,
+        isTargetDateInEditMode: false,
+        isDescriptionInEditMode: false,
+        isLabelsInEditMode: false,
+        isAttachmentsInEditMode: false
     }
 
     constructor(props) {
@@ -28,8 +35,38 @@ class BugDetailsModal extends PureComponent {
         this.inputOpenFileRef = React.createRef();
     }
 
+    resetAllSubsectionsToViewMode = () => {
+        this.setState({
+            isAssignedToInEditMode: false,
+            isSeverityInEditMode: false,
+            isRevisionInEditMode: false,
+            isTargetDateInEditMode: false,
+            isDescriptionInEditMode: false,
+            isLabelsInEditMode: false,
+            isAttachmentsInEditMode: false
+        })
+    }
+
+    onEditClickBugSubsection = stateToModify => event => {
+        this.setState({
+            [stateToModify]: true
+        })
+    }
+    
+    onEndEditModeForSubsection = stateToModify => event => {
+        this.setState({
+            [stateToModify]: false
+        })
+    }
+    
     onModalClose = () => {
         this.props.dispatch(closeModal());
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.bug.id !== this.props.bug.id) {
+            this.resetAllSubsectionsToViewMode();
+        }
     }
 
     componentDidMount() {
@@ -54,6 +91,10 @@ class BugDetailsModal extends PureComponent {
     }
 
     onEditClickAssignedTo = () => {
+        this.setState({
+            isAssignedToInEditMode: true
+        })
+
         this.props.dispatch(getUserNames());
     }
 
@@ -67,7 +108,9 @@ class BugDetailsModal extends PureComponent {
     }
 
     onEditClickSeverity = () => {
-        // TODO: Maybe load severities async if they are not hardcoded anymore
+        this.setState({
+            isSeverityInEditMode: true
+        })
     }
 
     onSeveritySave = () => {
@@ -203,13 +246,15 @@ class BugDetailsModal extends PureComponent {
                             <BugDetailsSidebarSection
                                 sectionName="Assigned to"
                                 initialData={this.props.bug.assignedToName}
+                                isInEditMode={this.state.isAssignedToInEditMode}
                                 onEditClick={this.onEditClickAssignedTo}
+                                onEndEditMode={this.onEndEditModeForSubsection('isAssignedToInEditMode')}
                                 onSave={this.onSaveGeneral('assignedToUsername')}
                                 renderEditControl={() => {
                                     return (
                                         <Select
-                                            value={this.state.assignedToUsernameNew || this.props.bug.assignedToUsername}
-                                            onChange={this.handleChange('assignedToUsernameNew')}
+                                        value={this.state.assignedToUsernameNew || this.props.bug.assignedToUsername}
+                                        onChange={this.handleChange('assignedToUsernameNew')}
                                         >
                                             {this.props.usernames.map(user =>
                                                 <MenuItem key={user.username} value={user.username}>{user.username + "-" + user.name}</MenuItem>
@@ -221,13 +266,15 @@ class BugDetailsModal extends PureComponent {
                             <BugDetailsSidebarSection
                                 sectionName="Severity"
                                 initialData={this.props.bug.severity}
+                                isInEditMode={this.state.isSeverityInEditMode}
                                 onEditClick={this.onEditClickSeverity}
+                                onEndEditMode={this.onEndEditModeForSubsection('isSeverityInEditMode')}
                                 onSave={this.onSaveGeneral('severity')}
                                 renderEditControl={() => {
                                     return (
                                         <Select
-                                            value={this.state.severityNew || this.props.bug.severity}
-                                            onChange={this.handleChange('severityNew')}
+                                        value={this.state.severityNew || this.props.bug.severity}
+                                        onChange={this.handleChange('severityNew')}
                                         >
                                             {this.props.severities.map(severity =>
                                                 <MenuItem key={severity} value={severity}>{severity}</MenuItem>
@@ -239,28 +286,34 @@ class BugDetailsModal extends PureComponent {
                             <BugDetailsSidebarSection
                                 sectionName="Revision"
                                 initialData={this.props.bug.revision}
+                                isInEditMode={this.state.isRevisionInEditMode}
+                                onEditClick={this.onEditClickBugSubsection('isRevisionInEditMode')}
+                                onEndEditMode={this.onEndEditModeForSubsection('isRevisionInEditMode')}
                                 onSave={this.onSaveGeneral('revision')}
                                 renderEditControl={() => {
                                     return (
                                         <Input
-                                            value={this.state.revisionNew || this.props.bug.revision}
-                                            onChange={this.handleChange('revisionNew')} />
+                                        value={this.state.revisionNew || this.props.bug.revision}
+                                        onChange={this.handleChange('revisionNew')} />
                                     )
                                 }} />
                             <div className="sidebar__horizontal-separator" />
                             <BugDetailsSidebarSection
                                 sectionName="Target date"
                                 initialData={this.props.bug.targetDate}
+                                isInEditMode={this.state.isTargetDateInEditMode}
+                                onEditClick={this.onEditClickBugSubsection('isTargetDateInEditMode')}
+                                onEndEditMode={this.onEndEditModeForSubsection('isTargetDateInEditMode')}
                                 onSave={this.onSaveGeneral('targetDate')}
                                 renderEditControl={() => {
                                     return (
                                         <TextField
-                                            type="date"
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            value={this.state.targetDateNew || this.props.bug.targetDate}
-                                            onChange={this.handleChange('targetDateNew')}
+                                        type="date"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={this.state.targetDateNew || this.props.bug.targetDate}
+                                        onChange={this.handleChange('targetDateNew')}
                                         />
                                     )
                                 }} />
@@ -268,30 +321,36 @@ class BugDetailsModal extends PureComponent {
                             <BugDetailsSidebarSection
                                 sectionName="Description"
                                 initialData={this.props.bug.description}
+                                isInEditMode={this.state.isDescriptionInEditMode}
+                                onEditClick={this.onEditClickBugSubsection('isDescriptionInEditMode')}
+                                onEndEditMode={this.onEndEditModeForSubsection('isDescriptionInEditMode')}
                                 onSave={this.onSaveGeneral('description')}
                                 renderEditControl={() => {
                                     return (
                                         <Input
-                                            className="full-width"
-                                            multiline
-                                            value={this.state.descriptionNew || this.props.bug.description}
-                                            onChange={this.handleChange('descriptionNew')} />
+                                        className="full-width"
+                                        multiline
+                                        value={this.state.descriptionNew || this.props.bug.description}
+                                        onChange={this.handleChange('descriptionNew')} />
                                     )
                                 }} />
                             <div className="sidebar__horizontal-separator" />
                             <BugDetailsSidebarSection
                                 sectionName="Labels"
                                 onEditClick={this.onLabelsEditClick}
+                                isInEditMode={this.state.isLabelsInEditMode}
+                                onEditClick={this.onEditClickBugSubsection('isLabelsInEditMode')}
+                                onEndEditMode={this.onEndEditModeForSubsection('isLabelsInEditMode')}
                                 onSave={this.onSaveLabels}
                                 renderViewControl={() => {
                                     return (
                                         <div className="flexbox-horizontal flex-wrap small-margin-top">
                                             {this.props.bug.labels.map(label =>
                                                 <LabelShort
-                                                    key={label.labelName}
-                                                    text={label.labelName}
-                                                    backgroundColor={label.backgroundColor}
-                                                    smallMarginBottom />)}
+                                                key={label.labelName}
+                                                text={label.labelName}
+                                                backgroundColor={label.backgroundColor}
+                                                smallMarginBottom />)}
                                         </div>
                                     )
                                 }}
@@ -300,15 +359,15 @@ class BugDetailsModal extends PureComponent {
                                         <div className="flexbox-horizontal flex-wrap small-margin-top">
                                             {this.props.labels.map(label => {
                                                 return <LabelShort
-                                                    selectable
-                                                    selected={this.state.labelsSelectionState[label.labelName]}
-                                                    onClick={this.onLabelClick(label.labelName)}
-                                                    key={label.labelName}
-                                                    text={label.labelName}
-                                                    backgroundColor={label.backgroundColor}
-                                                    smallMarginBottom />
+                                                selectable
+                                                selected={this.state.labelsSelectionState[label.labelName]}
+                                                onClick={this.onLabelClick(label.labelName)}
+                                                key={label.labelName}
+                                                text={label.labelName}
+                                                backgroundColor={label.backgroundColor}
+                                                smallMarginBottom />
                                             }
-                                            )}
+                                        )}
                                         </div>
                                     )
                                 }} />
@@ -316,15 +375,18 @@ class BugDetailsModal extends PureComponent {
                             <BugDetailsSidebarSection
                                 sectionName="Attachments"
                                 initialData={this.props.bug.description}
+                                isInEditMode={this.state.isAttachmentsInEditMode}
+                                onEditClick={this.onEditClickBugSubsection('isAttachmentsInEditMode')}
+                                onEndEditMode={this.onEndEditModeForSubsection('isAttachmentsInEditMode')}
                                 doneInsteadOfSaveAndCancel
                                 renderViewControl={() => {
                                     return (
                                         this.props.bug.attachmentsInfo.map(attachmentInfo =>
                                             <AttachmentShortOverview
-                                                key={attachmentInfo.id}
-                                                attachmentName={attachmentInfo.name}
-                                                attachmentId={attachmentInfo.id}
-                                                onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)} />
+                                            key={attachmentInfo.id}
+                                            attachmentName={attachmentInfo.name}
+                                            attachmentId={attachmentInfo.id}
+                                            onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)} />
                                         )
                                     )
                                 }}
@@ -333,12 +395,12 @@ class BugDetailsModal extends PureComponent {
                                         <>
                                             {this.props.bug.attachmentsInfo.map(attachmentInfo =>
                                                 <AttachmentShortOverview
-                                                    key={attachmentInfo.id}
-                                                    attachmentName={attachmentInfo.name}
-                                                    attachmentId={attachmentInfo.id}
-                                                    onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)}
-                                                    showRemoveIcon
-                                                    onClickRemoveAttachment={this.onRemoveAttachment(this.props.bug.id, attachmentInfo.id)} />
+                                                key={attachmentInfo.id}
+                                                attachmentName={attachmentInfo.name}
+                                                attachmentId={attachmentInfo.id}
+                                                onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)}
+                                                showRemoveIcon
+                                                onClickRemoveAttachment={this.onRemoveAttachment(this.props.bug.id, attachmentInfo.id)} />
                                             )}
                                             <div className="flexbox-horizontal justify-flex-end">
                                                 <IconButton
@@ -352,7 +414,7 @@ class BugDetailsModal extends PureComponent {
                                                 onChange={this.onAttachmentInputSelected}
                                                 ref={this.inputOpenFileRef}
                                                 style={{ display: "none" }}
-                                            />
+                                                />
                                             {this.state.isUploadInProgress ?
                                                 <div className="full-width flexbox-horizontal flexbox-justify-center">
                                                     <CircularProgress
@@ -361,7 +423,7 @@ class BugDetailsModal extends PureComponent {
                                                         className="progress-circular"
                                                         size={24}
                                                         thickness={4}
-                                                    />
+                                                        />
                                                 </div>
                                                 :
                                                 null}
