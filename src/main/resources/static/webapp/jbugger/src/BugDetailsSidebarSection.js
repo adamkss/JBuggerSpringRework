@@ -36,7 +36,7 @@ class BugDetailsSidebarSection extends React.PureComponent {
             <section>
                 <div className="flexbox-horizontal">
                     <Typography className="flex-grow" variant="subtitle2">{this.props.sectionName}</Typography>
-
+                    
                     {this.props.isInEditMode ?
                         <React.Fragment>
                             {

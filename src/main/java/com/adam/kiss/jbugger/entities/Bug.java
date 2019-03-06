@@ -52,6 +52,9 @@ public class Bug {
     @OneToMany(mappedBy = "bug", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Attachment> attachments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "bug", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private List<Comment> comments = new ArrayList<>();
+
     @ManyToMany
     @EqualsAndHashCode.Exclude
     private List<Label> labels = new ArrayList<>();

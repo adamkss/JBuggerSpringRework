@@ -63,6 +63,11 @@ public class User {
     @EqualsAndHashCode.Exclude
     private List<Bug> bugsAssignedToTheUser = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author")
+    @EqualsAndHashCode.Exclude
+    private List<Comment> comments = new ArrayList<>();
+
+
     public User(String name, String phoneNumber, String email, List<Role> roles, String passwordHash) {
 
         this.name = name;
