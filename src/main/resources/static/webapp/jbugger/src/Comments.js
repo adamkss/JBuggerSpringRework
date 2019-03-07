@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Typography } from '@material-ui/core';
+import { Typography, IconButton } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import Comment from './Comment';
 
 export default class Comments extends Component {
@@ -8,8 +9,13 @@ export default class Comments extends Component {
             <div>
                 <div className="flexbox-horizontal">
                     <Typography className="flex-grow" variant="subtitle2">Comments</Typography>
+                    <IconButton
+                        className="small-padding-all-over"
+                        onClick={this.props.onNewCommentPress}>
+                        <AddIcon />
+                    </IconButton>
                 </div>
-                {this.props.comments.lenght == 0 ?
+                {this.props.comments.length == 0 ?
                     <div className="flexbox-horizontal flexbox-justify-center">
                         <Typography variant="subtitle2" className="sidebar__detail-info">No comments.</Typography>
                     </div>

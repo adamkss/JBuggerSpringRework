@@ -53,6 +53,7 @@ public class Bug {
     private List<Attachment> attachments = new ArrayList<>();
 
     @OneToMany(mappedBy = "bug", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OrderBy("createdTime DESC")
     private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany
