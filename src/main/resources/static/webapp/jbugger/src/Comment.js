@@ -10,7 +10,7 @@ export default class Comment extends Component {
                     <Typography className="flex-grow sidebar__detail-info">{this.props.author}</Typography>
                     <Typography className="sidebar__detail-info">{this.props.createdDateTime.replace("T", " ")}</Typography>
                 </header>
-                <Typography>
+                <Typography className="white-space-pre">
                     {this.props.commentText}
                 </Typography>
             </div>

@@ -59,7 +59,7 @@ class BugDetailsSidebarSection extends React.PureComponent {
                     this.props.renderViewControl ?
                         this.props.renderViewControl()
                         :
-                        <Typography className="sidebar__detail-info">
+                        <Typography className="sidebar__detail-info white-space-pre">
                             {this.props.initialData}
                         </Typography>
 
