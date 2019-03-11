@@ -39,4 +39,9 @@ public class UserController {
     public List<UserWithNameAndUsernameProjection> getAllUsernames(){
         return userService.getAllUsersWithNamesAndUsernames();
     }
+
+    @GetMapping("/byFilterStringInName/{filterString}")
+    public List<UserWithNameAndUsernameProjection> getAllUsernamesByFilterStringInName(@PathVariable("filterString") String filterString){
+        return userService.findAllByNameSearchString(filterString);
+    }
 }

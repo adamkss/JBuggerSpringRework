@@ -29,4 +29,8 @@ public class UserService {
     public User getUserByUsername(String username){
         return userRepository.findByUsername(username);
     }
+
+    public List<UserWithNameAndUsernameProjection> findAllByNameSearchString(String searchString){
+        return userRepository.findAllByNameSearchString(searchString);
+    }
 }

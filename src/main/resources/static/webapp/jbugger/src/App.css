@@ -121,3 +121,19 @@
 .white-space-pre{
     white-space: pre-line; 
 }
+
+.position-relative{
+    position: relative;
+}
+
+.opacity-invisible{
+    opacity: 0;
+}
+
+.opacity-visible{
+    opacity: 0.8;
+}
+
+.color-white{
+    color: white !important;
+}
