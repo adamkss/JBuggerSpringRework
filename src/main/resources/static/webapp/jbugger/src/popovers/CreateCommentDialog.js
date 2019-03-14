@@ -46,6 +46,20 @@ const SelectableUser = styled.div`
     :
     null}
 `
+const getPostitionAfterAtSignBeforeLastWord = (text, lastPosition) => {
+  let i = lastPosition - 1;
+
+  while (i >= 0) {
+    if (text[i] === '@') {
+      return i + 1;
+    }
+    if (text[i] === ' ' || text[i] === '\n' || text[i] === '\r\n')
+      break;
+    i--;
+  }
+
+  return -1;
+}
 
 const getLastWordAfterLastAtSign = (text, lastPosition) => {
   let i = lastPosition - 1;
@@ -68,6 +82,16 @@ const getLastWordAfterLastAtSign = (text, lastPosition) => {
   return lastWord;
 }
 
+const replaceLastWordAfterLastAtSign = (text, lastPosition, newWord) => {
+  let positionAfterAtSign = getPostitionAfterAtSignBeforeLastWord(text, lastPosition);
+
+  let textIncludingAtSign = text.slice(0, positionAfterAtSign);
+  let textToRemove = getLastWordAfterLastAtSign(text, lastPosition);
+  let textAfterName = text.slice(positionAfterAtSign + textToRemove.length);
+
+  return textIncludingAtSign + newWord + textAfterName;
+}
+
 class CreateCommentDialog extends React.Component {
 
   constructor(props) {
@@ -81,7 +105,8 @@ class CreateCommentDialog extends React.Component {
     potentialMentionedUsers: [],
     topCoordinateAssignUser: 0,
     leftCoordinateAssignUser: 0,
-    chosenUserIndex: 0
+    chosenUserIndex: 0,
+    selectionEnd: null
   }
 
   handleCancel = () => {
@@ -110,7 +135,8 @@ class CreateCommentDialog extends React.Component {
             isPotentialMentionedUsersOpen: true,
             potentialMentionedUsers: resp,
             topCoordinateAssignUser: coordinates.top + coordinates.height,
-            leftCoordinateAssignUser: coordinates.left
+            leftCoordinateAssignUser: coordinates.left,
+            chosenUserIndex: 0
           })
         } else {
           this.clearPotentialUsersByPartialName();
@@ -128,6 +154,9 @@ class CreateCommentDialog extends React.Component {
     } else {
       this.clearPotentialUsersByPartialName();
     }
+    this.setState({
+      selectionEnd: event.target.selectionEnd
+    })
   }
 
   onKeyDownInput = (event) => {
@@ -164,7 +193,7 @@ class CreateCommentDialog extends React.Component {
         }
 
         if (isEnterPressed) {
-
+          this.onSelectableUserSelected(this.state.chosenUserIndex)();
         }
       }
     }
@@ -174,6 +203,30 @@ class CreateCommentDialog extends React.Component {
     this.setState({
       chosenUserIndex: index
     })
+  }
+
+  onSelectableUserSelected = (index) => event => {
+    let chosenUsername = this.state.potentialMentionedUsers[index].username;
+    let oldCommentMessage = this.state.commentMessage;
+    let oldSelectionEnd = this.state.selectionEnd;
+
+    let newMessage = replaceLastWordAfterLastAtSign(
+      oldCommentMessage,
+      oldSelectionEnd,
+      chosenUsername
+    );
+    
+    let newSelectionEnd = getPostitionAfterAtSignBeforeLastWord(oldCommentMessage,oldSelectionEnd) + chosenUsername.length;
+    this.setState(
+      {
+        commentMessage: newMessage
+      },
+      () => {
+        this.textFieldRef.current.setSelectionRange(newSelectionEnd, newSelectionEnd);
+      }
+    )
+    this.clearPotentialUsersByPartialName();
+    this.textFieldRef.current.focus();
   }
 
   render() {
@@ -211,7 +264,8 @@ class CreateCommentDialog extends React.Component {
                 left={this.state.leftCoordinateAssignUser}
                 usersToChooseFrom={this.state.potentialMentionedUsers}
                 chosenIndex={this.state.chosenUserIndex}
-                onMouseOverSelectableUser={this.onMouseOverSelectableUser} />
+                onMouseOverSelectableUser={this.onMouseOverSelectableUser}
+                onUserSelected={this.onSelectableUserSelected} />
               :
               null}
           </div>
@@ -261,7 +315,8 @@ class AtSignUserChooserWrapper extends React.Component {
                 isSelected={isSelectedUser}
                 isFirstInList={index === 0}
                 isLastInList={index === this.props.usersToChooseFrom.length - 1}
-                onMouseOver={this.props.onMouseOverSelectableUser(index)}>
+                onMouseOver={this.props.onMouseOverSelectableUser(index)}
+                onClick={this.props.onUserSelected(index)}>
                 <Typography variant="subtitle2" className={isSelectedUser ? "color-white" : ""}>
                   {user.name}-{user.username}
                 </Typography>
