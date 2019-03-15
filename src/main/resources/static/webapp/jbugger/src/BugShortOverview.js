@@ -57,8 +57,7 @@ class BugShortOverview extends Component {
           </section>
         </Grid>
         {isThisTheSelectedBug ?
-          <div className="selected-indicator bug-short-info__with-moving-background">
-
+          <div className="selected-indicator-wrapper bug-short-info__with-moving-background">
           </div>
           :
           null}
