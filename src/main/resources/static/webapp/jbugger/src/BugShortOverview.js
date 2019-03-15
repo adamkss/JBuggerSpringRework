@@ -29,8 +29,10 @@ class BugShortOverview extends Component {
   }
 
   render() {
+    const isThisTheSelectedBug = this.props.currentlySelectedBugID == this.props.id;
+
     return (
-      <div className="bug-short-overview" onClick={this.onBugClick}>
+      <div className={"bug-short-overview"} onClick={this.onBugClick}>
         <Grid
           container
           direction="column">
@@ -54,7 +56,12 @@ class BugShortOverview extends Component {
             )}
           </section>
         </Grid>
+        {isThisTheSelectedBug ?
+          <div className="selected-indicator bug-short-info__with-moving-background">
 
+          </div>
+          :
+          null}
       </div>
     );
   }
@@ -64,4 +71,9 @@ class BugShortOverview extends Component {
 //id
 //severity
 
-export default connect()(withRouter(BugShortOverview));
+const mapStateToProps = (state) => {
+  return {
+    currentlySelectedBugID: state.activeBugToModifyID
+  }
+}
+export default connect(mapStateToProps)(withRouter(BugShortOverview));

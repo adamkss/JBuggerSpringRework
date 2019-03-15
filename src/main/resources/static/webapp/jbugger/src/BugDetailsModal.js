@@ -386,16 +386,24 @@ class BugDetailsModal extends PureComponent {
                                     onEndEditMode={this.onEndEditModeForSubsection('isLabelsInEditMode')}
                                     onSave={this.onSaveLabels}
                                     renderViewControl={() => {
-                                        return (
-                                            <div className="flexbox-horizontal flex-wrap small-margin-top">
-                                                {this.props.bug.labels.map(label =>
-                                                    <LabelShort
-                                                        key={label.labelName}
-                                                        text={label.labelName}
-                                                        backgroundColor={label.backgroundColor}
-                                                        smallMarginBottom />)}
-                                            </div>
-                                        )
+                                        if (this.props.bug.labels.length > 0) {
+                                            return (
+                                                <div className="flexbox-horizontal flex-wrap small-margin-top">
+                                                    {this.props.bug.labels.map(label =>
+                                                        <LabelShort
+                                                            key={label.labelName}
+                                                            text={label.labelName}
+                                                            backgroundColor={label.backgroundColor}
+                                                            smallMarginBottom />)}
+                                                </div>
+                                            )
+                                        } else {
+                                            return (
+                                                <div className="flexbox-horizontal flexbox-justify-center">
+                                                    <Typography variant="subtitle2" className="sidebar__detail-info">No labels yet.</Typography>
+                                                </div>
+                                            )
+                                        }
                                     }}
                                     renderEditControl={() => {
                                         return (
@@ -423,15 +431,23 @@ class BugDetailsModal extends PureComponent {
                                     onEndEditMode={this.onEndEditModeForSubsection('isAttachmentsInEditMode')}
                                     doneInsteadOfSaveAndCancel
                                     renderViewControl={() => {
-                                        return (
-                                            this.props.bug.attachmentsInfo.map(attachmentInfo =>
-                                                <AttachmentShortOverview
-                                                    key={attachmentInfo.id}
-                                                    attachmentName={attachmentInfo.name}
-                                                    attachmentId={attachmentInfo.id}
-                                                    onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)} />
+                                        if (this.props.bug.attachmentsInfo.length > 0) {
+                                            return (
+                                                this.props.bug.attachmentsInfo.map(attachmentInfo =>
+                                                    <AttachmentShortOverview
+                                                        key={attachmentInfo.id}
+                                                        attachmentName={attachmentInfo.name}
+                                                        attachmentId={attachmentInfo.id}
+                                                        onAttachmentClick={this.startDownloadingAttachment(attachmentInfo)} />
+                                                )
                                             )
-                                        )
+                                        } else {
+                                            return (
+                                                <div className="flexbox-horizontal flexbox-justify-center">
+                                                    <Typography variant="subtitle2" className="sidebar__detail-info">No attachments yet.</Typography>
+                                                </div>
+                                            )
+                                        }
                                     }}
                                     renderEditControl={() => {
                                         return (

@@ -17,7 +17,7 @@ export default class Comments extends Component {
                 </div>
                 {this.props.comments.length == 0 ?
                     <div className="flexbox-horizontal flexbox-justify-center">
-                        <Typography variant="subtitle2" className="sidebar__detail-info">No comments.</Typography>
+                        <Typography variant="subtitle2" className="sidebar__detail-info">No comments yet.</Typography>
                     </div>
                     :
                     null

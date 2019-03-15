@@ -7,6 +7,22 @@
     padding-bottom:10px;
     cursor:pointer;
     margin-top: 6px;
+    position: relative;
+}
+
+.selected-indicator{
+    position: absolute;
+    right: 0;
+    top:0;
+    bottom: 0;
+    width: 20px;
+    background-color: red;
+    z-index: 1;
+}
+
+.bug-short-info__with-moving-background{
+    background: linear-gradient(230deg,#a24bcf,#4b79cf,#4bc5cf);
+    background-size: 20% 100%;
 }
 
 .labels{
@@ -15,4 +31,5 @@
     flex-direction: row;
     justify-content: flex-end;
     flex-wrap: wrap;
+    z-index: 2;
 }

@@ -273,7 +273,6 @@ class BugsOverview extends Component {
         {this.props.waitingForBugUpdate ?
           <div className="loadinge-image-wrapper">
             <div className="loading-image-wrapper__background" />
-            {/* <img className="loading-image" src={loadingSVG} /> */}
           </div>
           :
           ""
