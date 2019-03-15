@@ -72,6 +72,11 @@ class BugDetailsModal extends PureComponent {
             this.resetAllSubsectionsToViewMode();
             this.getCommentsForCurrentBug();
         }
+        if ((prevProps.bug.id !== this.props.bug.id)
+            || (prevProps.labels !== this.props.labels)) {
+            this.calculateLabelsSelectionState();
+        }
+
     }
 
     getCommentsForCurrentBug = () => {
@@ -92,6 +97,7 @@ class BugDetailsModal extends PureComponent {
         })
 
         this.getCommentsForCurrentBug();
+        this.calculateLabelsSelectionState();
     }
 
     onAssignedToEditClick = () => {
@@ -181,19 +187,17 @@ class BugDetailsModal extends PureComponent {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    calculateLabelsSelectionState = () => {
         let labelsSelectionState = {};
 
-        if (nextProps.labels !== this.props.labels) {
-            nextProps.labels.forEach(label => {
-                labelsSelectionState[label.labelName] = this.isLabelAlreadyOnBug(label.labelName);
-            })
-            this.setState((oldState) => {
-                return {
-                    labelsSelectionState
-                }
-            })
-        }
+        this.props.labels.forEach(label => {
+            labelsSelectionState[label.labelName] = this.isLabelAlreadyOnBug(label.labelName);
+        })
+        this.setState(
+            {
+                labelsSelectionState
+            }
+        )
     }
 
     onSaveLabels = () => {
