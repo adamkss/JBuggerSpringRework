@@ -16,9 +16,10 @@ import ConfirmBugColumnDeletionDialog from './popovers/ConfirmBugColumnDeletionD
 import StringFormatters from './utils/StringFormatters';
 import NewSwimlaneNameInputDialog from './popovers/NewSwimlaneNameInputDialog';
 import RecolorSwimlaneInputDialog from './popovers/RecolorSwimlaneInputDialog';
+import CreateBugBigDialog from './popovers/CreateBugBigDialog';
 
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import {IconButton} from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 
 function FirstChild(props) {
   const childrenArray = React.Children.toArray(props.children);
@@ -86,7 +87,8 @@ class BugsOverview extends Component {
     draggingBugFromStatus: null,
     genericModalOpened: false,
     isInputNeededForBugColumnRenaming: false,
-    isInputNeededForBugColumnRecoloring: false
+    isInputNeededForBugColumnRecoloring: false,
+    isCreateBugBigDialogOpen: false
   }
 
   componentDidMount() {
@@ -258,6 +260,12 @@ class BugsOverview extends Component {
     this.handleMoreBugColumnOptionsPopoverClose();
   }
 
+  onCreateBugButtonClick = () => {
+    this.setState({
+      isCreateBugBigDialogOpen: true
+    })
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -296,7 +304,7 @@ class BugsOverview extends Component {
             variant="contained"
             color="primary"
             className="with-margin-left-auto"
-            onClick={this.handleClick}>
+            onClick={this.onCreateBugButtonClick}>
             New bug
             </Button>
           <Button
@@ -380,6 +388,17 @@ class BugsOverview extends Component {
             onCancel={this.onRecolorBugColumnDialogCancel}
             onConfirm={this.onRecolorBugColumnDialogConfirm}
             initialSwimlaneColor={this.state.columnToModifyColor} />
+          :
+          null
+        }
+
+        {this.state.isCreateBugBigDialogOpen ?
+          <CreateBugBigDialog
+            handleCancel={() => {
+              this.setState({
+                isCreateBugBigDialogOpen: false
+              })
+            }} />
           :
           null
         }

@@ -137,3 +137,15 @@
 .color-white{
     color: white !important;
 }
+
+.color-gray{
+    color: #aaaaaa;
+}
+
+.small-margin-right{
+    margin-right: 3px;
+}
+
+.with-margin-bottom{
+    margin-bottom: 8px;
+}
