@@ -5,11 +5,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
-import Popover from '@material-ui/core/Popover';
-import { lastDayOfISOWeek } from 'date-fns';
 import styled from 'styled-components';
 import getCaretCoordinates from 'textarea-caret';
 import { Typography } from '@material-ui/core';
+import axios from 'axios';
 
 const AtSignUserChooserWrapperDiv = styled.div`
   position: absolute;
@@ -126,14 +125,21 @@ class CreateCommentDialog extends React.Component {
   }
 
   getPotentialUsersByPartialName = (partialUsername) => {
-    fetch(`http://localhost:8080/users/byFilterStringInName/${partialUsername}`)
-      .then(resp => resp.json())
+    if (this.getPotentialUsersByPartialNameCancellationToken) {
+      this.getPotentialUsersByPartialNameCancellationToken.cancel('Never name came!');
+    }
+
+    this.getPotentialUsersByPartialNameCancellationToken = axios.CancelToken.source();
+
+    axios.get(`http://localhost:8080/users/byFilterStringInName/${partialUsername}`, {
+      cancelToken: this.getPotentialUsersByPartialNameCancellationToken.token
+    })
       .then(resp => {
-        if (resp.length > 0) {
+        if (resp.data.length > 0) {
           let coordinates = getCaretCoordinates(this.textFieldRef.current, this.textFieldRef.current.selectionEnd);
           this.setState({
             isPotentialMentionedUsersOpen: true,
-            potentialMentionedUsers: resp,
+            potentialMentionedUsers: resp.data,
             topCoordinateAssignUser: coordinates.top + coordinates.height,
             leftCoordinateAssignUser: coordinates.left,
             chosenUserIndex: 0
@@ -215,8 +221,8 @@ class CreateCommentDialog extends React.Component {
       oldSelectionEnd,
       chosenUsername
     );
-    
-    let newSelectionEnd = getPostitionAfterAtSignBeforeLastWord(oldCommentMessage,oldSelectionEnd) + chosenUsername.length;
+
+    let newSelectionEnd = getPostitionAfterAtSignBeforeLastWord(oldCommentMessage, oldSelectionEnd) + chosenUsername.length;
     this.setState(
       {
         commentMessage: newMessage
