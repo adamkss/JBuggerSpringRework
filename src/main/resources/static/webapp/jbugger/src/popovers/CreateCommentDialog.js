@@ -126,7 +126,7 @@ class CreateCommentDialog extends React.Component {
 
   getPotentialUsersByPartialName = (partialUsername) => {
     if (this.getPotentialUsersByPartialNameCancellationToken) {
-      this.getPotentialUsersByPartialNameCancellationToken.cancel('Never name came!');
+      this.getPotentialUsersByPartialNameCancellationToken.cancel('Newer name came!');
     }
 
     this.getPotentialUsersByPartialNameCancellationToken = axios.CancelToken.source();
