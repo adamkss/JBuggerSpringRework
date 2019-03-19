@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Popover from '@material-ui/core/Popover';
-import { Dialog, DialogContent, DialogActions, Button, Typography, Divider, List, ListItem } from '@material-ui/core';
+import { Dialog, DialogContent, DialogActions, Button, Typography, Divider, List, ListItem, Input } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import DateRange from '@material-ui/icons/DateRange';
 import ShortText from '@material-ui/icons/ShortText';
@@ -10,11 +10,16 @@ import Attachment from '@material-ui/icons/Attachment';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { getUserNames } from '../redux-stuff/actions/actionCreators';
+
 class CreateBugBigDialog extends Component {
   state = {
     bugTitle: "Unnamed bug",
     bugDescription: "",
-    assignedToName: null,
+    assignedToUser: {
+      name: null,
+      id: null,
+      username: null
+    },
     targetDate: null,
     severity: null,
     selectAssignedToUserPopoverAnchorEl: null,
@@ -46,7 +51,6 @@ class CreateBugBigDialog extends Component {
     this.setState({
       selectAssignedToUserPopoverAnchorEl: event.currentTarget
     })
-
   }
 
   onAssignToUserPopoverClose = () => {
@@ -79,6 +83,13 @@ class CreateBugBigDialog extends Component {
     })
   }
 
+  assignedToUserSelected = (selectedUser) => {
+    this.setState({
+      assignedToUser: { ...selectedUser }
+    })
+    this.onAssignToUserPopoverClose();
+  }
+
   render() {
     return (
       <Dialog
@@ -103,7 +114,7 @@ class CreateBugBigDialog extends Component {
                 onClick={this.onAssignUserButtonClick}>
                 <AccountCircle className="color-gray small-margin-right" />
                 <Typography variant="subtitle2">
-                  {this.state.assignedToName || "Not assigned"}
+                  {this.state.assignedToUser.name || "Not assigned"}
                 </Typography>
               </CustomButtonForSelection>
               <CustomButtonForSelection marginLeft
@@ -154,7 +165,8 @@ class CreateBugBigDialog extends Component {
             open={Boolean(this.state.selectAssignedToUserPopoverAnchorEl)}
             anchorEl={this.state.selectAssignedToUserPopoverAnchorEl}
             onClose={this.onAssignToUserPopoverClose}
-            selectableUsers={this.props.users} />
+            selectableUsers={this.props.users}
+            assignedToUserSelected={this.assignedToUserSelected} />
 
           <SelectTargetDatePopover
             open={Boolean(this.state.selectTargetDatePopoverAnchorEl)}
@@ -241,6 +253,10 @@ const NewBugSection = styled.div`
 
 class SelectAssignedToUserPopover extends React.PureComponent {
 
+  state = {
+    filterString: ""
+  }
+
   onKeyDown = (event) => {
     if (event.keyCode === 27) {
       event.stopPropagation();
@@ -249,11 +265,20 @@ class SelectAssignedToUserPopover extends React.PureComponent {
     }
   }
 
-  getOnUserSelected = (userId) => () => {
-    alert(userId)
+  getOnUserSelected = (user) => () => {
+    this.props.assignedToUserSelected(user);
   }
 
   render() {
+    const filterStringUppercase = this.state.filterString.toUpperCase();
+    let filteredUsers = this.props.selectableUsers.filter((user) => {
+      if (user.username.toUpperCase().includes(filterStringUppercase)
+        || user.name.toUpperCase().includes(filterStringUppercase))
+        return true;
+
+      return false;
+    })
+
     return (
       <Popover
         open={this.props.open}
@@ -261,25 +286,39 @@ class SelectAssignedToUserPopover extends React.PureComponent {
         onClose={this.props.onClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
           horizontal: 'center',
         }}
         onKeyDown={this.onKeyDown}
       >
-        <div
-          style={{ padding: "10px" }}>
-          <List component="nav">
-            {this.props.selectableUsers.map(selectableUser =>
-              <ListItem
-                onClick={this.getOnUserSelected(selectableUser.id)}
-                style={{cursor:"pointer"}}
-                key={selectableUser.id}>
-                {selectableUser.username}-{selectableUser.name}
-              </ListItem>)}
-          </List>
+        <div style={{ maxHeight: "300px" }} className="flexbox-vertical-centered">
+          <Input
+            placeholder="Search text..."
+            autoFocus
+            value={this.state.filterString}
+            onChange={(event) => {
+              this.setState({
+                filterString: event.target.value
+              })
+            }}
+            style={{ width: "100%" }}
+          />
+
+          {filteredUsers.length > 0 ?
+            <List component="nav" style={{ overflow: "auto" }}>
+              {filteredUsers.map(selectableUser =>
+                <ListItem
+                  button
+                  onClick={this.getOnUserSelected(selectableUser)}
+                  style={{ cursor: "pointer" }}
+                  key={selectableUser.id}>
+                  {selectableUser.username}-{selectableUser.name}
+                </ListItem>)}
+            </List>
+            :
+            <Typography variant="subtitle2">
+              No users.
+          </Typography>
+          }
         </div>
       </Popover>
     )
