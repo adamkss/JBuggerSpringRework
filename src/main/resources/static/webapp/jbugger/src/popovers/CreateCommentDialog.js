@@ -235,6 +235,14 @@ class CreateCommentDialog extends React.Component {
     this.textFieldRef.current.focus();
   }
 
+  onKeyDownDialog = (event) => {
+    if (event.keyCode === 27) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.props.onCancel();
+    }
+  }
+
   render() {
 
     return (
@@ -244,6 +252,7 @@ class CreateCommentDialog extends React.Component {
         maxWidth="md"
         aria-labelledby="confirmation-dialog-title"
         open={true}
+        onKeyDown={this.onKeyDownDialog}
       >
         <DialogTitle id="confirmation-dialog-title">New comment</DialogTitle>
         <DialogContent>
