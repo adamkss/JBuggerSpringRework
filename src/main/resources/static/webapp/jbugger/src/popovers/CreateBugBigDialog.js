@@ -1,15 +1,18 @@
 import React, { Component } from 'react'
 import Popover from '@material-ui/core/Popover';
-import { Dialog, DialogContent, DialogActions, Button, Typography, Divider, List, ListItem, Input } from '@material-ui/core';
+import { Dialog, DialogContent, DialogActions, Button, Typography, Divider, List, ListItem, Input, TextField } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import DateRange from '@material-ui/icons/DateRange';
 import ShortText from '@material-ui/icons/ShortText';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
+import Delete from '@material-ui/icons/Delete';
 import Label from '@material-ui/icons/Label';
 import Attachment from '@material-ui/icons/Attachment';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { getUserNames } from '../redux-stuff/actions/actionCreators';
+
+import LabelShort from '../LabelShort';
 
 class CreateBugBigDialog extends Component {
   state = {
@@ -22,9 +25,13 @@ class CreateBugBigDialog extends Component {
     },
     targetDate: null,
     severity: null,
+    labels: [],
     selectAssignedToUserPopoverAnchorEl: null,
     selectTargetDatePopoverAnchorEl: null,
-    selectSeverityPopoverAnchorEl: null
+    selectSeverityPopoverAnchorEl: null,
+    selectLabelsAnchorEl: null,
+    deleteLabelPopoverAnchorEl: null,
+    labelToPotentiallyDelete: null
   };
 
   handleStateValueChange = (nameOfStateElement) => (event) => {
@@ -90,14 +97,65 @@ class CreateBugBigDialog extends Component {
     this.onAssignToUserPopoverClose();
   }
 
+  onTargetDateChange = (event) => {
+    this.setState({
+      targetDate: event.target.value
+    })
+  }
+
+  onSeveritySelected = (severity) => {
+    this.setState({
+      severity
+    })
+  }
+
+  onSelectLabelsButtonClick = (event) => {
+    this.setState({
+      selectLabelsPopoverAnchorEl: event.currentTarget
+    })
+  }
+
+  onSelectLabelsPopoverClose = () => {
+    this.setState({
+      selectLabelsPopoverAnchorEl: null
+    })
+  }
+
+  onLabelSelected = (label) => {
+    this.setState(state => ({
+      labels: [...state.labels, { ...label }]
+    }))
+  }
+
+  getOnLabelClickedCallback = label => event => {
+    this.setState({
+      labelToPotentiallyDelete: label,
+      deleteLabelPopoverAnchorEl: event.currentTarget
+    })
+  }
+
+  onDeleteLabelPopoverClose = () => {
+    this.setState({
+      deleteLabelPopoverAnchorEl: null
+    })
+  }
+
+  deleteSelectedLabel = () => {
+    this.setState(state => ({
+      labelToPotentiallyDelete: null,
+      labels: state.labels.filter(label => state.labelToPotentiallyDelete.labelName !== label.labelName)
+    }))
+    this.onDeleteLabelPopoverClose();
+  }
+
   render() {
     return (
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown
-        maxWidth=""
         aria-labelledby="confirmation-dialog-title"
         open={true}
+        maxWidth="lg"
         onKeyDown={this.onKeyDownDialog}
       >
         <DialogContent>
@@ -111,21 +169,25 @@ class CreateBugBigDialog extends Component {
 
             <NewBugSection marginBottom>
               <CustomButtonForSelection
-                onClick={this.onAssignUserButtonClick}>
+                onClick={this.onAssignUserButtonClick}
+                title="Assigned to"
+              >
                 <AccountCircle className="color-gray small-margin-right" />
                 <Typography variant="subtitle2">
                   {this.state.assignedToUser.name || "Not assigned"}
                 </Typography>
               </CustomButtonForSelection>
               <CustomButtonForSelection marginLeft
-                onClick={this.onTargetDateButtonClick}>
+                onClick={this.onTargetDateButtonClick}
+                title="Target date">
                 <DateRange className="color-gray small-margin-right" />
                 <Typography variant="subtitle2">
                   {this.state.targetDate || "No target date"}
                 </Typography>
               </CustomButtonForSelection>
               <CustomButtonForSelection marginLeft
-                onClick={this.onSeverityButtonClick}>
+                onClick={this.onSeverityButtonClick}
+                title="Severity">
                 <ErrorOutline className="color-gray small-margin-right" />
                 <Typography variant="subtitle2">
                   {this.state.severity || "No severity selected"}
@@ -144,11 +206,21 @@ class CreateBugBigDialog extends Component {
             </NewBugSection>
 
             <NewBugSection alignedToUpperButtons marginTop>
-              {/* TODO: Add labels here */}
-              <CustomButtonForSelection>
+              <CustomButtonForSelection
+                onClick={this.onSelectLabelsButtonClick}>
                 <Label className="color-gray small-margin-right" />
                 <Typography variant="subtitle2">Add label</Typography>
               </CustomButtonForSelection>
+              <div className="flexbox-horizontal flex-wrap small-margin-top">
+                {this.state.labels.map(label =>
+                  <LabelShort
+                    key={label.labelName}
+                    text={label.labelName}
+                    backgroundColor={label.backgroundColor}
+                    selectable
+                    selected={true}
+                    onClick={this.getOnLabelClickedCallback(label)} />)}
+              </div>
             </NewBugSection>
 
             <NewBugSection alignedToUpperButtons marginTop>
@@ -171,12 +243,30 @@ class CreateBugBigDialog extends Component {
           <SelectTargetDatePopover
             open={Boolean(this.state.selectTargetDatePopoverAnchorEl)}
             anchorEl={this.state.selectTargetDatePopoverAnchorEl}
-            onClose={this.onTargetDatePopoverClose} />
+            onClose={this.onTargetDatePopoverClose}
+            targetDate={this.state.targetDate}
+            handleTargetDateChange={this.onTargetDateChange} />
 
           <SelectSeverityPopover
             open={Boolean(this.state.selectSeverityPopoverAnchorEl)}
             anchorEl={this.state.selectSeverityPopoverAnchorEl}
-            onClose={this.onSeverityPopoverClose} />
+            onClose={this.onSeverityPopoverClose}
+            severities={this.props.severities}
+            onSeveritySelected={this.onSeveritySelected} />
+
+          <SelectLabelsPopover
+            open={Boolean(this.state.selectLabelsPopoverAnchorEl)}
+            anchorEl={this.state.selectLabelsPopoverAnchorEl}
+            onClose={this.onSelectLabelsPopoverClose}
+            labels={this.props.labels}
+            alreadySelectedLabels={this.state.labels}
+            onLabelSelected={this.onLabelSelected} />
+
+          <DeleteLabelPopover
+            open={Boolean(this.state.deleteLabelPopoverAnchorEl)}
+            anchorEl={this.state.deleteLabelPopoverAnchorEl}
+            onClose={this.onDeleteLabelPopoverClose}
+            onDeleteLabel={this.deleteSelectedLabel} />
 
         </DialogContent>
         <DialogActions>
@@ -195,60 +285,61 @@ class CreateBugBigDialog extends Component {
 const mapStateToProps = state => ({
   severities: state.severities,
   statuses: state.statuses,
-  users: state.usernames
+  users: state.usernames,
+  labels: state.labels
 })
 
 export default connect(mapStateToProps)(CreateBugBigDialog);
 
 const CustomTextAreaForBugTextInput = styled.textarea`
-  ${props => props.title ? "height: 40px;" : "height: 80px;"}
-  width: 600px;
-  border-color: transparent;
-  border-radius: 5px;
-  transition: border-color 300ms;
-  resize: none;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: ${props => props.title ? "24px" : "16px"};
-  font-weight: ${props => props.title ? "500" : "200"};
-  line-height: ${props => props.title ? "32px" : "20px"};
-  ${props => props.title ? "overflow: hidden;" : ""}
-  margin-bottom: 8px;
+${props => props.title ? "height: 40px;" : "height: 80px;"}
+width: 600px;
+border-color: transparent;
+border-radius: 5px;
+transition: border-color 300ms;
+resize: none;
+font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+font-size: ${props => props.title ? "24px" : "16px"};
+font-weight: ${props => props.title ? "500" : "200"};
+line-height: ${props => props.title ? "32px" : "20px"};
+${props => props.title ? "overflow: hidden;" : ""}
+margin-bottom: 8px;
 
-  &:hover{
-    border-color: #d5dce0;
-  }
-  
-  &:focus{
-    outline: none;
-    border-color: #d5dce0;
-  }
+&:hover{
+  border-color: #d5dce0;
+}
+
+&:focus{
+  outline: none;
+  border-color: #d5dce0;
+}
 `;
 
 const CustomButtonForSelection = styled.div`
-  height: 30px;
-  padding: 5px;
-  border: solid 1px transparent;
-  transition: border-color 300ms;
-  border-radius: 10px;
-  display:flex;
-  flex-direction:row;
-  justify-content:center;
-  align-items:center;
-  align-content:center;
-  cursor: pointer;
-  margin-left: ${props => props.marginLeft ? "8px;" : ""};
+height: 30px;
+padding: 5px;
+border: solid 1px transparent;
+transition: border-color 300ms;
+border-radius: 10px;
+display:flex;
+flex-direction:row;
+justify-content:center;
+align-items:center;
+align-content:center;
+cursor: pointer;
+margin-left: ${props => props.marginLeft ? "8px;" : ""};
 
-  &:hover{
-    border-color: #d5dce0;
-  }
+&:hover{
+  border-color: #d5dce0;
+}
 `
 
 const NewBugSection = styled.div`
-  padding-left: ${props => props.alignedToUpperButtons ? "5px" : ""};
-  display: flex;
-  flex-direction: row;
-  margin-bottom: ${props => props.marginBottom ? "8px" : ""};
-  margin-top: ${props => props.marginTop ? "8px" : ""};
+padding-left: ${props => props.alignedToUpperButtons ? "5px" : ""};
+display: flex;
+flex-direction: row;
+margin-bottom: ${props => props.marginBottom ? "8px" : ""};
+margin-top: ${props => props.marginTop ? "8px" : ""};
 `
 
 class SelectAssignedToUserPopover extends React.PureComponent {
@@ -333,39 +424,7 @@ class SelectTargetDatePopover extends React.PureComponent {
       event.preventDefault();
       this.props.onClose();
     }
-  }
-
-  render() {
-    return (
-      <Popover
-        open={this.props.open}
-        anchorEl={this.props.anchorEl}
-        onClose={this.props.onClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        onKeyDown={this.onKeyDown}
-      >
-        <div
-          style={{ padding: "10px" }}>
-
-        </div>
-      </Popover>
-    )
-  }
-}
-
-class SelectSeverityPopover extends React.PureComponent {
-
-  onKeyDown = (event) => {
-    if (event.keyCode === 27) {
-      event.stopPropagation();
-      event.preventDefault();
+    if (event.keyCode === 13) {
       this.props.onClose();
     }
   }
@@ -388,7 +447,165 @@ class SelectSeverityPopover extends React.PureComponent {
       >
         <div
           style={{ padding: "10px" }}>
+          <TextField
+            type="date"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={this.props.targetDate}
+            onChange={this.props.handleTargetDateChange}
+          />
+        </div>
+      </Popover>
+    )
+  }
+}
 
+class SelectSeverityPopover extends React.PureComponent {
+
+  onKeyDown = (event) => {
+    if (event.keyCode === 27) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.props.onClose();
+    }
+  }
+
+  getOnSeveritySelect = severity => () => {
+    this.props.onSeveritySelected(severity);
+    this.props.onClose();
+  }
+
+  render() {
+    return (
+      <Popover
+        open={this.props.open}
+        anchorEl={this.props.anchorEl}
+        onClose={this.props.onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        onKeyDown={this.onKeyDown}
+      >
+        <div>
+          {this.props.severities.length > 0 ?
+            <List component="nav" style={{ overflow: "auto" }}>
+              {this.props.severities.map(severity =>
+                <ListItem
+                  button
+                  onClick={this.getOnSeveritySelect(severity)}
+                  style={{ cursor: "pointer" }}
+                  key={severity}>
+                  {severity}
+                </ListItem>)}
+            </List>
+            :
+            <Typography variant="subtitle2">
+              No severities.
+          </Typography>
+          }
+        </div>
+      </Popover>
+    )
+  }
+}
+
+class SelectLabelsPopover extends React.PureComponent {
+
+  onKeyDown = (event) => {
+    if (event.keyCode === 27) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.props.onClose();
+    }
+  }
+
+  onLabelSelected = label => event => {
+    this.props.onClose();
+    this.props.onLabelSelected(label);
+  }
+
+  isLabelNotSelectedYet = label => {
+    if (this.props.alreadySelectedLabels
+      .filter(selectedLabel => selectedLabel.labelName === label.labelName).length === 0)
+      return true;
+    return false;
+  }
+
+  render() {
+    const labelsNotSelectedYet = this.props.labels.filter(this.isLabelNotSelectedYet);
+    return (
+      <Popover
+        open={this.props.open}
+        anchorEl={this.props.anchorEl}
+        onClose={this.props.onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        onKeyDown={this.onKeyDown}
+      >
+        <div style={{ padding: "5px" }}>
+          {labelsNotSelectedYet.length > 0 ?
+            <div className="flexbox-horizontal flex-wrap">
+              {labelsNotSelectedYet.map(label =>
+                <LabelShort
+                  selectable
+                  selected={true}
+                  key={label.labelName}
+                  text={label.labelName}
+                  backgroundColor={label.backgroundColor}
+                  onClick={this.onLabelSelected(label)} />)}
+            </div>
+            :
+            <Typography variant="subtitle2">
+              No available labels to select left.
+          </Typography>
+          }
+        </div>
+      </Popover>
+    )
+  }
+}
+
+class DeleteLabelPopover extends React.PureComponent {
+
+  onKeyDown = (event) => {
+    if (event.keyCode === 27) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.props.onClose();
+    }
+  }
+
+  render() {
+    return (
+      <Popover
+        open={this.props.open}
+        anchorEl={this.props.anchorEl}
+        onClose={this.props.onClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 38,
+          horizontal: 'center',
+        }}
+        onKeyDown={this.onKeyDown}
+      >
+        <div className="flexbox-horizontal" style={{ padding: "5px", cursor: "pointer", alignItems: "center" }} onClick={this.props.onDeleteLabel}>
+          <Typography>Delete</Typography>
+          <Delete className="color-gray" />
         </div>
       </Popover>
     )
