@@ -391,9 +391,10 @@ class SelectAssignedToUserPopover extends React.PureComponent {
                 filterString: event.target.value
               })
             }}
-            style={{ width: "100%" }}
+            style={{ width: "100%", paddingLeft: "5px" }}
+            disableUnderline
           />
-
+          <Divider style={{width: "100%"}}/>
           {filteredUsers.length > 0 ?
             <List component="nav" style={{ overflow: "auto" }}>
               {filteredUsers.map(selectableUser =>
