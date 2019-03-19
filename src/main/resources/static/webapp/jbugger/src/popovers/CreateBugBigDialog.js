@@ -1,13 +1,25 @@
 import React, { Component } from 'react'
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Divider } from '@material-ui/core';
+import Popover from '@material-ui/core/Popover';
+import { Dialog, DialogContent, DialogActions, Button, Typography, Divider, List, ListItem } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import DateRange from '@material-ui/icons/DateRange';
 import ShortText from '@material-ui/icons/ShortText';
+import ErrorOutline from '@material-ui/icons/ErrorOutline';
+import Label from '@material-ui/icons/Label';
+import Attachment from '@material-ui/icons/Attachment';
 import styled from 'styled-components';
-
-export default class CreateBugBigDialog extends Component {
+import { connect } from 'react-redux';
+import { getUserNames } from '../redux-stuff/actions/actionCreators';
+class CreateBugBigDialog extends Component {
   state = {
-    newBugTitle: "Unnamed bug"
+    bugTitle: "Unnamed bug",
+    bugDescription: "",
+    assignedToName: null,
+    targetDate: null,
+    severity: null,
+    selectAssignedToUserPopoverAnchorEl: null,
+    selectTargetDatePopoverAnchorEl: null,
+    selectSeverityPopoverAnchorEl: null
   };
 
   handleStateValueChange = (nameOfStateElement) => (event) => {
@@ -29,6 +41,44 @@ export default class CreateBugBigDialog extends Component {
     }
   }
 
+  onAssignUserButtonClick = (event) => {
+    this.props.dispatch(getUserNames());
+    this.setState({
+      selectAssignedToUserPopoverAnchorEl: event.currentTarget
+    })
+
+  }
+
+  onAssignToUserPopoverClose = () => {
+    this.setState({
+      selectAssignedToUserPopoverAnchorEl: null
+    })
+  }
+
+  onTargetDateButtonClick = (event) => {
+    this.setState({
+      selectTargetDatePopoverAnchorEl: event.currentTarget
+    })
+  }
+
+  onTargetDatePopoverClose = () => {
+    this.setState({
+      selectTargetDatePopoverAnchorEl: null
+    })
+  }
+
+  onSeverityButtonClick = (event) => {
+    this.setState({
+      selectSeverityPopoverAnchorEl: event.currentTarget
+    })
+  }
+
+  onSeverityPopoverClose = () => {
+    this.setState({
+      selectSeverityPopoverAnchorEl: null
+    })
+  }
+
   render() {
     return (
       <Dialog
@@ -43,19 +93,32 @@ export default class CreateBugBigDialog extends Component {
           <div className="flexbox-vertical">
             <CustomTextAreaForBugTextInput
               title
-              value={this.state.newBugTitle}
-              onChange={this.handleStateValueChange('newBugTitle')}
+              value={this.state.bugTitle}
+              onChange={this.handleStateValueChange('bugTitle')}
               placeholder="Write a bug name"
               onKeyDown={this.onKeyDownOnInput} />
 
             <NewBugSection marginBottom>
-              <CustomButtonForSelection>
+              <CustomButtonForSelection
+                onClick={this.onAssignUserButtonClick}>
                 <AccountCircle className="color-gray small-margin-right" />
-                <Typography variant="subtitle2">Not assigned</Typography>
+                <Typography variant="subtitle2">
+                  {this.state.assignedToName || "Not assigned"}
+                </Typography>
               </CustomButtonForSelection>
-              <CustomButtonForSelection marginLeft>
+              <CustomButtonForSelection marginLeft
+                onClick={this.onTargetDateButtonClick}>
                 <DateRange className="color-gray small-margin-right" />
-                <Typography variant="subtitle2">No target date</Typography>
+                <Typography variant="subtitle2">
+                  {this.state.targetDate || "No target date"}
+                </Typography>
+              </CustomButtonForSelection>
+              <CustomButtonForSelection marginLeft
+                onClick={this.onSeverityButtonClick}>
+                <ErrorOutline className="color-gray small-margin-right" />
+                <Typography variant="subtitle2">
+                  {this.state.severity || "No severity selected"}
+                </Typography>
               </CustomButtonForSelection>
             </NewBugSection>
 
@@ -64,10 +127,45 @@ export default class CreateBugBigDialog extends Component {
             <NewBugSection alignedToUpperButtons marginTop>
               <ShortText className="color-gray small-margin-right" />
               <CustomTextAreaForBugTextInput
-                placeholder="Description..." />
+                placeholder="Description..."
+                onChange={this.handleStateValueChange('bugDescription')}
+                value={this.state.bugDescription} />
+            </NewBugSection>
+
+            <NewBugSection alignedToUpperButtons marginTop>
+              {/* TODO: Add labels here */}
+              <CustomButtonForSelection>
+                <Label className="color-gray small-margin-right" />
+                <Typography variant="subtitle2">Add label</Typography>
+              </CustomButtonForSelection>
+            </NewBugSection>
+
+            <NewBugSection alignedToUpperButtons marginTop>
+              {/* TODO: Add the attachments here */}
+              <CustomButtonForSelection>
+                <Attachment className="color-gray small-margin-right" />
+                <Typography variant="subtitle2">Add attachment</Typography>
+              </CustomButtonForSelection>
             </NewBugSection>
 
           </div>
+
+          <SelectAssignedToUserPopover
+            open={Boolean(this.state.selectAssignedToUserPopoverAnchorEl)}
+            anchorEl={this.state.selectAssignedToUserPopoverAnchorEl}
+            onClose={this.onAssignToUserPopoverClose}
+            selectableUsers={this.props.users} />
+
+          <SelectTargetDatePopover
+            open={Boolean(this.state.selectTargetDatePopoverAnchorEl)}
+            anchorEl={this.state.selectTargetDatePopoverAnchorEl}
+            onClose={this.onTargetDatePopoverClose} />
+
+          <SelectSeverityPopover
+            open={Boolean(this.state.selectSeverityPopoverAnchorEl)}
+            anchorEl={this.state.selectSeverityPopoverAnchorEl}
+            onClose={this.onSeverityPopoverClose} />
+
         </DialogContent>
         <DialogActions>
           <Button onClick={this.props.handleCancel} color="primary">
@@ -81,6 +179,14 @@ export default class CreateBugBigDialog extends Component {
     )
   }
 }
+
+const mapStateToProps = state => ({
+  severities: state.severities,
+  statuses: state.statuses,
+  users: state.usernames
+})
+
+export default connect(mapStateToProps)(CreateBugBigDialog);
 
 const CustomTextAreaForBugTextInput = styled.textarea`
   ${props => props.title ? "height: 40px;" : "height: 80px;"}
@@ -132,3 +238,120 @@ const NewBugSection = styled.div`
   margin-bottom: ${props => props.marginBottom ? "8px" : ""};
   margin-top: ${props => props.marginTop ? "8px" : ""};
 `
+
+class SelectAssignedToUserPopover extends React.PureComponent {
+
+  onKeyDown = (event) => {
+    if (event.keyCode === 27) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.props.onClose();
+    }
+  }
+
+  getOnUserSelected = (userId) => () => {
+    alert(userId)
+  }
+
+  render() {
+    return (
+      <Popover
+        open={this.props.open}
+        anchorEl={this.props.anchorEl}
+        onClose={this.props.onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        onKeyDown={this.onKeyDown}
+      >
+        <div
+          style={{ padding: "10px" }}>
+          <List component="nav">
+            {this.props.selectableUsers.map(selectableUser =>
+              <ListItem
+                onClick={this.getOnUserSelected(selectableUser.id)}
+                style={{cursor:"pointer"}}
+                key={selectableUser.id}>
+                {selectableUser.username}-{selectableUser.name}
+              </ListItem>)}
+          </List>
+        </div>
+      </Popover>
+    )
+  }
+}
+
+class SelectTargetDatePopover extends React.PureComponent {
+
+  onKeyDown = (event) => {
+    if (event.keyCode === 27) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.props.onClose();
+    }
+  }
+
+  render() {
+    return (
+      <Popover
+        open={this.props.open}
+        anchorEl={this.props.anchorEl}
+        onClose={this.props.onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        onKeyDown={this.onKeyDown}
+      >
+        <div
+          style={{ padding: "10px" }}>
+
+        </div>
+      </Popover>
+    )
+  }
+}
+
+class SelectSeverityPopover extends React.PureComponent {
+
+  onKeyDown = (event) => {
+    if (event.keyCode === 27) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.props.onClose();
+    }
+  }
+
+  render() {
+    return (
+      <Popover
+        open={this.props.open}
+        anchorEl={this.props.anchorEl}
+        onClose={this.props.onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        onKeyDown={this.onKeyDown}
+      >
+        <div
+          style={{ padding: "10px" }}>
+
+        </div>
+      </Popover>
+    )
+  }
+}
