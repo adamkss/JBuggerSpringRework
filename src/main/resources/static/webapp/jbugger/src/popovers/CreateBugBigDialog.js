@@ -20,10 +20,15 @@ export default class CreateBugBigDialog extends Component {
     if (event.keyCode == 13) {
       event.preventDefault();
       event.stopPropagation();
-      console.log(event);
     }
   }
-  event
+
+  onKeyDownDialog = (event) => {
+    if (event.keyCode === 27) {
+      this.props.handleCancel();
+    }
+  }
+
   render() {
     return (
       <Dialog
@@ -32,6 +37,7 @@ export default class CreateBugBigDialog extends Component {
         maxWidth=""
         aria-labelledby="confirmation-dialog-title"
         open={true}
+        onKeyDown={this.onKeyDownDialog}
       >
         <DialogContent>
           <div className="flexbox-vertical">
