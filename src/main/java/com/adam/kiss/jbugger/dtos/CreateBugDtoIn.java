@@ -19,4 +19,5 @@ public class CreateBugDtoIn {
     private String createdByUsername;
     private String assignedToUsername;
     private List<Integer> attachmentIds = new ArrayList<>();
+    private List<Integer> labelsIds = new ArrayList<>();
 }

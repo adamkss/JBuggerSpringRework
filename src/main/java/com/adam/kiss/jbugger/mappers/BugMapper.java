@@ -7,11 +7,9 @@ import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.entities.Status;
 import com.adam.kiss.jbugger.enums.Severity;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
+import com.adam.kiss.jbugger.exceptions.LabelNotFoundException;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
-import com.adam.kiss.jbugger.services.AttachmentService;
-import com.adam.kiss.jbugger.services.BugService;
-import com.adam.kiss.jbugger.services.StatusService;
-import com.adam.kiss.jbugger.services.UserService;
+import com.adam.kiss.jbugger.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +24,7 @@ public class BugMapper {
     private final UserService userService;
     private final StatusService statusService;
     private final BugService bugService;
+    private final LabelService labelService;
 
     public Bug mapCreateBugDtoInToBug(CreateBugDtoIn createBugDtoIn) throws StatusNotFoundException {
         List<Attachment> relatedAttachments = attachmentService.getAttachmentsByIds(createBugDtoIn.getAttachmentIds())
@@ -52,6 +51,19 @@ public class BugMapper {
         Status status = statusService.getStatusByStatusName(createBugDtoIn.getStatus());
         bug.setStatus(status);
 
+        bug.setLabels(
+                createBugDtoIn.getLabelsIds()
+                .stream()
+                .map(labelId -> {
+                    try {
+                        return labelService.getLabelById(labelId);
+                    } catch (LabelNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList())
+        );
         return bug;
     }
 

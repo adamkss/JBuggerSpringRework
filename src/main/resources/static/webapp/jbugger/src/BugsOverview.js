@@ -279,7 +279,8 @@ class BugsOverview extends Component {
       targetDate,
       assignedToUsername: assignedToUser.username,
       status: status.statusName,
-      severity
+      severity,
+      labelsIds: labels.map(label => label.id)
     };
 
     this.props.dispatch(createBug(newBug));
