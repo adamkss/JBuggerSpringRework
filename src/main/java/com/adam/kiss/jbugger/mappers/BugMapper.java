@@ -5,6 +5,7 @@ import com.adam.kiss.jbugger.dtos.UpdateBugInDto;
 import com.adam.kiss.jbugger.entities.Attachment;
 import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.enums.Severity;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.services.AttachmentService;
@@ -35,7 +36,7 @@ public class BugMapper {
         Bug bug = new Bug();
         bug.setTitle(createBugDtoIn.getTitle());
         bug.setDescription(createBugDtoIn.getDescription());
-        bug.setSeverity(createBugDtoIn.getSeverity());
+        bug.setSeverity(createBugDtoIn.getSeverity() == null ? Severity.LOW : createBugDtoIn.getSeverity());
         bug.setAssignedTo(
                 userService.getUserByUsername(createBugDtoIn.getAssignedToUsername())
         );

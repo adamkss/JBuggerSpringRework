@@ -7,6 +7,7 @@ import ShortText from '@material-ui/icons/ShortText';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import Delete from '@material-ui/icons/Delete';
 import Label from '@material-ui/icons/Label';
+import ViewColumn from '@material-ui/icons/ViewColumn';
 import Attachment from '@material-ui/icons/Attachment';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
@@ -15,6 +16,7 @@ import { getUserNames } from '../redux-stuff/actions/actionCreators';
 import LabelShort from '../LabelShort';
 
 class CreateBugBigDialog extends Component {
+
   state = {
     bugTitle: "Unnamed bug",
     bugDescription: "",
@@ -25,14 +27,32 @@ class CreateBugBigDialog extends Component {
     },
     targetDate: null,
     severity: null,
+    status: {
+      statusName: null
+    },
     labels: [],
     selectAssignedToUserPopoverAnchorEl: null,
     selectTargetDatePopoverAnchorEl: null,
     selectSeverityPopoverAnchorEl: null,
+    selectStatusPopoverAnchorEl: null,
     selectLabelsAnchorEl: null,
     deleteLabelPopoverAnchorEl: null,
     labelToPotentiallyDelete: null
   };
+
+  componentDidMount = () => {
+    this.setState({
+      status: this.props.statuses ? this.props.statuses[0] : null
+    })
+  }
+
+  componentDidUpdate = (oldProps) => {
+    if (oldProps.statuses != this.props.statuses) {
+      this.setState({
+        status: this.props.statuses[0]
+      })
+    }
+  }
 
   handleStateValueChange = (nameOfStateElement) => (event) => {
     this.setState({
@@ -148,6 +168,42 @@ class CreateBugBigDialog extends Component {
     this.onDeleteLabelPopoverClose();
   }
 
+  onNewAttachmentButtonPressed = () => {
+    this.setState(state => ({
+      filesToUploadCount: state.filesToUploadCount + 1
+    }))
+  }
+
+  handleOk = () => {
+    this.props.handleCreateBug(
+      this.state.bugTitle,
+      this.state.bugDescription,
+      this.state.assignedToUser,
+      this.state.severity,
+      this.state.targetDate,
+      this.state.status,
+      this.state.labels
+    );
+  }
+
+  onStatusButtonClick = event => {
+    this.setState({
+      selectStatusPopoverAnchorEl: event.currentTarget
+    })
+  }
+
+  onStatusSelected = status => {
+    this.setState({
+      status
+    })
+  }
+
+  onStatusPopoverClose = () => {
+    this.setState({
+      selectStatusPopoverAnchorEl: null
+    })
+  }
+
   render() {
     return (
       <Dialog
@@ -168,6 +224,7 @@ class CreateBugBigDialog extends Component {
               onKeyDown={this.onKeyDownOnInput} />
 
             <NewBugSection marginBottom>
+
               <CustomButtonForSelection
                 onClick={this.onAssignUserButtonClick}
                 title="Assigned to"
@@ -177,6 +234,7 @@ class CreateBugBigDialog extends Component {
                   {this.state.assignedToUser.name || "Not assigned"}
                 </Typography>
               </CustomButtonForSelection>
+
               <CustomButtonForSelection marginLeft
                 onClick={this.onTargetDateButtonClick}
                 title="Target date">
@@ -185,12 +243,22 @@ class CreateBugBigDialog extends Component {
                   {this.state.targetDate || "No target date"}
                 </Typography>
               </CustomButtonForSelection>
+
               <CustomButtonForSelection marginLeft
                 onClick={this.onSeverityButtonClick}
                 title="Severity">
                 <ErrorOutline className="color-gray small-margin-right" />
                 <Typography variant="subtitle2">
                   {this.state.severity || "No severity selected"}
+                </Typography>
+              </CustomButtonForSelection>
+
+              <CustomButtonForSelection marginLeft
+                onClick={this.onStatusButtonClick}
+                title="Status">
+                <ViewColumn className="color-gray small-margin-right" />
+                <Typography variant="subtitle2">
+                  {this.state.status.statusName || "No status selected"}
                 </Typography>
               </CustomButtonForSelection>
             </NewBugSection>
@@ -222,15 +290,6 @@ class CreateBugBigDialog extends Component {
                     onClick={this.getOnLabelClickedCallback(label)} />)}
               </div>
             </NewBugSection>
-
-            <NewBugSection alignedToUpperButtons marginTop>
-              {/* TODO: Add the attachments here */}
-              <CustomButtonForSelection>
-                <Attachment className="color-gray small-margin-right" />
-                <Typography variant="subtitle2">Add attachment</Typography>
-              </CustomButtonForSelection>
-            </NewBugSection>
-
           </div>
 
           <SelectAssignedToUserPopover
@@ -254,6 +313,13 @@ class CreateBugBigDialog extends Component {
             severities={this.props.severities}
             onSeveritySelected={this.onSeveritySelected} />
 
+          <SelectStatusPopover
+            open={Boolean(this.state.selectStatusPopoverAnchorEl)}
+            anchorEl={this.state.selectStatusPopoverAnchorEl}
+            onClose={this.onStatusPopoverClose}
+            statuses={this.props.statuses}
+            onStatusSelected={this.onStatusSelected} />
+
           <SelectLabelsPopover
             open={Boolean(this.state.selectLabelsPopoverAnchorEl)}
             anchorEl={this.state.selectLabelsPopoverAnchorEl}
@@ -273,7 +339,7 @@ class CreateBugBigDialog extends Component {
           <Button onClick={this.props.handleCancel} color="primary">
             Cancel
           </Button>
-          <Button onClick={this.props.handleOk} color="primary">
+          <Button onClick={this.handleOk} color="primary">
             Ok
           </Button>
         </DialogActions>
@@ -286,7 +352,8 @@ const mapStateToProps = state => ({
   severities: state.severities,
   statuses: state.statuses,
   users: state.usernames,
-  labels: state.labels
+  labels: state.labels,
+  statuses: state.statuses
 })
 
 export default connect(mapStateToProps)(CreateBugBigDialog);
@@ -394,7 +461,7 @@ class SelectAssignedToUserPopover extends React.PureComponent {
             style={{ width: "100%", paddingLeft: "5px" }}
             disableUnderline
           />
-          <Divider style={{width: "100%"}}/>
+          <Divider style={{ width: "100%" }} />
           {filteredUsers.length > 0 ?
             <List component="nav" style={{ overflow: "auto" }}>
               {filteredUsers.map(selectableUser =>
@@ -516,6 +583,59 @@ class SelectSeverityPopover extends React.PureComponent {
   }
 }
 
+class SelectStatusPopover extends React.PureComponent {
+
+  onKeyDown = (event) => {
+    if (event.keyCode === 27) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.props.onClose();
+    }
+  }
+
+  getOnStatusSelect = status => () => {
+    this.props.onStatusSelected(status);
+    this.props.onClose();
+  }
+
+  render() {
+    return (
+      <Popover
+        open={this.props.open}
+        anchorEl={this.props.anchorEl}
+        onClose={this.props.onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        onKeyDown={this.onKeyDown}
+      >
+        <div>
+          {this.props.statuses.length > 0 ?
+            <List component="nav" style={{ overflow: "auto" }}>
+              {this.props.statuses.map(status =>
+                <ListItem
+                  button
+                  onClick={this.getOnStatusSelect(status)}
+                  style={{ cursor: "pointer" }}
+                  key={status.id}>
+                  {status.statusName}
+                </ListItem>)}
+            </List>
+            :
+            <Typography variant="subtitle2">
+              No statuses.
+          </Typography>
+          }
+        </div>
+      </Popover>
+    )
+  }
+}
 class SelectLabelsPopover extends React.PureComponent {
 
   onKeyDown = (event) => {

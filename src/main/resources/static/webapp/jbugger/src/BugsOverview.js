@@ -266,6 +266,26 @@ class BugsOverview extends Component {
     })
   }
 
+  closeCreateBugBigDialog = () => {
+    this.setState({
+      isCreateBugBigDialogOpen: false
+    })
+  }
+
+  handleCreateBugFromDialog = (title, description, assignedToUser, severity, targetDate, status, labels) => {
+    let newBug = {
+      title,
+      description,
+      targetDate,
+      assignedToUsername: assignedToUser.username,
+      status: status.statusName,
+      severity
+    };
+
+    this.props.dispatch(createBug(newBug));
+    this.closeCreateBugBigDialog();
+  }
+
   render() {
     const { classes } = this.props;
     const { newBugPopoverAnchorEl } = this.state;
@@ -398,7 +418,8 @@ class BugsOverview extends Component {
               this.setState({
                 isCreateBugBigDialogOpen: false
               })
-            }} />
+            }}
+            handleCreateBug={this.handleCreateBugFromDialog} />
           :
           null
         }
