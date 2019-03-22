@@ -8,7 +8,20 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bugClicked } from './redux-stuff/actions/actionCreators';
 import LabelShort from './LabelShort';
+import CriticalSign from './assets/severitySVGs/CriticalSign';
+import HighSign from './assets/severitySVGs/HighSign';
+import MediumSign from './assets/severitySVGs/MediumSign';
+import LowSign from './assets/severitySVGs/LowSign';
 
+const getIconForSeverity = severity => {
+  switch(severity){
+    case "LOW" : return <LowSign/>;
+    case "MEDIUM": return <MediumSign/>;
+    case "HIGH" : return <HighSign/>
+    case "CRITICAL" : return <CriticalSign/>
+    default: return null;
+  }
+}
 class BugShortOverview extends Component {
 
   constructor(props) {
@@ -30,17 +43,18 @@ class BugShortOverview extends Component {
 
   render() {
     const isThisTheSelectedBug = this.props.currentlySelectedBugID == this.props.id;
-
+    
     return (
       <div className={"bug-short-overview"} onClick={this.onBugClick}>
         <Grid
           container
           direction="column">
-          <Grid item>
-            <Typography variant="subtitle2" color="inherit">
+          <div className="flexbox-horizontal">
+            <Typography variant="subtitle2" color="inherit" className="flex-grow">
               {this.props.title}
             </Typography>
-          </Grid>
+            {getIconForSeverity(this.props.severity)}
+          </div>
           <Grid item>
             <Typography variant="caption" color="inherit">
               #{this.props.id}
