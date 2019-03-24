@@ -15,6 +15,8 @@ import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -37,6 +39,7 @@ public class BugController {
     private final StatusService statusService;
     private final LabelService labelService;
 
+    @Secured("ROLE_DEV")
     @GetMapping
     public List<ViewBugOutDto> getAllBugs(
             @RequestParam(

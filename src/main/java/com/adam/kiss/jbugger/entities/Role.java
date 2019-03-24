@@ -21,11 +21,11 @@ import java.util.Map;
                 query = "select r from Role r WHERE :rightNeeded MEMBER  OF r.rights")
 })
 public class Role {
-    public static final Role ADM_ROLE = new Role("ADM");
-    public static final Role TEST_ROLE = new Role("TEST");
-    public static final Role PM_ROLE = new Role("PM");
-    public static final Role TM_ROLE = new Role("TM");
-    public static final Role DEV_ROLE = new Role("DEV");
+    public static final Role ADM_ROLE = new Role("ROLE_ADM");
+    public static final Role TEST_ROLE = new Role("ROLE_TEST");
+    public static final Role PM_ROLE = new Role("ROLE_PM");
+    public static final Role TM_ROLE = new Role("ROLE_TM");
+    public static final Role DEV_ROLE = new Role("ROLE_DEV");
     public static final String[] ROLES_NAMES = new String[]{ADM_ROLE.roleName,TEST_ROLE.roleName,PM_ROLE.roleName,TM_ROLE.roleName,DEV_ROLE.roleName};
     public static final Map<String,Role> roleByName;
     static{
