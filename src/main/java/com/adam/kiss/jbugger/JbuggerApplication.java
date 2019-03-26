@@ -9,4 +9,5 @@ public class JbuggerApplication {
     public static void main(String[] args) {
         SpringApplication.run(JbuggerApplication.class, args);
     }
+
 }

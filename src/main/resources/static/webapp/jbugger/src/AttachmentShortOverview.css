@@ -1,9 +1,0 @@
-.attachment-name{
-    cursor: pointer;
-    flex-grow: 1;
-}
-
-.attachment-name:hover{
-    cursor: pointer;
-    text-decoration-line: underline;
-}
