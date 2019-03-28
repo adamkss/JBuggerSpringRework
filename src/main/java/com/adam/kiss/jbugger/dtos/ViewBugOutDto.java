@@ -27,6 +27,8 @@ public class ViewBugOutDto {
 
     private int createdByUserId;
 
+    private String createdByUsername;
+
     private String status;
 
     private LocalDate targetDate;
@@ -62,6 +64,7 @@ public class ViewBugOutDto {
                 .assignedToName(bug.getAssignedTo() != null ? bug.getAssignedTo().getName() : null)
                 .assignedToUsername(bug.getAssignedTo() != null ? bug.getAssignedTo().getUsername() : null)
                 .labels(bug.getLabels().stream().map(ViewLabelDtoOut::mapLabelToDto).collect(Collectors.toList()))
+                .createdByUsername(bug.getCreatedBy().getUsername())
                 .build();
     }
 

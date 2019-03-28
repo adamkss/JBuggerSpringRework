@@ -8,4 +8,6 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationResponse {
     private final String accessToken;
     private String tokenType = "Bearer";
+    private final String username;
+    private final String name;
 }

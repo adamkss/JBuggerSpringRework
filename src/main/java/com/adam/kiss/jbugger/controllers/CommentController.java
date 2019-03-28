@@ -3,15 +3,20 @@ package com.adam.kiss.jbugger.controllers;
 import com.adam.kiss.jbugger.dtos.CreateCommentDtoIn;
 import com.adam.kiss.jbugger.dtos.ViewCommentDtoOut;
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
+import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
+import com.adam.kiss.jbugger.security.UserPrincipal;
 import com.adam.kiss.jbugger.services.BugService;
 import com.adam.kiss.jbugger.services.CommentService;
 import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.View;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequestMapping("/comments")
@@ -33,14 +38,18 @@ public class CommentController {
     }
 
     @PostMapping("/bug/{bugId}")
-    public ViewCommentDtoOut createComment(@PathVariable Integer bugId, @RequestBody CreateCommentDtoIn createCommentDtoIn)
-            throws BugNotFoundException {
+    public ViewCommentDtoOut createComment(@PathVariable Integer bugId,
+                                           @RequestBody CreateCommentDtoIn createCommentDtoIn,
+                                           @AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws BugNotFoundException, UserIdNotValidException {
+        User author = userService.getUserById(userPrincipal.getId());
+
         Bug associatedBug = bugService.getBugById(bugId);
         ViewCommentDtoOut viewCommentDtoOut = ViewCommentDtoOut.mapCommentToViewCommentOutDto(
                 commentService.createComment(
                         createCommentDtoIn.getCommentText(),
                         associatedBug,
-                        userService.getAllUsers().get(0)
+                        author
                 )
         );
         return viewCommentDtoOut;

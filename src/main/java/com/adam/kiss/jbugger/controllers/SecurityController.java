@@ -3,6 +3,7 @@ package com.adam.kiss.jbugger.controllers;
 import com.adam.kiss.jbugger.security.JwtAuthenticationResponse;
 import com.adam.kiss.jbugger.security.JwtTokenProvider;
 import com.adam.kiss.jbugger.security.LoginRequest;
+import com.adam.kiss.jbugger.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,15 @@ public class SecurityController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtTokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+
+        UserPrincipal userPrincipal = (UserPrincipal)authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+                new JwtAuthenticationResponse(
+                        jwt,
+                        userPrincipal.getUsername(),
+                        userPrincipal.getName()
+                )
+        );
     }
 }

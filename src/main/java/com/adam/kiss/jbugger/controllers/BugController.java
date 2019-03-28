@@ -8,6 +8,7 @@ import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
 import com.adam.kiss.jbugger.exceptions.LabelNotFoundException;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.mappers.BugMapper;
+import com.adam.kiss.jbugger.security.UserPrincipal;
 import com.adam.kiss.jbugger.services.BugService;
 import com.adam.kiss.jbugger.services.LabelService;
 import com.adam.kiss.jbugger.services.StatusService;
@@ -17,6 +18,7 @@ import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -39,7 +41,6 @@ public class BugController {
     private final StatusService statusService;
     private final LabelService labelService;
 
-    @Secured("ROLE_DEV")
     @GetMapping
     public List<ViewBugOutDto> getAllBugs(
             @RequestParam(
@@ -56,9 +57,10 @@ public class BugController {
 
     @PostMapping
     @SneakyThrows
-    public ResponseEntity<ViewBugOutDto> createBug(@RequestBody CreateBugDtoIn createBugDtoIn) {
+    public ResponseEntity<ViewBugOutDto> createBug(@RequestBody CreateBugDtoIn createBugDtoIn,
+                                                   @AuthenticationPrincipal UserPrincipal userPrincipal) {
         //TODO: Temporary, just for testing UI. No security yet.
-        createBugDtoIn.setCreatedByUsername(userService.getAllUsers().get(0).getUsername());
+        createBugDtoIn.setCreatedByUsername(userPrincipal.getUsername());
 
         Bug mappedBug = bugMapper.mapCreateBugDtoInToBug(createBugDtoIn);
         Bug savedBug = bugService.createBug(mappedBug);
