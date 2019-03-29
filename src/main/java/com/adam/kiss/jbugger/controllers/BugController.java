@@ -3,10 +3,7 @@ package com.adam.kiss.jbugger.controllers;
 import com.adam.kiss.jbugger.dtos.*;
 import com.adam.kiss.jbugger.entities.*;
 import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
-import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
-import com.adam.kiss.jbugger.exceptions.LabelNotFoundException;
-import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
-import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
+import com.adam.kiss.jbugger.exceptions.*;
 import com.adam.kiss.jbugger.mappers.BugMapper;
 import com.adam.kiss.jbugger.security.UserPrincipal;
 import com.adam.kiss.jbugger.services.*;
@@ -94,11 +91,14 @@ public class BugController {
     public void updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
                                 @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn,
                                 @AuthenticationPrincipal UserPrincipal userPrincipal) throws BugNotFoundException,
-            StatusNotFoundException, UserIdNotValidException {
+            StatusNotFoundException, UserIdNotValidException, NothingChangedException {
         Bug affectedBug = bugService.getBugById(bugId);
 
         Status oldStatus = affectedBug.getStatus();
         Status newStatus = statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus());
+        if (oldStatus.equals(newStatus)) {
+            throw new NothingChangedException();
+        }
 
         changeInBugService.createChangeInBug(
                 String.format("Changed status from %s to %s.", oldStatus.getStatusName(), newStatus.getStatusName()),
