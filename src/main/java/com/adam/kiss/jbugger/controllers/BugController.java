@@ -1,10 +1,7 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.*;
-import com.adam.kiss.jbugger.entities.Bug;
-import com.adam.kiss.jbugger.entities.ChangeInBug;
-import com.adam.kiss.jbugger.entities.Label;
-import com.adam.kiss.jbugger.entities.User;
+import com.adam.kiss.jbugger.entities.*;
 import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
 import com.adam.kiss.jbugger.exceptions.LabelNotFoundException;
@@ -95,9 +92,21 @@ public class BugController {
 
     @PutMapping("/bug/{bugId}/status")
     public void updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
-                                @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn) throws BugNotFoundException,
-            StatusNotFoundException {
-        bugService.updateBugStatus(bugId, statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus()));
+                                @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn,
+                                @AuthenticationPrincipal UserPrincipal userPrincipal) throws BugNotFoundException,
+            StatusNotFoundException, UserIdNotValidException {
+        Bug affectedBug = bugService.getBugById(bugId);
+
+        Status oldStatus = affectedBug.getStatus();
+        Status newStatus = statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus());
+
+        changeInBugService.createChangeInBug(
+                String.format("Changed status from %s to %s.", oldStatus.getStatusName(), newStatus.getStatusName()),
+                affectedBug,
+                getUserByUserPrincipal(userPrincipal)
+        );
+
+        bugService.updateBugStatus(bugId, newStatus);
     }
 
     @PutMapping("/bug/{bugId}")
