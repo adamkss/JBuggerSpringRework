@@ -14,6 +14,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import utils.FormatHelper;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -101,9 +102,12 @@ public class BugController {
         }
 
         changeInBugService.createChangeInBug(
-                String.format("Changed status from %s to %s.", oldStatus.getStatusName(), newStatus.getStatusName()),
+                "Status changed.",
                 affectedBug,
-                getUserByUserPrincipal(userPrincipal)
+                getUserByUserPrincipal(userPrincipal),
+                "Status",
+                oldStatus.getStatusName(),
+                newStatus.getStatusName()
         );
 
         bugService.updateBugStatus(bugId, newStatus);
@@ -111,7 +115,107 @@ public class BugController {
 
     @PutMapping("/bug/{bugId}")
     public ViewBugOutDto updateBug(@PathVariable(name = "bugId") Integer bugId,
-                                   @RequestBody UpdateBugInDto updateBugInDto) throws BugNotFoundException {
+                                   @RequestBody UpdateBugInDto updateBugInDto,
+                                   @AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws BugNotFoundException, UserIdNotValidException {
+
+        Bug bugToModify = bugService.getBugById(bugId);
+
+        User author = this.getUserByUserPrincipal(userPrincipal);
+
+        if (!bugToModify.getDescription().equals(updateBugInDto.getDescription())) {
+            changeInBugService.createChangeInBug(
+                    "Description changed.",
+                    bugToModify,
+                    author,
+                    "Description",
+                    bugToModify.getDescription(),
+                    updateBugInDto.getDescription()
+            );
+        }
+
+        if (!bugToModify.getTitle().equals(updateBugInDto.getTitle())) {
+            changeInBugService.createChangeInBug(
+                    "Title changed.",
+                    bugToModify,
+                    author,
+                    "Title",
+                    bugToModify.getTitle(),
+                    updateBugInDto.getTitle()
+            );
+        }
+
+        if (!bugToModify.getSeverity().equals(updateBugInDto.getSeverity())) {
+            changeInBugService.createChangeInBug(
+                    "Severity changed.",
+                    bugToModify,
+                    author,
+                    "Severity",
+                    bugToModify.getSeverity().toString(),
+                    updateBugInDto.getSeverity().toString()
+            );
+        }
+
+        if (!bugToModify.getRevision().equals(updateBugInDto.getRevision())) {
+            changeInBugService.createChangeInBug(
+                    "Revision changed.",
+                    bugToModify,
+                    author,
+                    "Revision",
+                    bugToModify.getRevision(),
+                    updateBugInDto.getRevision()
+            );
+        }
+
+        if (bugToModify.getTargetDate() == null && updateBugInDto.getTargetDate() != null) {
+            changeInBugService.createChangeInBug(
+                    "Target date changed.",
+                    bugToModify,
+                    author,
+                    "Target date",
+                    "Not set",
+                    updateBugInDto.getTargetDate().toString()
+            );
+        }
+
+        if (bugToModify.getTargetDate() != null
+                && updateBugInDto.getTargetDate() != null) {
+            if (!bugToModify.getTargetDate().equals(updateBugInDto.getTargetDate())) {
+                changeInBugService.createChangeInBug(
+                        "Target date changed.",
+                        bugToModify,
+                        author,
+                        "Target date",
+                        bugToModify.getTargetDate().toString(),
+                        updateBugInDto.getTargetDate().toString()
+                );
+            }
+        }
+
+        if (bugToModify.getAssignedTo() == null && updateBugInDto.getAssignedToUsername() != null) {
+            changeInBugService.createChangeInBug(
+                    "User assigned to bug changed.",
+                    bugToModify,
+                    author,
+                    "Assigned to",
+                    "Not set",
+                    updateBugInDto.getAssignedToUsername()
+            );
+        }
+
+        if (bugToModify.getAssignedTo() != null && updateBugInDto.getAssignedToUsername() != null) {
+            if (!bugToModify.getAssignedTo().getUsername().equals(updateBugInDto.getAssignedToUsername())) {
+                changeInBugService.createChangeInBug(
+                        "User assigned to bug changed.",
+                        bugToModify,
+                        author,
+                        "Assigned to",
+                        bugToModify.getAssignedTo().getUsername(),
+                        updateBugInDto.getAssignedToUsername()
+                );
+            }
+        }
+
         return ViewBugOutDto.mapToDto(
                 bugService.updateBug(bugMapper.mapUpdateBugInDtoToBug(bugId, updateBugInDto))
         );
@@ -119,7 +223,8 @@ public class BugController {
 
     @PutMapping("/bug/{bugId}/labels")
     public ViewBugOutDto updateBugLabels(@PathVariable(name = "bugId") Integer bugId,
-                                         @RequestBody UpdateBugLabelsInDto updateBugLabelsInDto) throws LabelNotFoundException, BugNotFoundException {
+                                         @RequestBody UpdateBugLabelsInDto updateBugLabelsInDto)
+            throws LabelNotFoundException, BugNotFoundException {
         List<Label> newLabels = new ArrayList<>();
         for (String labelName :
                 updateBugLabelsInDto.getLabelsName()) {
@@ -132,7 +237,8 @@ public class BugController {
     }
 
     @GetMapping("/bug/{bugId}/history")
-    public List<ViewChangeInBugDtoOut> getAllChangesOfABug(@PathVariable(name = "bugId") Integer bugId) throws BugNotFoundException {
+    public List<ViewChangeInBugDtoOut> getAllChangesOfABug(@PathVariable(name = "bugId") Integer bugId)
+            throws BugNotFoundException {
         return bugService.getAllChangesOfABugById(bugId)
                 .stream()
                 .map(ViewChangeInBugDtoOut::mapChangeInBugToDto)

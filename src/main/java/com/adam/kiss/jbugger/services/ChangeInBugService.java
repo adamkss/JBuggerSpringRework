@@ -19,4 +19,11 @@ public class ChangeInBugService {
                 new ChangeInBug(changeText, bug, changeAuthor)
         );
     }
+
+    public ChangeInBug createChangeInBug(String changeText, Bug bug, User changeAuthor, String fieldChanged,
+                                         String oldValue, String newValue) {
+        return changeInBugRepository.save(
+                new ChangeInBug(changeText, bug, changeAuthor, fieldChanged, oldValue, newValue)
+        );
+    }
 }

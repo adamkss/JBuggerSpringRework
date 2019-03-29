@@ -23,8 +23,16 @@ public class ViewChangeInBugDtoOut {
 
     private ViewUserShortDtoOut changeAuthor;
 
+    private boolean isFieldRelatedChange;
+
+    private String fieldChanged;
+
+    private String oldValue;
+
+    private String newValue;
+
     public static ViewChangeInBugDtoOut mapChangeInBugToDto(ChangeInBug changeInBug) {
-        return ViewChangeInBugDtoOut.builder()
+        ViewChangeInBugDtoOutBuilder viewChangeInBugDtoOutBuilder = ViewChangeInBugDtoOut.builder()
                 .id(changeInBug.getId())
                 .changeText(changeInBug.getChangeText())
                 .timeOfChangeHappening(
@@ -37,7 +45,16 @@ public class ViewChangeInBugDtoOut {
                                 changeInBug.getChangeAuthor()
                         )
                 )
-                .build();
+                .fieldChanged(changeInBug.getFieldChanged())
+                .oldValue(changeInBug.getOldValue())
+                .newValue(changeInBug.getNewValue());
+
+        if (changeInBug.isFieldRelatedChange()) {
+            viewChangeInBugDtoOutBuilder.fieldChanged = changeInBug.getFieldChanged();
+            viewChangeInBugDtoOutBuilder.oldValue = changeInBug.getOldValue();
+            viewChangeInBugDtoOutBuilder.newValue = changeInBug.getNewValue();
+        }
+        return viewChangeInBugDtoOutBuilder.build();
     }
 }
 

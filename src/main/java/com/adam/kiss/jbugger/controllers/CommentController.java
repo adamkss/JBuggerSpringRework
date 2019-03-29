@@ -8,6 +8,7 @@ import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
 import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
 import com.adam.kiss.jbugger.security.UserPrincipal;
 import com.adam.kiss.jbugger.services.BugService;
+import com.adam.kiss.jbugger.services.ChangeInBugService;
 import com.adam.kiss.jbugger.services.CommentService;
 import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class CommentController {
     private final CommentService commentService;
     private final BugService bugService;
     private final UserService userService;
+    private final ChangeInBugService changeInBugService;
 
     @GetMapping("/bug/{bugId}")
     public List<ViewCommentDtoOut> getAllCommentsForBug(@PathVariable Integer bugId) throws BugNotFoundException {
@@ -52,6 +54,14 @@ public class CommentController {
                         author
                 )
         );
+
+        changeInBugService.createChangeInBug(
+                "User with username: \""
+                        + userPrincipal.getUsername() + "\" added a comment.",
+                associatedBug,
+                author
+        );
+
         return viewCommentDtoOut;
     }
 }

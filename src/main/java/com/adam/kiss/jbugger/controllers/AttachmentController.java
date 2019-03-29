@@ -2,13 +2,20 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.ViewAttachmentInfoDtoOut;
 import com.adam.kiss.jbugger.entities.Attachment;
+import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.exceptions.AttachmentNotFoundException;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
+import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
+import com.adam.kiss.jbugger.security.UserPrincipal;
 import com.adam.kiss.jbugger.services.AttachmentService;
 import com.adam.kiss.jbugger.services.BugService;
+import com.adam.kiss.jbugger.services.ChangeInBugService;
+import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.omg.CORBA.UserException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +31,8 @@ public class AttachmentController {
 
     private final AttachmentService attachmentService;
     private final BugService bugService;
+    private final ChangeInBugService changeInBugService;
+    private final UserService userService;
 
     @SneakyThrows
     @PostMapping
@@ -53,13 +62,29 @@ public class AttachmentController {
     }
 
     @PostMapping("/attachment/upload/{bugId}")
-    public ViewAttachmentInfoDtoOut uploadAttachmentToBug(@PathVariable("bugId") Integer bugId, @RequestParam("file") MultipartFile multipartFile) throws BugNotFoundException, IOException {
+    public ViewAttachmentInfoDtoOut uploadAttachmentToBug(
+            @PathVariable("bugId") Integer bugId,
+            @RequestParam("file") MultipartFile multipartFile,
+            @AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws BugNotFoundException, IOException, UserIdNotValidException {
+
         Attachment newAttachment = new Attachment(multipartFile.getBytes(), multipartFile.getOriginalFilename());
         newAttachment = attachmentService.createAttachment(newAttachment);
 
+        Bug associatedBug = bugService.getBugById(bugId);
         attachmentService.associateBugToAttachment(
-                bugService.getBugById(bugId),
+                associatedBug,
                 newAttachment
+        );
+
+        changeInBugService.createChangeInBug(
+                "Attachment with name \""
+                        + newAttachment.getName() +
+                        "\" was added by \""
+                        + userPrincipal.getUsername()
+                        + "\".",
+                associatedBug,
+                userService.getUserById(userPrincipal.getId())
         );
 
         return ViewAttachmentInfoDtoOut.mapAttachmentToViewAttachmentInfoDtoOut(newAttachment);

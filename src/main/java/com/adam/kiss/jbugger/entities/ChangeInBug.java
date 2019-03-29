@@ -25,10 +25,31 @@ public class ChangeInBug {
     @ManyToOne
     private User changeAuthor;
 
+    private boolean isFieldRelatedChange;
+
+    private String fieldChanged;
+
+    private String oldValue;
+
+    private String newValue;
+
     public ChangeInBug(String changeText, Bug bug, User changeAuthor) {
         this.changeText = changeText;
         this.timeOfChangeHappening = LocalDateTime.now();
         this.bugChangeIsAssociatedWith = bug;
         this.changeAuthor = changeAuthor;
+        this.isFieldRelatedChange = false;
+    }
+
+    public ChangeInBug(String changeText, Bug bug, User changeAuthor, String fieldChanged, String oldValue,
+                       String newValue) {
+        this.changeText = changeText;
+        this.timeOfChangeHappening = LocalDateTime.now();
+        this.bugChangeIsAssociatedWith = bug;
+        this.changeAuthor = changeAuthor;
+        this.fieldChanged = fieldChanged;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
+        this.isFieldRelatedChange = true;
     }
 }
