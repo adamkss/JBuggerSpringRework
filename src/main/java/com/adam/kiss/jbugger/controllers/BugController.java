@@ -2,17 +2,17 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.*;
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.entities.ChangeInBug;
 import com.adam.kiss.jbugger.entities.Label;
+import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
 import com.adam.kiss.jbugger.exceptions.LabelNotFoundException;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
+import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
 import com.adam.kiss.jbugger.mappers.BugMapper;
 import com.adam.kiss.jbugger.security.UserPrincipal;
-import com.adam.kiss.jbugger.services.BugService;
-import com.adam.kiss.jbugger.services.LabelService;
-import com.adam.kiss.jbugger.services.StatusService;
-import com.adam.kiss.jbugger.services.UserService;
+import com.adam.kiss.jbugger.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +40,11 @@ public class BugController {
     private final UserService userService;
     private final StatusService statusService;
     private final LabelService labelService;
+    private final ChangeInBugService changeInBugService;
+
+    private User getUserByUserPrincipal(UserPrincipal userPrincipal) throws UserIdNotValidException {
+        return userService.getUserById(userPrincipal.getId());
+    }
 
     @GetMapping
     public List<ViewBugOutDto> getAllBugs(
@@ -64,6 +69,13 @@ public class BugController {
 
         Bug mappedBug = bugMapper.mapCreateBugDtoInToBug(createBugDtoIn);
         Bug savedBug = bugService.createBug(mappedBug);
+
+        changeInBugService.createChangeInBug(
+                "Bug created.",
+                savedBug,
+                getUserByUserPrincipal(userPrincipal)
+        );
+
         ViewBugOutDto viewBugOutDto = ViewBugOutDto.mapToDto(savedBug);
 
         return ResponseEntity.created(
@@ -108,5 +120,13 @@ public class BugController {
         return ViewBugOutDto.mapToDto(
                 bugService.updateBugLabels(bugId, newLabels)
         );
+    }
+
+    @GetMapping("/bug/{bugId}/history")
+    public List<ViewChangeInBugDtoOut> getAllChangesOfABug(@PathVariable(name = "bugId") Integer bugId) throws BugNotFoundException {
+        return bugService.getAllChangesOfABugById(bugId)
+                .stream()
+                .map(ViewChangeInBugDtoOut::mapChangeInBugToDto)
+                .collect(Collectors.toList());
     }
 }

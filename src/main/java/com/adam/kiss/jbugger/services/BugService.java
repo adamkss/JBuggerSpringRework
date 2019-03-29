@@ -1,6 +1,7 @@
 package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.entities.ChangeInBug;
 import com.adam.kiss.jbugger.entities.Label;
 import com.adam.kiss.jbugger.entities.Status;
 import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
@@ -48,5 +49,11 @@ public class BugService {
         bug.setLabels(labels);
         bugRepository.save(bug);
         return bug;
+    }
+
+    public List<ChangeInBug> getAllChangesOfABugById(Integer bugId) throws BugNotFoundException {
+        return bugRepository
+                .findById(bugId).orElseThrow(BugNotFoundException::new)
+                .getChangesOfBug();
     }
 }

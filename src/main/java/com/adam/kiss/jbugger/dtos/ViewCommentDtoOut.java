@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import utils.FormatHelper;
 
 @Data
 @NoArgsConstructor
@@ -22,7 +23,11 @@ public class ViewCommentDtoOut {
                 .id(comment.getId())
                 .comment(comment.getComment())
                 .author(ViewUserShortDtoOut.mapToDto(comment.getAuthor()))
-                .createdDateTime(comment.getCreatedTime().toString())
+                .createdDateTime(
+                        FormatHelper.formatLocalDateTime(
+                                comment.getCreatedTime()
+                        )
+                )
                 .build();
     }
 }

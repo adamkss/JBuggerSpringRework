@@ -24,7 +24,7 @@ import java.util.List;
         @NamedQuery(name = "getUsersWithSpecificRoles",
                 query = "SELECT u FROM User u JOIN u.roles role WHERE role IN (:rolesAccepted)"),
         @NamedQuery(name = "getUsersWithPatternInUsername",
-                query ="SELECT u.id FROM User u WHERE u.username LIKE :pattern")
+                query = "SELECT u.id FROM User u WHERE u.username LIKE :pattern")
 })
 @NoArgsConstructor
 @Data
@@ -67,6 +67,9 @@ public class User {
     @EqualsAndHashCode.Exclude
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "changeAuthor")
+    @EqualsAndHashCode.Exclude
+    private List<ChangeInBug> changesDoneInBugs = new ArrayList<>();
 
     public User(String name, String phoneNumber, String email, List<Role> roles, String passwordHash) {
 
