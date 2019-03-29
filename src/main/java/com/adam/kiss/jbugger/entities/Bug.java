@@ -61,6 +61,7 @@ public class Bug {
     private List<Label> labels = new ArrayList<>();
 
     @OneToMany(mappedBy ="bugChangeIsAssociatedWith")
+    @OrderBy("timeOfChangeHappening DESC")
     private List<ChangeInBug> changesOfBug = new ArrayList<>();
 
     public Bug(String title, String description, String revision, String fixedInRevision, LocalDate targetDate, Severity severity, User createdBy, Status status, User assignedTo) {

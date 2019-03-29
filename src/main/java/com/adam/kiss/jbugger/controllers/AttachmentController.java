@@ -47,18 +47,29 @@ public class AttachmentController {
     }
 
     @GetMapping("/attachment/{id}")
-    public Attachment getAttachmentById(@PathVariable Integer id) {
-        return attachmentService.getAttachmentById(id).get();
+    public Attachment getAttachmentById(@PathVariable Integer id) throws AttachmentNotFoundException {
+        return attachmentService.getAttachmentById(id);
     }
 
     @GetMapping("attachment/{id}/blob")
     public byte[] getAttachmentBlobById(@PathVariable Integer id) throws AttachmentNotFoundException {
-        return attachmentService.getAttachmentById(id).orElseThrow(AttachmentNotFoundException::new).getContent();
+        return attachmentService.getAttachmentById(id).getContent();
     }
 
     @DeleteMapping("/attachment/{id}")
-    public void deleteAttachment(@PathVariable Integer id) throws AttachmentNotFoundException {
+    public void deleteAttachment(@PathVariable Integer id,
+                                 @AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws AttachmentNotFoundException, UserIdNotValidException {
+        String attachmentName = attachmentService.getAttachmentById(id).getName();
+        Bug associatedBug = attachmentService.getAttachmentById(id).getBug();
+
         attachmentService.deleteAttachmentById(id);
+
+        changeInBugService.createChangeInBug(
+                "Attachment \"" + attachmentName + "\" was deleted.",
+                associatedBug,
+                userService.getUserById(userPrincipal.getId())
+        );
     }
 
     @PostMapping("/attachment/upload/{bugId}")

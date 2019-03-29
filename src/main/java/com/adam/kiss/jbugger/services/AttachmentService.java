@@ -20,8 +20,8 @@ public class AttachmentService {
         return attachmentRepository.save(attachment);
     }
 
-    public Optional<Attachment> getAttachmentById(Integer id) {
-        return attachmentRepository.findById(id);
+    public Attachment getAttachmentById(Integer id) throws AttachmentNotFoundException {
+        return attachmentRepository.findById(id).orElseThrow(AttachmentNotFoundException::new);
     }
 
     public void associateBugToAttachment(Bug bug, Attachment attachment) {
@@ -42,6 +42,6 @@ public class AttachmentService {
     }
 
     public void deleteAttachmentById(Integer id) throws AttachmentNotFoundException {
-        attachmentRepository.delete(getAttachmentById(id).orElseThrow(AttachmentNotFoundException::new));
+        attachmentRepository.delete(getAttachmentById(id));
     }
 }

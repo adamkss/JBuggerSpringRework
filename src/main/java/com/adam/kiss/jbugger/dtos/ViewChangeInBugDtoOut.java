@@ -47,7 +47,8 @@ public class ViewChangeInBugDtoOut {
                 )
                 .fieldChanged(changeInBug.getFieldChanged())
                 .oldValue(changeInBug.getOldValue())
-                .newValue(changeInBug.getNewValue());
+                .newValue(changeInBug.getNewValue())
+                .isFieldRelatedChange(changeInBug.isFieldRelatedChange());
 
         if (changeInBug.isFieldRelatedChange()) {
             viewChangeInBugDtoOutBuilder.fieldChanged = changeInBug.getFieldChanged();
