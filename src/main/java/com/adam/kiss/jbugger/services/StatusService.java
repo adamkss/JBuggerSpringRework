@@ -14,11 +14,19 @@ public class StatusService {
     private final StatusRepository statusRepository;
 
     public List<Status> getAllStatuses() {
-        return statusRepository.findAll();
+        return statusRepository.findAllByOrderByOrderNrAsc();
+    }
+
+    private void shiftStatuses() {
+        List<Status> allStatuses = getAllStatuses();
+        allStatuses.forEach(status -> status.setOrderNr(status.getOrderNr() + 1));
+
+        statusRepository.saveAll(allStatuses);
     }
 
     public Status createStatus(String statusName, String backgroundColor) {
-        return statusRepository.save(new Status(statusName, backgroundColor));
+        this.shiftStatuses();
+        return statusRepository.save(new Status(statusName, backgroundColor, 0));
     }
 
     public Status getStatusByStatusName(String statusName) throws StatusNotFoundException {
@@ -42,4 +50,28 @@ public class StatusService {
         statusRepository.save(statusToUpdate);
     }
 
+    public void reorderStatusesByChangedStatusOrder(int oldOrder, int newOrder) throws StatusNotFoundException {
+        Status statusOrderChanged = this.statusRepository.findByOrderNr(oldOrder);
+
+        List<Status> allStatuses = getAllStatuses();
+
+        if (newOrder < oldOrder) {
+            for (int i = newOrder; i < oldOrder; i++) {
+                Status currentStatus = statusRepository.findByOrderNr(i);
+                currentStatus.incrementOrderNr();
+            }
+        }
+
+        if (newOrder > oldOrder) {
+            for (int i = oldOrder + 1; i <= newOrder; i++) {
+                Status currentStatus = statusRepository.findByOrderNr(i);
+                currentStatus.decrementOrderNr();
+            }
+        }
+
+        statusRepository.saveAll(allStatuses);
+
+        statusOrderChanged.setOrderNr(newOrder);
+        statusRepository.save(statusOrderChanged);
+    }
 }

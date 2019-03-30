@@ -5,6 +5,7 @@ import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.repositories.*;
 import com.adam.kiss.jbugger.enums.NotificationType;
 import com.adam.kiss.jbugger.enums.Severity;
+import com.adam.kiss.jbugger.services.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ public class SingletonInit {
     private final NotificationRepository notificationRepository;
     private final StatusRepository statusRepository;
     private final LabelRepository labelRepository;
+    private final StatusService statusService;
 
     @PostConstruct
     private void init() {
@@ -34,7 +36,9 @@ public class SingletonInit {
         labelRepository.save(new Label("Testing","#ff00ff"));
 
         Status.PredefinedStatuses.PREDEFINED_STATUSES.forEach(
-                (statusRepository::save)
+                predefinedStatus -> {
+                    statusService.createStatus(predefinedStatus.getStatusName(), predefinedStatus.getStatusColor());
+                }
         );
 
         rightRepository.save(Right.BUG_CLOSE);
@@ -98,7 +102,7 @@ public class SingletonInit {
 
         FakeDataGenerator.doGenerate(10, 20);
         FakeDataGenerator.getUSERS().forEach(user -> userRepository.save(user));
-        FakeDataGenerator.getBUGS().forEach(bug -> bugRepository.save(bug));
+//        FakeDataGenerator.getBUGS().forEach(bug -> bugRepository.save(bug));
 
         Notification notification1 = new Notification(NotificationType.WELCOME_NEW_USER, "Welcome admin!", LocalDateTime.now().minusDays(40));
         //Notification notification2 = new Notification(NotificationType.BUG_STATUS_UPDATED,"Bug 1 was updated!");
@@ -112,12 +116,12 @@ public class SingletonInit {
         userRepository.save(dev1);
         userRepository.save(dev2);
 
-        bugRepository.save(new Bug("Buggy Facebook", "The facebook main page is quite buggy", "1.0", null, LocalDate.now(), Severity.CRITICAL, dev1, Status.PredefinedStatuses.PREDEFINED_STATUSES.get(0), dev2));
-        bugRepository.save(new Bug("Buggy Instagram", "The instagram main page is very buggy", "1.0", null, LocalDate.now(), Severity.CRITICAL, admin, Status.PredefinedStatuses.PREDEFINED_STATUSES.get(1), dev1));
-        bugRepository.save(new Bug("Buggy Twitter", "The twitter is buggy", "2.0", "2.0", LocalDate.now().minusDays(1), Severity.HIGH, admin, Status.PredefinedStatuses.PREDEFINED_STATUSES.get(2), dev2));
-        bugRepository.save(new Bug("Buggy Pinterest", "Pinterest is really buggy", "3.0", null, LocalDate.now().minusDays(10), Severity.LOW, admin, Status.PredefinedStatuses.PREDEFINED_STATUSES.get(3), dev1));
-        bugRepository.save(new Bug("Buggy Uber", "Uber doesn't work!", "4.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, Status.PredefinedStatuses.PREDEFINED_STATUSES.get(4), admin));
-        bugRepository.save(new Bug("Bug in Autovit", "Autovit doesn't show the cars...", "1.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, Status.PredefinedStatuses.PREDEFINED_STATUSES.get(5), admin));
-        bugRepository.save(new Bug("Bug in WizzAir", "WizzAir planes don't fly", "2.0.1", null, LocalDate.now().minusDays(14), Severity.CRITICAL, dev1, Status.PredefinedStatuses.PREDEFINED_STATUSES.get(0), dev1));
+        bugRepository.save(new Bug("Buggy Facebook", "The facebook main page is quite buggy", "1.0", null, LocalDate.now(), Severity.CRITICAL, dev1, statusService.getAllStatuses().get(0), dev2));
+        bugRepository.save(new Bug("Buggy Instagram", "The instagram main page is very buggy", "1.0", null, LocalDate.now(), Severity.CRITICAL, admin, statusService.getAllStatuses().get(1), dev1));
+        bugRepository.save(new Bug("Buggy Twitter", "The twitter is buggy", "2.0", "2.0", LocalDate.now().minusDays(1), Severity.HIGH, admin, statusService.getAllStatuses().get(2), dev2));
+        bugRepository.save(new Bug("Buggy Pinterest", "Pinterest is really buggy", "3.0", null, LocalDate.now().minusDays(10), Severity.LOW, admin, statusService.getAllStatuses().get(3), dev1));
+        bugRepository.save(new Bug("Buggy Uber", "Uber doesn't work!", "4.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatuses().get(4), admin));
+        bugRepository.save(new Bug("Bug in Autovit", "Autovit doesn't show the cars...", "1.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatuses().get(5), admin));
+        bugRepository.save(new Bug("Bug in WizzAir", "WizzAir planes don't fly", "2.0.1", null, LocalDate.now().minusDays(14), Severity.CRITICAL, dev1, statusService.getAllStatuses().get(0), dev1));
     }
 }

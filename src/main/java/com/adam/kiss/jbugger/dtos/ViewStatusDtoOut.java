@@ -8,11 +8,13 @@ import lombok.Data;
 @Builder
 public class ViewStatusDtoOut {
     private String statusName;
+    private int orderNr;
 
     public static ViewStatusDtoOut mapStatusToDTO(Status status) {
         return ViewStatusDtoOut
                 .builder()
                 .statusName(status.getStatusName())
+                .orderNr(status.getOrderNr())
                 .build();
     }
 }

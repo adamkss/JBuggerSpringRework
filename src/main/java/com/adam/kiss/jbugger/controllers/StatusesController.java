@@ -3,6 +3,7 @@ package com.adam.kiss.jbugger.controllers;
 import com.adam.kiss.jbugger.dtos.CreateStatusDtoIn;
 import com.adam.kiss.jbugger.dtos.UpdateStatusColorDtoIn;
 import com.adam.kiss.jbugger.dtos.UpdateStatusNameDtoIn;
+import com.adam.kiss.jbugger.dtos.UpdateStatusOrderDtoIn;
 import com.adam.kiss.jbugger.entities.Status;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.services.StatusService;
@@ -44,5 +45,13 @@ public class StatusesController {
     public void updateStatusName(@PathVariable(name = "statusName") String statusName,
                                  @RequestBody UpdateStatusColorDtoIn updateStatusColorDtoIn) throws StatusNotFoundException {
         statusService.updateStatusColor(statusName, updateStatusColorDtoIn.getStatusColor());
+    }
+
+    @PutMapping("/order")
+    public void updateStatusOrder(@RequestBody UpdateStatusOrderDtoIn updateStatusOrderDtoIn) throws StatusNotFoundException {
+        statusService.reorderStatusesByChangedStatusOrder(
+                updateStatusOrderDtoIn.getOldOrder(),
+                updateStatusOrderDtoIn.getNewOrder()
+        );
     }
 }

@@ -15,9 +15,10 @@ public class Status {
         this.statusName = statusName;
     }
 
-    public Status(String statusName, String statusColor) {
+    public Status(String statusName, String statusColor, int orderNr) {
         this.statusName = statusName;
         this.statusColor = statusColor;
+        this.orderNr = orderNr;
     }
 
     public Status() {
@@ -35,6 +36,16 @@ public class Status {
     @OneToMany(mappedBy = "status", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonIgnore
     private List<Bug> bugsWithThisStatus;
+
+    private int orderNr;
+
+    public void incrementOrderNr() {
+        this.orderNr++;
+    }
+
+    public void decrementOrderNr() {
+        this.orderNr--;
+    }
 
     public static class PredefinedStatuses {
         public static List<Status> PREDEFINED_STATUSES = new ArrayList<>();
