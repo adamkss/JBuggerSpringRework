@@ -249,6 +249,5 @@ public class BugController {
         User userToAssign = getUserByUserPrincipal(currentUserPrincipal);
 
         bugService.assignBugToUser(bugToModify, userToAssign);
-
     }
 }

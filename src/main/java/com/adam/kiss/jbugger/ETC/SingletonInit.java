@@ -37,7 +37,11 @@ public class SingletonInit {
 
         Status.PredefinedStatuses.PREDEFINED_STATUSES.forEach(
                 predefinedStatus -> {
-                    statusService.createStatus(predefinedStatus.getStatusName(), predefinedStatus.getStatusColor());
+                    statusService.createStatusWithOrder(
+                            predefinedStatus.getStatusName(),
+                            predefinedStatus.getStatusColor(),
+                            predefinedStatus.getOrderNr()
+                    );
                 }
         );
 

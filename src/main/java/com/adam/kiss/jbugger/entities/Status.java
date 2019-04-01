@@ -51,10 +51,36 @@ public class Status {
         public static List<Status> PREDEFINED_STATUSES = new ArrayList<>();
 
         static {
-            for (PredefinedStatusNames predefinedStatusName :
-                    PredefinedStatusNames.values()) {
-                PREDEFINED_STATUSES.add(new Status(predefinedStatusName.toString()));
-            }
+            PREDEFINED_STATUSES.add(new Status(
+                    PredefinedStatusNames.NEW.toString(),
+                    "#78909C",
+                    0
+            ));
+            PREDEFINED_STATUSES.add(new Status(
+                    PredefinedStatusNames.INFO_NEEDED.toString(),
+                    "#F57F17",
+                    1
+            ));
+            PREDEFINED_STATUSES.add(new Status(
+                    PredefinedStatusNames.IN_PROGRESS.toString(),
+                    "#4527A0",
+                    2
+            ));
+            PREDEFINED_STATUSES.add(new Status(
+                    PredefinedStatusNames.FIXED.toString(),
+                    "#4CAF50",
+                    3
+            ));
+            PREDEFINED_STATUSES.add(new Status(
+                    PredefinedStatusNames.CLOSED.toString(),
+                    "#795548",
+                    4
+            ));
+            PREDEFINED_STATUSES.add(new Status(
+                    PredefinedStatusNames.REJECTED.toString(),
+                    "#D32F2F",
+                    5
+            ));
         }
     }
 }

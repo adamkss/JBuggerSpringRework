@@ -29,6 +29,10 @@ public class StatusService {
         return statusRepository.save(new Status(statusName, backgroundColor, 0));
     }
 
+    public Status createStatusWithOrder(String statusName, String backgroundColor, int order){
+        return statusRepository.save(new Status(statusName, backgroundColor, order));
+    }
+
     public Status getStatusByStatusName(String statusName) throws StatusNotFoundException {
         return statusRepository.findByStatusName(statusName).orElseThrow(StatusNotFoundException::new);
     }
