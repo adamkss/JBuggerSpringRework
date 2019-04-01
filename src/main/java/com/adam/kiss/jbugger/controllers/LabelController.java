@@ -2,18 +2,13 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.CreateLabelDtoIn;
 import com.adam.kiss.jbugger.dtos.ViewLabelDtoOut;
-import com.adam.kiss.jbugger.dtos.ViewUserDtoOut;
 import com.adam.kiss.jbugger.entities.Label;
-import com.adam.kiss.jbugger.entities.User;
-import com.adam.kiss.jbugger.projections.UserWithNameAndUsernameProjection;
+import com.adam.kiss.jbugger.exceptions.LabelWithThisNameAlreadyExistsException;
 import com.adam.kiss.jbugger.services.LabelService;
-import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -32,7 +27,8 @@ public class LabelController {
     }
 
     @PostMapping
-    public ViewLabelDtoOut createLabel(@RequestBody CreateLabelDtoIn createLabelDtoIn) {
+    public ViewLabelDtoOut createLabel(@RequestBody CreateLabelDtoIn createLabelDtoIn)
+            throws LabelWithThisNameAlreadyExistsException {
         Label labelToCreate = new Label();
         labelToCreate.setBackgroundColor(createLabelDtoIn.getLabelColor());
         labelToCreate.setLabelName(createLabelDtoIn.getLabelName());

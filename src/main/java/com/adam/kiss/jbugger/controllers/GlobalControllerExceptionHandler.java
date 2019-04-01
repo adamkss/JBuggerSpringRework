@@ -1,7 +1,9 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.exceptions.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,5 +28,16 @@ public class GlobalControllerExceptionHandler {
     })
     public void handleNotModified() {
 
+    }
+
+    @ExceptionHandler({
+            LabelWithThisNameAlreadyExistsException.class
+    })
+    public ResponseEntity handleAlreadyExists() {
+        return new ResponseEntity<>(
+                "Label with this name already exists!",
+                new HttpHeaders(),
+                HttpStatus.CONFLICT
+        );
     }
 }
