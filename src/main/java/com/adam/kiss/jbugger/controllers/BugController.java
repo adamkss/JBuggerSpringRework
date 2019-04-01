@@ -1,8 +1,10 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.*;
-import com.adam.kiss.jbugger.entities.*;
-import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
+import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.entities.Label;
+import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.exceptions.*;
 import com.adam.kiss.jbugger.mappers.BugMapper;
 import com.adam.kiss.jbugger.security.UserPrincipal;
@@ -10,18 +12,13 @@ import com.adam.kiss.jbugger.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import utils.FormatHelper;
 
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequestMapping("/bugs")
@@ -243,5 +240,15 @@ public class BugController {
                 .stream()
                 .map(ViewChangeInBugDtoOut::mapChangeInBugToDto)
                 .collect(Collectors.toList());
+    }
+
+    @PutMapping("/bug/{bugId}/assignToMyself")
+    public void assignBugToUser(@PathVariable(name = "bugId")Integer bugId,
+                                @AuthenticationPrincipal UserPrincipal currentUserPrincipal) throws BugNotFoundException, UserIdNotValidException {
+        Bug bugToModify = bugService.getBugById(bugId);
+        User userToAssign = getUserByUserPrincipal(currentUserPrincipal);
+
+        bugService.assignBugToUser(bugToModify, userToAssign);
+
     }
 }
