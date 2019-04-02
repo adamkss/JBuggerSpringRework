@@ -70,6 +70,7 @@ public class BugMapper {
     public Bug mapUpdateBugInDtoToBug(Integer bugId, UpdateBugInDto updateBugInDto) throws BugNotFoundException {
         //change only the differences
         Bug bug = bugService.getBugById(bugId);
+        bug.setTitle(updateBugInDto.getTitle());
         bug.setAssignedTo(
                 userService.getUserByUsername(updateBugInDto.getAssignedToUsername())
         );
