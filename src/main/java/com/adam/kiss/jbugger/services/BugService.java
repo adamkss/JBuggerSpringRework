@@ -56,6 +56,9 @@ public class BugService {
     public void assignBugToUser(Bug bug, User user){
         bug.setAssignedTo(user);
         bugRepository.save(bug);
+    }
 
+    public void deleteBug(Integer bugId){
+        bugRepository.deleteById(bugId);
     }
 }
