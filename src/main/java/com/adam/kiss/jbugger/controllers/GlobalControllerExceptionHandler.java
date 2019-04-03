@@ -16,7 +16,8 @@ public class GlobalControllerExceptionHandler {
             BugNotFoundException.class,
             StatusNotFoundException.class,
             LabelNotFoundException.class,
-            UserIdNotValidException.class
+            UserIdNotValidException.class,
+            RoleNotFoundException.class
     })
     public void handleConflict() {
         // TODO: add right error message
