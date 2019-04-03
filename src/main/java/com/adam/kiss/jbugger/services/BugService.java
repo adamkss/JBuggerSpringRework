@@ -2,6 +2,7 @@ package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.*;
 import com.adam.kiss.jbugger.exceptions.BugNotFoundException;
+import com.adam.kiss.jbugger.exceptions.NoClosedStatusException;
 import com.adam.kiss.jbugger.repositories.BugRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public class BugService {
     private final BugRepository bugRepository;
     private final AttachmentService attachmentService;
+    private final StatusService statusService;
 
     public List<Bug> getAllBugs(String filter){
         return bugRepository.findAllFiltered(filter);
@@ -60,5 +62,13 @@ public class BugService {
 
     public void deleteBug(Integer bugId){
         bugRepository.deleteById(bugId);
+    }
+
+    public void closeBug(Integer bugId) throws BugNotFoundException, NoClosedStatusException {
+        Bug bugToClose = getBugById(bugId);
+        bugToClose.setStatus(
+                statusService.getClosedStatusIfExists()
+        );
+        bugRepository.save(bugToClose);
     }
 }

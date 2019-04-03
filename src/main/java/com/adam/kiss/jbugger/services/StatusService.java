@@ -1,12 +1,14 @@
 package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.exceptions.NoClosedStatusException;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.repositories.StatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class StatusService {
         return statusRepository.save(new Status(statusName, backgroundColor, 0));
     }
 
-    public Status createStatusWithOrder(String statusName, String backgroundColor, int order){
+    public Status createStatusWithOrder(String statusName, String backgroundColor, int order) {
         return statusRepository.save(new Status(statusName, backgroundColor, order));
     }
 
@@ -77,5 +79,18 @@ public class StatusService {
 
         statusOrderChanged.setOrderNr(newOrder);
         statusRepository.save(statusOrderChanged);
+    }
+
+    public Status getClosedStatusIfExists() throws NoClosedStatusException {
+        Status closedStatus = getAllStatuses().stream()
+                .filter(status -> status.getStatusName().equalsIgnoreCase("Closed"))
+                .collect(Collectors.toList())
+                .get(0);
+
+        if (closedStatus != null) {
+            return closedStatus;
+        } else {
+            throw new NoClosedStatusException();
+        }
     }
 }

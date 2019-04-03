@@ -244,7 +244,8 @@ public class BugController {
 
     @PutMapping("/bug/{bugId}/assignToMyself")
     public void assignBugToUser(@PathVariable(name = "bugId") Integer bugId,
-                                @AuthenticationPrincipal UserPrincipal currentUserPrincipal) throws BugNotFoundException, UserIdNotValidException {
+                                @AuthenticationPrincipal UserPrincipal currentUserPrincipal)
+            throws BugNotFoundException, UserIdNotValidException {
         Bug bugToModify = bugService.getBugById(bugId);
         User userToAssign = getUserByUserPrincipal(currentUserPrincipal);
 
@@ -254,5 +255,11 @@ public class BugController {
     @DeleteMapping("bug/{bugId}")
     public void deleteBug(@PathVariable(name = "bugId") Integer bugId) {
         bugService.deleteBug(bugId);
+    }
+
+    @PutMapping("bug/{bugId}/close")
+    public void closeBug(@PathVariable(name = "bugId") Integer bugId)
+            throws NoClosedStatusException, BugNotFoundException {
+        bugService.closeBug(bugId);
     }
 }
