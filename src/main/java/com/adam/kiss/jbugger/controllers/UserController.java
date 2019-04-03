@@ -2,6 +2,7 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.CreateUserDtoIn;
 import com.adam.kiss.jbugger.dtos.ViewUserDtoOut;
+import com.adam.kiss.jbugger.dtos.ViewUserForAdminDtoOut;
 import com.adam.kiss.jbugger.dtos.ViewUserShortDtoOut;
 import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.exceptions.RoleNotFoundException;
@@ -44,6 +45,12 @@ public class UserController {
         );
     }
 
+    @GetMapping("/adminInfo")
+    @Secured({"ROLE_ADM", "ROLE_PM"})
+    public List<ViewUserForAdminDtoOut> getAllUsersForProjectPage() {
+        return ViewUserForAdminDtoOut.mapToDtoList(userService.getAllUsers());
+    }
+
     @GetMapping("/namesAndUsernames")
     public List<UserWithNameAndUsernameProjection> getAllUsernames() {
         return userService.getAllUsersWithNamesAndUsernames();
@@ -79,7 +86,7 @@ public class UserController {
 
         return ResponseEntity
                 .created(
-                        new URI("/users/"  + createdUser.getId())
+                        new URI("/users/" + createdUser.getId())
                 )
                 .body(ViewUserShortDtoOut.mapToDto(createdUser));
     }
