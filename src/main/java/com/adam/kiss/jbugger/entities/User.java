@@ -10,22 +10,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@NamedQueries({
-        @NamedQuery(name = "findAllUsers",
-                query = "select e from User e"),
-        @NamedQuery(name = "findUserByUserName",
-                query = "select u from User u where u.username=:uname"),
-        @NamedQuery(name = "getAllUsersNames",
-                query = "select u.name from User u"),
-        @NamedQuery(name = "getAllUsernames",
-                query = "select u.username from User u"),
-        @NamedQuery(name = "getUsersWithCertainRole",
-                query = "SELECT u FROM User u WHERE :roleNeeded MEMBER  OF u.roles"),
-        @NamedQuery(name = "getUsersWithSpecificRoles",
-                query = "SELECT u FROM User u JOIN u.roles role WHERE role IN (:rolesAccepted)"),
-        @NamedQuery(name = "getUsersWithPatternInUsername",
-                query = "SELECT u.id FROM User u WHERE u.username LIKE :pattern")
-})
 @NoArgsConstructor
 @Data
 public class User {
@@ -49,13 +33,8 @@ public class User {
     @EqualsAndHashCode.Exclude
     private List<Notification> notifications = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    @EqualsAndHashCode.Exclude
-    private List<Role> roles = new ArrayList<Role>();
+    @ManyToOne
+    private Role role;
 
     private String username;
 
@@ -71,30 +50,17 @@ public class User {
     @EqualsAndHashCode.Exclude
     private List<ChangeInBug> changesDoneInBugs = new ArrayList<>();
 
-    public User(String name, String phoneNumber, String email, List<Role> roles, String passwordHash) {
+    public User(String name, String phoneNumber, String email, Role role, String passwordHash) {
 
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.roles = roles;
+        this.role = role;
         this.passwordHash = passwordHash;
     }
 
     @Override
     public String toString() {
         return username;
-    }
-
-    public String toUserDetailsString() {
-        StringBuilder toReturn = new StringBuilder();
-        toReturn.append("Name: ").append(name).append("\n");
-        toReturn.append("Phone Number: ").append(phoneNumber).append("\n");
-        toReturn.append("Email: ").append(email).append("\n");
-        toReturn.append("Roles: ");
-        roles.parallelStream().forEach(role -> {
-            toReturn.append(role.getRoleName()).append(" ");
-        });
-        toReturn.append("\n");
-        return toReturn.toString();
     }
 }

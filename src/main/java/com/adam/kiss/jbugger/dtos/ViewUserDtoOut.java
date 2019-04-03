@@ -26,7 +26,7 @@ public class ViewUserDtoOut {
 
     private List<Integer> notificationsIds = new ArrayList<>();
 
-    private List<Integer> rolesIds = new ArrayList<>();
+    private Integer rolesId;
 
     private String username;
 
@@ -41,9 +41,7 @@ public class ViewUserDtoOut {
                 .notificationsIds(
                         user.getNotifications().stream().map(Notification::getId).collect(Collectors.toList())
                 )
-                .rolesIds(
-                        user.getRoles().stream().map(Role::getId).collect(Collectors.toList())
-                )
+                .rolesId(user.getRole().getId())
                 .username(user.getUsername())
                 .bugsAssignedToTheUserIds(
                         user.getBugsAssignedToTheUser().stream().map(Bug::getId).collect(Collectors.toList())

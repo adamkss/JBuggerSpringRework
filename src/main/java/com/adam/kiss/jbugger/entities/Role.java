@@ -44,7 +44,7 @@ public class Role {
     private String roleName;
 
     @EqualsAndHashCode.Exclude
-    @ManyToMany(mappedBy = "roles")
+    @OneToMany(mappedBy = "role")
     private List<User> users = new ArrayList<User>();
 
     @ManyToMany()

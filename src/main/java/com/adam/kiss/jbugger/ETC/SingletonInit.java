@@ -74,7 +74,7 @@ public class SingletonInit {
         admin.setUserActivated(true);
         admin.setName("Admin Master");
         admin.setEmail("admin@msggroup.com");
-        admin.getRoles().add(Role.ADM_ROLE);
+        admin.setRole(Role.ADM_ROLE);
         admin.setPhoneNumber("0040720170752");
 
         User tester = new User();
@@ -83,7 +83,7 @@ public class SingletonInit {
         tester.setUserActivated(true);
         tester.setName("Tester Mester");
         tester.setEmail("tester@msggroup.com");
-        tester.getRoles().add(Role.TEST_ROLE);
+        tester.setRole(Role.TEST_ROLE);
         tester.setPhoneNumber("003145849999");
 
         User dev1 = new User();
@@ -92,7 +92,7 @@ public class SingletonInit {
         dev1.setUserActivated(true);
         dev1.setName("The DeveloperOne");
         dev1.setEmail("dev1@msggroup.com");
-        dev1.getRoles().add(Role.DEV_ROLE);
+        dev1.setRole(Role.DEV_ROLE);
         dev1.setPhoneNumber("004045849999");
 
         User dev2 = new User();
@@ -101,7 +101,7 @@ public class SingletonInit {
         dev2.setUserActivated(true);
         dev2.setName("Second Developer");
         dev2.setEmail("dev2@msggroup.com");
-        dev2.getRoles().add(Role.DEV_ROLE);
+        dev2.setRole(Role.DEV_ROLE);
         dev2.setPhoneNumber("004045839999");
 
         FakeDataGenerator.doGenerate(10, 20);

@@ -66,7 +66,7 @@ public class FakeDataGenerator {
 
         user.setUserActivated(true);
 
-        user.getRoles().add(Role.DEV_ROLE);
+        user.setRole(Role.DEV_ROLE);
 
         return user;
     }
