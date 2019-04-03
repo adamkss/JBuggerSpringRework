@@ -254,6 +254,7 @@ public class BugController {
     }
 
     @DeleteMapping("bug/{bugId}")
+    @Secured({"ROLE_ADM", "ROLE_PM"})
     public void deleteBug(@PathVariable(name = "bugId") Integer bugId) {
         bugService.deleteBug(bugId);
     }
