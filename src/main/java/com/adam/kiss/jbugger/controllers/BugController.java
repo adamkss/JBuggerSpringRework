@@ -12,6 +12,7 @@ import com.adam.kiss.jbugger.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -258,6 +259,7 @@ public class BugController {
     }
 
     @PutMapping("bug/{bugId}/close")
+    @Secured({"ROLE_ADM", "ROLE_PM"})
     public void closeBug(@PathVariable(name = "bugId") Integer bugId)
             throws NoClosedStatusException, BugNotFoundException {
         bugService.closeBug(bugId);
