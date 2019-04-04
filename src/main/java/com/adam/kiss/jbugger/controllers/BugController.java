@@ -1,10 +1,7 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.*;
-import com.adam.kiss.jbugger.entities.Bug;
-import com.adam.kiss.jbugger.entities.Label;
-import com.adam.kiss.jbugger.entities.Status;
-import com.adam.kiss.jbugger.entities.User;
+import com.adam.kiss.jbugger.entities.*;
 import com.adam.kiss.jbugger.exceptions.*;
 import com.adam.kiss.jbugger.mappers.BugMapper;
 import com.adam.kiss.jbugger.security.UserPrincipal;
@@ -261,8 +258,24 @@ public class BugController {
 
     @PutMapping("bug/{bugId}/close")
     @Secured({"ROLE_ADM", "ROLE_PM"})
-    public void closeBug(@PathVariable(name = "bugId") Integer bugId)
-            throws NoClosedStatusException, BugNotFoundException {
+    public void closeBug(@PathVariable(name = "bugId") Integer bugId,
+                         @AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws NoClosedStatusException, BugNotFoundException, UserIdNotValidException {
+        Bug affectedBug = bugService.getBugById(bugId);
+
         bugService.closeBug(bugId);
+        changeInBugService.createChangeInBug(
+                "Status changed.",
+                affectedBug,
+                getUserByUserPrincipal(userPrincipal),
+                "Status",
+                affectedBug.getStatus().getStatusName(),
+                "CLOSED"
+        );
+    }
+
+    @GetMapping("/closedStatistics")
+    public ClosedStatusStatistics getClosedStatistics() {
+        return bugService.calculateAverageCloseTimes();
     }
 }

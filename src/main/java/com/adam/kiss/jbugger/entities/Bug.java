@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class Bug {
     private String fixedInRevision;
 
     private LocalDate targetDate;
+
+    private LocalDateTime createdTime = LocalDateTime.now();
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

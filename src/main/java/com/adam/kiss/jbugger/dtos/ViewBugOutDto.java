@@ -4,6 +4,7 @@ import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.enums.Severity;
 import lombok.Builder;
 import lombok.Data;
+import utils.FormatHelper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,6 +27,8 @@ public class ViewBugOutDto {
     private Severity severity;
 
     private int createdByUserId;
+
+    private String createdAtDateTime;
 
     private String createdByUsername;
 
@@ -65,6 +68,7 @@ public class ViewBugOutDto {
                 .assignedToUsername(bug.getAssignedTo() != null ? bug.getAssignedTo().getUsername() : null)
                 .labels(bug.getLabels().stream().map(ViewLabelDtoOut::mapLabelToDto).collect(Collectors.toList()))
                 .createdByUsername(bug.getCreatedBy().getUsername())
+                .createdAtDateTime(FormatHelper.formatLocalDateTime(bug.getCreatedTime()))
                 .build();
     }
 
