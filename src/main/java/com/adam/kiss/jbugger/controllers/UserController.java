@@ -74,7 +74,7 @@ public class UserController {
 
     @PostMapping()
     @Secured({"ROLE_ADM", "ROLE_PM"})
-    public ResponseEntity<ViewUserShortDtoOut> createUser(@RequestBody CreateUserDtoIn createUserDtoIn)
+    public ResponseEntity<ViewUserForAdminDtoOut> createUser(@RequestBody CreateUserDtoIn createUserDtoIn)
             throws RoleNotFoundException, URISyntaxException, UserNotValidException {
         User createdUser = userService.createUser(
                 createUserDtoIn.getName(),
@@ -88,6 +88,6 @@ public class UserController {
                 .created(
                         new URI("/users/" + createdUser.getId())
                 )
-                .body(ViewUserShortDtoOut.mapToDto(createdUser));
+                .body(ViewUserForAdminDtoOut.mapToDto(createdUser));
     }
 }

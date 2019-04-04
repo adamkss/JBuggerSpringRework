@@ -58,6 +58,7 @@ public class UserService {
         newUser.setEmail(email);
         newUser.setPasswordHash(BCrypt.hashpw(password, BCrypt.gensalt()));
         newUser.setRole(role);
+        newUser.setUserActivated(true);
 
         String[] userNameParts = name.split(" ");
 
