@@ -66,15 +66,6 @@ public class BugController {
                 getUserByUserPrincipal(userPrincipal)
         );
 
-        changeInBugService.createChangeInBug(
-                "Status changed",
-                savedBug,
-                getUserByUserPrincipal(userPrincipal),
-                "STATUS",
-                "None",
-                "NEW"
-        );
-
         ViewBugOutDto viewBugOutDto = ViewBugOutDto.mapToDto(savedBug);
 
         return ResponseEntity.created(
@@ -281,7 +272,6 @@ public class BugController {
             throws NoClosedStatusException, BugNotFoundException, UserIdNotValidException {
         Bug affectedBug = bugService.getBugById(bugId);
 
-        bugService.closeBug(bugId);
         changeInBugService.createChangeInBug(
                 "Status changed.",
                 affectedBug,
@@ -290,6 +280,7 @@ public class BugController {
                 affectedBug.getStatus().getStatusName(),
                 "CLOSED"
         );
+        bugService.closeBug(bugId);
     }
 
     @GetMapping("/closedStatistics")

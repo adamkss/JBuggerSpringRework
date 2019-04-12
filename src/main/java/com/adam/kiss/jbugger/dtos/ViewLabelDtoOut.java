@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,12 +20,18 @@ public class ViewLabelDtoOut {
 
     private String backgroundColor;
 
-    public static ViewLabelDtoOut mapLabelToDto(Label label){
+    public static ViewLabelDtoOut mapLabelToDto(Label label) {
         return ViewLabelDtoOut.builder()
                 .id(label.getId())
                 .labelName(label.getLabelName())
                 .backgroundColor(label.getBackgroundColor())
                 .build();
+    }
+
+    public static List<ViewLabelDtoOut> mapLabelListToDtoList(List<Label> labels) {
+        return labels.stream()
+                .map(ViewLabelDtoOut::mapLabelToDto)
+                .collect(Collectors.toList());
     }
 }
 

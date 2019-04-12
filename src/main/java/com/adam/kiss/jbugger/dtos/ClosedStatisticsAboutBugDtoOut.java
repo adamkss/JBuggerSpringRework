@@ -14,6 +14,7 @@ public class ClosedStatisticsAboutBugDtoOut {
 
     private int bugId;
     private String bugTitle;
+    private String severity;
 
     private String createdDateTime;
     private String closedDateTime;
@@ -26,6 +27,7 @@ public class ClosedStatisticsAboutBugDtoOut {
     private String durationHours;
     private String durationMinutes;
 
+    private List<ViewLabelDtoOut> labels;
 
     public static ClosedStatisticsAboutBugDtoOut mapToDto(BugService.ClosedBugInfo closedBugInfo) {
         return ClosedStatisticsAboutBugDtoOut.builder()
@@ -39,6 +41,8 @@ public class ClosedStatisticsAboutBugDtoOut {
                 .durationDays(String.valueOf(closedBugInfo.getDuration().toDays()))
                 .durationHours(String.valueOf(closedBugInfo.getDuration().toHours()))
                 .durationMinutes(String.valueOf(closedBugInfo.getDuration().toMinutes()))
+                .labels(ViewLabelDtoOut.mapLabelListToDtoList(closedBugInfo.getBug().getLabels()))
+                .severity(closedBugInfo.getBug().getSeverity().name())
                 .build();
     }
 
