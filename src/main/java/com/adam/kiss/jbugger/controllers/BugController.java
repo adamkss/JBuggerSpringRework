@@ -66,6 +66,15 @@ public class BugController {
                 getUserByUserPrincipal(userPrincipal)
         );
 
+        changeInBugService.createChangeInBug(
+                "Status changed",
+                savedBug,
+                getUserByUserPrincipal(userPrincipal),
+                "STATUS",
+                "None",
+                "NEW"
+        );
+
         ViewBugOutDto viewBugOutDto = ViewBugOutDto.mapToDto(savedBug);
 
         return ResponseEntity.created(
@@ -235,6 +244,15 @@ public class BugController {
     public List<ViewChangeInBugDtoOut> getAllChangesOfABug(@PathVariable(name = "bugId") Integer bugId)
             throws BugNotFoundException {
         return bugService.getAllChangesOfABugById(bugId)
+                .stream()
+                .map(ViewChangeInBugDtoOut::mapChangeInBugToDto)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/bug/{bugId}/history/statuses")
+    public List<ViewChangeInBugDtoOut> getAllStatusChangesOfABug(@PathVariable(name = "bugId") Integer bugId)
+            throws BugNotFoundException {
+        return bugService.getAllStatusChangesOfABug(bugId)
                 .stream()
                 .map(ViewChangeInBugDtoOut::mapChangeInBugToDto)
                 .collect(Collectors.toList());

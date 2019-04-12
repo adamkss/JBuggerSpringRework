@@ -64,6 +64,20 @@ public class BugService {
                 .getChangesOfBug();
     }
 
+    public List<ChangeInBug> getAllStatusChangesOfABug(Integer bugId) throws BugNotFoundException {
+        return bugRepository
+                .findById(bugId).orElseThrow(BugNotFoundException::new)
+                .getChangesOfBug()
+                .stream()
+                .filter(changeInBug ->
+                {
+                    if (changeInBug.getFieldChanged() == null)
+                        return false;
+                    return changeInBug.getFieldChanged().equalsIgnoreCase("STATUS");
+                })
+                .collect(Collectors.toList());
+    }
+
     public void assignBugToUser(Bug bug, User user) {
         bug.setAssignedTo(user);
         bugRepository.save(bug);
@@ -87,7 +101,11 @@ public class BugService {
         getAllBugs("").forEach(bug -> {
             List<ChangeInBug> changesInBug = bug.getChangesOfBug()
                     .stream()
-                    .filter(changeInBug -> changeInBug.getFieldChanged().equalsIgnoreCase("STATUS"))
+                    .filter(changeInBug -> {
+                        if (changeInBug.getFieldChanged() == null)
+                            return false;
+                        return changeInBug.getFieldChanged().equalsIgnoreCase("STATUS");
+                    })
                     .collect(Collectors.toList());
 
             List<ChangeInBug> closedChanges = changesInBug
@@ -121,9 +139,18 @@ public class BugService {
         long totalMinutes = closedBugsInfo
                 .stream().map(ClosedBugInfo::getDuration).mapToLong(Duration::toMinutes).sum();
 
-        long averageDays = totalDays / closedBugsInfo.size();
-        long averageHours = totalHours / closedBugsInfo.size();
-        long averageMinutes = totalMinutes / closedBugsInfo.size();
+        long averageDays;
+        long averageHours;
+        long averageMinutes;
+        if (closedBugsInfo.isEmpty()) {
+            averageDays = 0;
+            averageHours = 0;
+            averageMinutes = 0;
+        } else {
+            averageDays = totalDays / closedBugsInfo.size();
+            averageHours = totalHours / closedBugsInfo.size();
+            averageMinutes = totalMinutes / closedBugsInfo.size();
+        }
 
         return new ClosedStatusStatistics(
                 ClosedStatisticsAboutBugDtoOut.mapToDtoList(closedBugsInfo),
