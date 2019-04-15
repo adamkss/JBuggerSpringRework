@@ -30,7 +30,6 @@ public class Notification {
     @ManyToOne
     private Bug bug;
 
-
     private LocalDateTime created;
 
     public Notification(NotificationType notificationType, String text) {

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -19,6 +20,9 @@ public class Comment {
     private Bug bug;
 
     private String comment;
+
+    @OneToMany(mappedBy = "parentComment")
+    private List<PartialCommentUserMention> partialCommentUserMentions;
 
     @ManyToOne
     private User author;
