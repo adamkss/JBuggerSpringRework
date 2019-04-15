@@ -1,9 +1,6 @@
 package com.adam.kiss.jbugger.controllers;
 
-import com.adam.kiss.jbugger.dtos.CreateUserDtoIn;
-import com.adam.kiss.jbugger.dtos.ViewUserDtoOut;
-import com.adam.kiss.jbugger.dtos.ViewUserForAdminDtoOut;
-import com.adam.kiss.jbugger.dtos.ViewUserShortDtoOut;
+import com.adam.kiss.jbugger.dtos.*;
 import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.exceptions.RoleNotFoundException;
 import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
@@ -89,5 +86,20 @@ public class UserController {
                         new URI("/users/" + createdUser.getId())
                 )
                 .body(ViewUserForAdminDtoOut.mapToDto(createdUser));
+    }
+
+    @GetMapping("/current/notifications")
+    public List<ViewNotificationDtoOut> getAllNotificationsOfUser(
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) throws UserIdNotValidException {
+        return ViewNotificationDtoOut.mapNotificationsListToDTOList(
+                userService.getAllNotificationsOfUser(userPrincipal.getId())
+        );
+    }
+
+    @GetMapping("/current/notifications/count")
+    public Integer getNumberOfNotificationsOfUser(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) throws UserIdNotValidException {
+        return userService.getNumberOfNotificationsOfUser(userPrincipal.getId());
     }
 }

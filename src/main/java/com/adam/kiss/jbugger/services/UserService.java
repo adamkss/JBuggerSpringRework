@@ -1,5 +1,6 @@
 package com.adam.kiss.jbugger.services;
 
+import com.adam.kiss.jbugger.entities.Notification;
 import com.adam.kiss.jbugger.entities.Role;
 import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
@@ -65,5 +66,13 @@ public class UserService {
         newUser.setUsername(getUsernameForUser(userNameParts[0], userNameParts[1]));
 
         return userRepository.save(newUser);
+    }
+
+    public List<Notification> getAllNotificationsOfUser(Integer userId) throws UserIdNotValidException {
+        return getUserById(userId).getNotifications();
+    }
+
+    public Integer getNumberOfNotificationsOfUser(Integer userId) throws UserIdNotValidException {
+        return getAllNotificationsOfUser(userId).size();
     }
 }

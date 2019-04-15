@@ -11,10 +11,12 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    public User findByUsername(String username);
+    User findByUsername(String username);
 
-    public List<UserWithNameAndUsernameProjection> findAllUsersWithNamesAndUsernamesProjectedBy();
+    List<UserWithNameAndUsernameProjection> findAllUsersWithNamesAndUsernamesProjectedBy();
 
-    @Query(value = "SELECT user FROM User user WHERE user.name LIKE %:searchString% OR user.username LIKE %:searchString%")
-    public List<UserWithNameAndUsernameProjection> findAllByNameSearchString(@Param("searchString") String searchString);
+    @Query(value = "SELECT user FROM User user WHERE user.name LIKE %:searchString% OR user.username LIKE " +
+            "%:searchString%")
+    List<UserWithNameAndUsernameProjection> findAllByNameSearchString(@Param("searchString") String searchString);
+
 }

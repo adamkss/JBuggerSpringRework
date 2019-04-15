@@ -11,9 +11,6 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "notifications")
-@NamedQueries(
-        @NamedQuery(name = "removeNotifications",query = "DELETE FROM Notification notif where notif.created <= :expireDate")
-)
 public class Notification {
     @GeneratedValue
     @Id
@@ -28,8 +25,11 @@ public class Notification {
     @ManyToMany(mappedBy = "notifications")
     private List<User> userList = new ArrayList<>();
 
+    boolean isRelatedToBug;
+
     @ManyToOne
     private Bug bug;
+
 
     private LocalDateTime created;
 
