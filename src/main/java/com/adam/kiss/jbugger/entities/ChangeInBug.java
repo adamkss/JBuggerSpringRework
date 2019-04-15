@@ -27,11 +27,11 @@ public class ChangeInBug {
 
     private boolean isFieldRelatedChange;
 
-    private String fieldChanged;
+    private String fieldChanged = "";
 
-    private String oldValue;
+    private String oldValue = "";
 
-    private String newValue;
+    private String newValue = "";
 
     public ChangeInBug(String changeText, Bug bug, User changeAuthor) {
         this.changeText = changeText;
