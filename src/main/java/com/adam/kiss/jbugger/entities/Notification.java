@@ -36,12 +36,14 @@ public class Notification {
         this.notificationType = notificationType;
         this.text = text;
         this.created = LocalDateTime.now();
+        this.isRelatedToBug = false;
     }
 
     public Notification(NotificationType notificationType, String text, LocalDateTime created) {
         this.notificationType = notificationType;
         this.text = text;
         this.created = created;
+        this.isRelatedToBug = false;
     }
 
     public Notification(NotificationType notificationType, String text, Bug bug) {
@@ -49,6 +51,7 @@ public class Notification {
         this.text = text;
         this.bug = bug;
         this.created = LocalDateTime.now();
+        this.isRelatedToBug = true;
     }
 
     public Notification() {

@@ -4,15 +4,12 @@ import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.entities.Comment;
 import com.adam.kiss.jbugger.entities.PartialCommentUserMention;
 import com.adam.kiss.jbugger.entities.User;
+import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
 import com.adam.kiss.jbugger.repositories.CommentRepository;
 import com.adam.kiss.jbugger.repositories.PartialCommentRepository;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.websocket.MessageHandler;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +20,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PartialCommentRepository partialCommentRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     // TODO :Add user here
     public Comment createComment(String commentMessage, Bug associatedBug, User author) {
@@ -41,6 +39,19 @@ public class CommentService {
 
         comment.setPartialCommentUserMentions(partialCommentUserMentions);
         commentRepository.save(comment);
+
+        partialCommentUserMentions
+                .stream()
+                .filter(partialCommentUserMention -> partialCommentUserMention.isUserRelevant())
+                .forEach(partialCommentUserMention -> {
+                    try {
+                        notificationService.sendNotificationUserWasMentioned(
+                                userService.getUserById(partialCommentUserMention.getUserId()),
+                                associatedBug
+                        );
+                    } catch (UserIdNotValidException e) {
+                    }
+                });
         return comment;
     }
 

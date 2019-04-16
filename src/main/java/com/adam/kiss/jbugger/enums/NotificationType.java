@@ -7,7 +7,8 @@ public enum NotificationType {
     BUG_UPDATED,
     BUG_CLOSED,
     BUG_STATUS_UPDATED,
-    USER_DEACTIVATED;
+    USER_DEACTIVATED,
+    USER_MENTIONED;
 
 
     @Override
