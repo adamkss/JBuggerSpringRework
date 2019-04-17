@@ -25,7 +25,7 @@ public class Notification {
     @ManyToMany(mappedBy = "notifications")
     private List<User> userList = new ArrayList<>();
 
-    boolean isRelatedToBug;
+    private boolean isRelatedToBug;
 
     @ManyToOne
     private Bug bug;

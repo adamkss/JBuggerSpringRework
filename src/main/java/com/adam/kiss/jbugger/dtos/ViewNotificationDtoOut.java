@@ -30,7 +30,7 @@ public class ViewNotificationDtoOut {
                 .id(notification.getId())
                 .notificationType(notification.getNotificationType().toString())
                 .text(notification.getText())
-                .isRelatedToBug(notification.isRelatedToBug())
+                .isRelatedToBug(notification.getBug() != null)
                 .createdTime(FormatHelper.formatLocalDateTime(
                         notification.getCreated()
                 ));

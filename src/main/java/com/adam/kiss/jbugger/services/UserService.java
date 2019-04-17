@@ -75,4 +75,9 @@ public class UserService {
     public Integer getNumberOfNotificationsOfUser(Integer userId) throws UserIdNotValidException {
         return getAllNotificationsOfUser(userId).size();
     }
+
+    public void addNotificationToUser(User user, Notification notification) {
+        user.getNotifications().add(notification);
+        userRepository.save(user);
+    }
 }

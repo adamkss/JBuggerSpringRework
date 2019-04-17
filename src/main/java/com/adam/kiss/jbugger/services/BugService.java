@@ -25,6 +25,7 @@ public class BugService {
     private final BugRepository bugRepository;
     private final AttachmentService attachmentService;
     private final StatusService statusService;
+    private final NotificationService notificationService;
 
     public List<Bug> getAllBugs(String filter) {
         return bugRepository.findAllFiltered(filter);
@@ -45,9 +46,11 @@ public class BugService {
         Bug bugToUpdate = bugToUpdateStatus.orElseThrow(BugNotFoundException::new);
         bugToUpdate.setStatus(status);
         bugRepository.save(bugToUpdate);
+        notificationService.sendNotificationUsersBugStatusWasUpdated(bugToUpdate.getCreatedBy(), bugToUpdate);
     }
 
     public Bug updateBug(Bug bugToUpdate) {
+        notificationService.sendNotificationUsersBugWasUpdated(bugToUpdate.getCreatedBy(), bugToUpdate);
         return bugRepository.save(bugToUpdate);
     }
 
@@ -93,6 +96,7 @@ public class BugService {
                 statusService.getClosedStatusIfExists()
         );
         bugRepository.save(bugToClose);
+        notificationService.sendNotificationUsersBugWasClosed(bugToClose.getCreatedBy(), bugToClose);
     }
 
     public ClosedStatusStatistics calculateAverageCloseTimes() {

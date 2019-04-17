@@ -93,7 +93,7 @@ public class UserController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) throws UserIdNotValidException {
         return ViewNotificationDtoOut.mapNotificationsListToDTOList(
-                userService.getAllNotificationsOfUser(userPrincipal.getId())
+                    userService.getAllNotificationsOfUser(userPrincipal.getId())
         );
     }
 

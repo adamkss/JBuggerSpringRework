@@ -87,13 +87,18 @@ public class BugController {
     public void updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
                                 @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn,
                                 @AuthenticationPrincipal UserPrincipal userPrincipal) throws BugNotFoundException,
-            StatusNotFoundException, UserIdNotValidException, NothingChangedException {
+            StatusNotFoundException, UserIdNotValidException, NothingChangedException, NoClosedStatusException {
         Bug affectedBug = bugService.getBugById(bugId);
 
         Status oldStatus = affectedBug.getStatus();
         Status newStatus = statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus());
         if (oldStatus.equals(newStatus)) {
             throw new NothingChangedException();
+        }
+
+        if(newStatus.getStatusName().equalsIgnoreCase("CLOSED")){
+            closeBug(bugId, userPrincipal);
+            return;
         }
 
         changeInBugService.createChangeInBug(
