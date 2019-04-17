@@ -27,6 +27,8 @@ public class Notification {
 
     private boolean isRelatedToBug;
 
+    private Boolean isSeen = false;
+
     @ManyToOne
     private Bug bug;
 

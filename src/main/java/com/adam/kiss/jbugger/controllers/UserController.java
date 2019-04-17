@@ -7,6 +7,7 @@ import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
 import com.adam.kiss.jbugger.exceptions.UserNotValidException;
 import com.adam.kiss.jbugger.projections.UserWithNameAndUsernameProjection;
 import com.adam.kiss.jbugger.security.UserPrincipal;
+import com.adam.kiss.jbugger.services.NotificationService;
 import com.adam.kiss.jbugger.services.RoleService;
 import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
     private final RoleService roleService;
+    private final NotificationService notificationService;
 
     @GetMapping
     public List<ViewUserDtoOut> getAllUser() {
@@ -93,13 +95,24 @@ public class UserController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) throws UserIdNotValidException {
         return ViewNotificationDtoOut.mapNotificationsListToDTOList(
-                    userService.getAllNotificationsOfUser(userPrincipal.getId())
+                notificationService.getAllNotificationsOfUser(
+                        userService.getUserById(userPrincipal.getId())
+                )
         );
+    }
+
+    @PutMapping("/current/notifications/seen")
+    public void userSawAllNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws UserIdNotValidException {
+        notificationService.userSawAllNotifications(userService.getUserById(userPrincipal.getId()));
     }
 
     @GetMapping("/current/notifications/count")
     public Integer getNumberOfNotificationsOfUser(
             @AuthenticationPrincipal UserPrincipal userPrincipal) throws UserIdNotValidException {
-        return userService.getNumberOfNotificationsOfUser(userPrincipal.getId());
+        return notificationService.getNumberOfNotificationsOfUser(
+                userService.getUserById(
+                        userPrincipal.getId()
+                ));
     }
 }

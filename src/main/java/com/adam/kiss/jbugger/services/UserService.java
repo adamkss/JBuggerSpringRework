@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import utils.UserHelper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,14 +67,6 @@ public class UserService {
         newUser.setUsername(getUsernameForUser(userNameParts[0], userNameParts[1]));
 
         return userRepository.save(newUser);
-    }
-
-    public List<Notification> getAllNotificationsOfUser(Integer userId) throws UserIdNotValidException {
-        return getUserById(userId).getNotifications();
-    }
-
-    public Integer getNumberOfNotificationsOfUser(Integer userId) throws UserIdNotValidException {
-        return getAllNotificationsOfUser(userId).size();
     }
 
     public void addNotificationToUser(User user, Notification notification) {

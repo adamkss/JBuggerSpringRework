@@ -4,9 +4,13 @@ import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.entities.Notification;
 import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.enums.NotificationType;
+import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
 import com.adam.kiss.jbugger.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,5 +56,33 @@ public class NotificationService {
         );
         notificationRepository.save(newNotification);
         userService.addNotificationToUser(mentionedUser, newNotification);
+    }
+
+    public List<Notification> getNotificationsWhichWereNotSeen(User user) {
+        return getAllNotificationsOfUser(user)
+                .stream()
+                .filter(notification -> !notification.getIsSeen())
+                .collect(Collectors.toList());
+    }
+
+    public void userSawAllNotifications(User user) {
+        getNotificationsWhichWereNotSeen(user)
+                .forEach(notification -> {
+                    notification.setIsSeen(true);
+                    notificationRepository.save(notification);
+                });
+    }
+
+    public Integer getNumberOfNotificationsOfUser(User user) {
+        return getNotificationsWhichWereNotSeen(
+                user
+        ).size();
+    }
+
+    public List<Notification> getAllNotificationsOfUser(User user) {
+        return notificationRepository.findAllByOrderByCreatedDesc()
+                .stream()
+                .filter(notification -> notification.getUserList().contains(user))
+                .collect(Collectors.toList());
     }
 }

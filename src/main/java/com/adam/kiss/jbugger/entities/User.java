@@ -18,9 +18,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-//    @Version
-//    private LocalDateTime versionDateTime;
-
     private String name;
 
     @Column(name = "phone_number")
