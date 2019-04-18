@@ -37,11 +37,15 @@ public class BugController {
     }
 
     @GetMapping
-    public List<ViewBugOutDto> getAllBugs(
+    public List<ViewBugWithStarredStarsOutDto> getAllBugs(
             @RequestParam(
                     name = "filter",
-                    defaultValue = "") String filter) {
-        return ViewBugOutDto.mapToDtoList(bugService.getAllBugs(filter));
+                    defaultValue = "") String filter,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) throws UserIdNotValidException {
+        return ViewBugWithStarredStarsOutDto.mapToDtoList(
+                bugService.getAllBugs(filter),
+                getUserByUserPrincipal(userPrincipal)
+        );
     }
 
     @GetMapping("/bug/{id}")
@@ -96,7 +100,7 @@ public class BugController {
             throw new NothingChangedException();
         }
 
-        if(newStatus.getStatusName().equalsIgnoreCase("CLOSED")){
+        if (newStatus.getStatusName().equalsIgnoreCase("CLOSED")) {
             closeBug(bugId, userPrincipal);
             return;
         }
@@ -291,5 +295,19 @@ public class BugController {
     @GetMapping("/closedStatistics")
     public ClosedStatusStatistics getClosedStatistics() {
         return bugService.calculateAverageCloseTimes();
+    }
+
+    @PutMapping("bug/{bugId}/interested")
+    public void userIsInterestedInBug(@PathVariable(name = "bugId") Integer bugId,
+                                      @AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws UserIdNotValidException, BugNotFoundException {
+        bugService.addInterestedUserToBug(userService.getUserById(userPrincipal.getId()), bugId);
+    }
+
+    @PutMapping("bug/{bugId}/uninterested")
+    public void userIsUninterestedInBug(@PathVariable(name = "bugId") Integer bugId,
+                                      @AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws UserIdNotValidException, BugNotFoundException {
+        bugService.removeInterestedUserFromBug(userService.getUserById(userPrincipal.getId()), bugId);
     }
 }

@@ -67,6 +67,9 @@ public class Bug {
     @OrderBy("timeOfChangeHappening DESC")
     private List<ChangeInBug> changesOfBug = new ArrayList<>();
 
+    @ManyToMany
+    private List<User> usersInterestedInChanges = new ArrayList<>();
+
     public Bug(String title, String description, String revision, String fixedInRevision, LocalDate targetDate, Severity severity, User createdBy, Status status, User assignedTo) {
         this.title = title;
         this.description = description;

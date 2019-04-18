@@ -36,6 +36,7 @@ public class NotificationService {
         );
         notificationRepository.save(newNotification);
         userService.addNotificationToUser(mentionedUser, newNotification);
+        userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotification);
     }
 
     public void sendNotificationUsersBugStatusWasUpdated(User mentionedUser, Bug bug) {
@@ -46,6 +47,7 @@ public class NotificationService {
         );
         notificationRepository.save(newNotification);
         userService.addNotificationToUser(mentionedUser, newNotification);
+        userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotification);
     }
 
     public void sendNotificationUsersBugWasClosed(User mentionedUser, Bug bug) {
@@ -56,6 +58,7 @@ public class NotificationService {
         );
         notificationRepository.save(newNotification);
         userService.addNotificationToUser(mentionedUser, newNotification);
+        userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotification);
     }
 
     public List<Notification> getNotificationsWhichWereNotSeen(User user) {

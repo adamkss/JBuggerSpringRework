@@ -167,6 +167,18 @@ public class BugService {
         );
     }
 
+    public void addInterestedUserToBug(User interestedUser, Integer bugId) throws BugNotFoundException {
+        Bug bug = getBugById(bugId);
+        bug.getUsersInterestedInChanges().add(interestedUser);
+        bugRepository.save(bug);
+    }
+
+    public void removeInterestedUserFromBug(User interestedUser, Integer bugId) throws BugNotFoundException {
+        Bug bug = getBugById(bugId);
+        bug.getUsersInterestedInChanges().remove(interestedUser);
+        bugRepository.save(bug);
+    }
+
     @Data
     @AllArgsConstructor
     public static class ClosedBugInfo {

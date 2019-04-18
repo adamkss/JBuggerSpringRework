@@ -73,4 +73,10 @@ public class UserService {
         user.getNotifications().add(notification);
         userRepository.save(user);
     }
+
+    public void addNotificationToUsers(List<User> users, Notification notification) {
+        users
+                .stream()
+                .forEach(user -> addNotificationToUser(user, notification));
+    }
 }

@@ -1,6 +1,7 @@
 package com.adam.kiss.jbugger.dtos;
 
 import com.adam.kiss.jbugger.entities.Bug;
+import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.enums.Severity;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
-public class ViewBugOutDto {
+public class ViewBugWithStarredStarsOutDto {
 
     private int id;
 
@@ -48,8 +49,10 @@ public class ViewBugOutDto {
 
     private List<ViewUserShortDtoOut> interestedUsers;
 
-    public static ViewBugOutDto mapToDto(Bug bug) {
-        return ViewBugOutDto.builder()
+    private boolean isCurrentUserInterestedInMe;
+
+    public static ViewBugWithStarredStarsOutDto mapToDto(Bug bug, User user) {
+        return ViewBugWithStarredStarsOutDto.builder()
                 .id(bug.getId())
                 .title(bug.getTitle())
                 .description(bug.getDescription())
@@ -71,6 +74,7 @@ public class ViewBugOutDto {
                 .labels(bug.getLabels().stream().map(ViewLabelDtoOut::mapLabelToDto).collect(Collectors.toList()))
                 .createdByUsername(bug.getCreatedBy().getUsername())
                 .createdAtDateTime(FormatHelper.formatLocalDateTime(bug.getCreatedTime()))
+                .isCurrentUserInterestedInMe(bug.getUsersInterestedInChanges().contains(user))
                 .interestedUsers(
                         bug.getUsersInterestedInChanges()
                                 .stream()
@@ -81,7 +85,7 @@ public class ViewBugOutDto {
                 .build();
     }
 
-    public static List<ViewBugOutDto> mapToDtoList(List<Bug> bugList) {
-        return bugList.stream().map(ViewBugOutDto::mapToDto).collect(Collectors.toList());
+    public static List<ViewBugWithStarredStarsOutDto> mapToDtoList(List<Bug> bugList, User user) {
+        return bugList.stream().map(bug -> mapToDto(bug, user)).collect(Collectors.toList());
     }
 }

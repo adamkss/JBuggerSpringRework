@@ -35,6 +35,7 @@ public class User {
     private List<Notification> notifications = new ArrayList<>();
 
     @ManyToOne
+    @EqualsAndHashCode.Exclude
     private Role role;
 
     private String username;
@@ -50,6 +51,10 @@ public class User {
     @OneToMany(mappedBy = "changeAuthor")
     @EqualsAndHashCode.Exclude
     private List<ChangeInBug> changesDoneInBugs = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "usersInterestedInChanges")
+    @EqualsAndHashCode.Exclude
+    private List<Bug> bugsUserIsInterestedIn = new ArrayList<>();
 
     public User(String name, String phoneNumber, String email, Role role, String passwordHash) {
 
