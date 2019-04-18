@@ -34,20 +34,32 @@ public class NotificationService {
                 "A bug you created was updated.",
                 bug
         );
+        Notification newNotificationForSubscribers = new Notification(
+                NotificationType.BUG_UPDATED,
+                "A bug you subscribed to has been updated.",
+                bug
+        );
         notificationRepository.save(newNotification);
+        notificationRepository.save(newNotificationForSubscribers);
         userService.addNotificationToUser(mentionedUser, newNotification);
-        userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotification);
+        userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotificationForSubscribers);
     }
 
     public void sendNotificationUsersBugStatusWasUpdated(User mentionedUser, Bug bug) {
-        Notification newNotification = new Notification(
+        Notification newNotificationForAuthor = new Notification(
                 NotificationType.BUG_UPDATED,
                 "A bug you created has new status.",
                 bug
         );
-        notificationRepository.save(newNotification);
-        userService.addNotificationToUser(mentionedUser, newNotification);
-        userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotification);
+        Notification newNotificationForSubscribers = new Notification(
+                NotificationType.BUG_UPDATED,
+                "A bug you subscribed to has a new status.",
+                bug
+        );
+        notificationRepository.save(newNotificationForAuthor);
+        notificationRepository.save(newNotificationForSubscribers);
+        userService.addNotificationToUser(mentionedUser, newNotificationForAuthor);
+        userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotificationForSubscribers);
     }
 
     public void sendNotificationUsersBugWasClosed(User mentionedUser, Bug bug) {
@@ -56,9 +68,16 @@ public class NotificationService {
                 "A bug you created has been closed.",
                 bug
         );
+        Notification newNotificationForSubscribers = new Notification(
+                NotificationType.BUG_CLOSED,
+                "A bug you subscribed to has been closed.",
+                bug
+        );
         notificationRepository.save(newNotification);
+        notificationRepository.save(newNotificationForSubscribers);
         userService.addNotificationToUser(mentionedUser, newNotification);
         userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotification);
+        userService.addNotificationToUsers(bug.getUsersInterestedInChanges(), newNotificationForSubscribers);
     }
 
     public List<Notification> getNotificationsWhichWereNotSeen(User user) {
