@@ -11,11 +11,13 @@ import java.util.List;
 @Entity
 @Data
 public class Status {
-    public Status(String statusName) {
+    public Status(Project project, String statusName) {
+        this.project = project;
         this.statusName = statusName;
     }
 
-    public Status(String statusName, String statusColor, int orderNr) {
+    public Status(Project project, String statusName, String statusColor, int orderNr) {
+        this.project = project;
         this.statusName = statusName;
         this.statusColor = statusColor;
         this.orderNr = orderNr;
@@ -39,6 +41,10 @@ public class Status {
 
     private int orderNr;
 
+    @ManyToOne
+    @JsonIgnore
+    private Project project;
+
     public void incrementOrderNr() {
         this.orderNr++;
     }
@@ -52,31 +58,37 @@ public class Status {
 
         static {
             PREDEFINED_STATUSES.add(new Status(
+                    null,
                     PredefinedStatusNames.NEW.toString(),
                     "#78909C",
                     0
             ));
             PREDEFINED_STATUSES.add(new Status(
+                    null,
                     PredefinedStatusNames.INFO_NEEDED.toString(),
                     "#F57F17",
                     1
             ));
             PREDEFINED_STATUSES.add(new Status(
+                    null,
                     PredefinedStatusNames.IN_PROGRESS.toString(),
                     "#4527A0",
                     2
             ));
             PREDEFINED_STATUSES.add(new Status(
+                    null,
                     PredefinedStatusNames.FIXED.toString(),
                     "#4CAF50",
                     3
             ));
             PREDEFINED_STATUSES.add(new Status(
+                    null,
                     PredefinedStatusNames.CLOSED.toString(),
                     "#795548",
                     4
             ));
             PREDEFINED_STATUSES.add(new Status(
+                    null,
                     PredefinedStatusNames.REJECTED.toString(),
                     "#D32F2F",
                     5

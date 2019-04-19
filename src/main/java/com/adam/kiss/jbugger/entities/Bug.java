@@ -63,14 +63,18 @@ public class Bug {
     @EqualsAndHashCode.Exclude
     private List<Label> labels = new ArrayList<>();
 
-    @OneToMany(mappedBy ="bugChangeIsAssociatedWith")
+    @OneToMany(mappedBy = "bugChangeIsAssociatedWith")
     @OrderBy("timeOfChangeHappening DESC")
     private List<ChangeInBug> changesOfBug = new ArrayList<>();
 
     @ManyToMany
     private List<User> usersInterestedInChanges = new ArrayList<>();
 
-    public Bug(String title, String description, String revision, String fixedInRevision, LocalDate targetDate, Severity severity, User createdBy, Status status, User assignedTo) {
+    @ManyToOne
+    private Project project;
+
+    public Bug(Project project, String title, String description, String revision, String fixedInRevision, LocalDate targetDate, Severity severity, User createdBy, Status status, User assignedTo) {
+        this.project = project;
         this.title = title;
         this.description = description;
         this.revision = revision;

@@ -24,7 +24,11 @@ public class Label {
     @ManyToMany(mappedBy = "labels")
     private List<Bug> bugsWithThisLabel;
 
-    public Label(String labelName, String backgroundColor) {
+    @ManyToOne
+    private Project project;
+
+    public Label(Project project, String labelName, String backgroundColor) {
+        this.project = project;
         this.labelName = labelName;
         this.backgroundColor = backgroundColor;
     }

@@ -5,6 +5,7 @@ import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.repositories.*;
 import com.adam.kiss.jbugger.enums.NotificationType;
 import com.adam.kiss.jbugger.enums.Severity;
+import com.adam.kiss.jbugger.services.ProjectService;
 import com.adam.kiss.jbugger.services.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
@@ -26,18 +27,23 @@ public class SingletonInit {
     private final StatusRepository statusRepository;
     private final LabelRepository labelRepository;
     private final StatusService statusService;
+    private final ProjectService projectService;
 
     @PostConstruct
     private void init() {
 
-        labelRepository.save(new Label("Frontend","#ff0000"));
-        labelRepository.save(new Label("Backend","#00ff00"));
-        labelRepository.save(new Label("DevOps","#0000ff"));
-        labelRepository.save(new Label("Testing","#ff00ff"));
+        Project project1 = new Project("AMDARIS");
+        projectService.createProject(project1);
+
+        labelRepository.save(new Label(project1, "Frontend", "#ff0000"));
+        labelRepository.save(new Label(project1, "Backend", "#00ff00"));
+        labelRepository.save(new Label(project1, "DevOps", "#0000ff"));
+        labelRepository.save(new Label(project1, "Testing", "#ff00ff"));
 
         Status.PredefinedStatuses.PREDEFINED_STATUSES.forEach(
                 predefinedStatus -> {
                     statusService.createStatusWithOrder(
+                            project1,
                             predefinedStatus.getStatusName(),
                             predefinedStatus.getStatusColor(),
                             predefinedStatus.getOrderNr()
@@ -115,17 +121,24 @@ public class SingletonInit {
         notificationRepository.save(notification1);
         //em.persist(notification2);
 
+
+        tester.getProjects().add(project1);
+        admin.getProjects().add(project1);
+        dev1.getProjects().add(project1);
+        dev2.getProjects().add(project1);
+
         userRepository.save(tester);
         userRepository.save(admin);
         userRepository.save(dev1);
         userRepository.save(dev2);
 
-        bugRepository.save(new Bug("Buggy Facebook", "The facebook main page is quite buggy", "1.0", null, LocalDate.now(), Severity.CRITICAL, dev1, statusService.getAllStatuses().get(0), dev2));
-        bugRepository.save(new Bug("Buggy Instagram", "The instagram main page is very buggy", "1.0", null, LocalDate.now(), Severity.CRITICAL, admin, statusService.getAllStatuses().get(1), dev1));
-        bugRepository.save(new Bug("Buggy Twitter", "The twitter is buggy", "2.0", "2.0", LocalDate.now().minusDays(1), Severity.HIGH, admin, statusService.getAllStatuses().get(2), dev2));
-        bugRepository.save(new Bug("Buggy Pinterest", "Pinterest is really buggy", "3.0", null, LocalDate.now().minusDays(10), Severity.LOW, admin, statusService.getAllStatuses().get(3), dev1));
-        bugRepository.save(new Bug("Buggy Uber", "Uber doesn't work!", "4.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatuses().get(4), admin));
-        bugRepository.save(new Bug("Bug in Autovit", "Autovit doesn't show the cars...", "1.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatuses().get(5), admin));
-        bugRepository.save(new Bug("Bug in WizzAir", "WizzAir planes don't fly", "2.0.1", null, LocalDate.now().minusDays(14), Severity.CRITICAL, dev1, statusService.getAllStatuses().get(0), dev1));
+
+        bugRepository.save(new Bug(project1, "Buggy Facebook", "The facebook main page is quite buggy", "1.0", null, LocalDate.now(), Severity.CRITICAL, dev1, statusService.getAllStatusesOfProject(project1).get(0), dev2));
+        bugRepository.save(new Bug(project1, "Buggy Instagram", "The instagram main page is very buggy", "1.0", null, LocalDate.now(), Severity.CRITICAL, admin, statusService.getAllStatusesOfProject(project1).get(1), dev1));
+        bugRepository.save(new Bug(project1, "Buggy Twitter", "The twitter is buggy", "2.0", "2.0", LocalDate.now().minusDays(1), Severity.HIGH, admin, statusService.getAllStatusesOfProject(project1).get(2), dev2));
+        bugRepository.save(new Bug(project1, "Buggy Pinterest", "Pinterest is really buggy", "3.0", null, LocalDate.now().minusDays(10), Severity.LOW, admin, statusService.getAllStatusesOfProject(project1).get(3), dev1));
+        bugRepository.save(new Bug(project1, "Buggy Uber", "Uber doesn't work!", "4.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatusesOfProject(project1).get(4), admin));
+        bugRepository.save(new Bug(project1, "Bug in Autovit", "Autovit doesn't show the cars...", "1.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatusesOfProject(project1).get(5), admin));
+        bugRepository.save(new Bug(project1, "Bug in WizzAir", "WizzAir planes don't fly", "2.0.1", null, LocalDate.now().minusDays(14), Severity.CRITICAL, dev1, statusService.getAllStatusesOfProject(project1).get(0), dev1));
     }
 }

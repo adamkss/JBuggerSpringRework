@@ -93,7 +93,7 @@ public class BugService {
     public void closeBug(Integer bugId) throws BugNotFoundException, NoClosedStatusException {
         Bug bugToClose = getBugById(bugId);
         bugToClose.setStatus(
-                statusService.getClosedStatusIfExists()
+                statusService.getClosedStatusIfExists(bugToClose.getProject())
         );
         bugRepository.save(bugToClose);
         notificationService.sendNotificationUsersBugWasClosed(bugToClose.getCreatedBy(), bugToClose);

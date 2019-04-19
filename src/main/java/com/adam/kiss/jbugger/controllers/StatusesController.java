@@ -5,7 +5,9 @@ import com.adam.kiss.jbugger.dtos.UpdateStatusColorDtoIn;
 import com.adam.kiss.jbugger.dtos.UpdateStatusNameDtoIn;
 import com.adam.kiss.jbugger.dtos.UpdateStatusOrderDtoIn;
 import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
+import com.adam.kiss.jbugger.services.ProjectService;
 import com.adam.kiss.jbugger.services.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,26 +21,35 @@ import java.util.List;
 public class StatusesController {
 
     private final StatusService statusService;
+    private final ProjectService projectService;
 
-    @GetMapping
-    public List<Status> getStatuses() {
-        return statusService.getAllStatuses();
+    @GetMapping("/{projectId}")
+    public List<Status> getStatuses(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        projectService.getProjectById(projectId)
+        ;
+        return statusService.getAllStatusesOfProject(projectService.getProjectById(projectId));
     }
 
-    @PostMapping
-    public Status createStatus(@RequestBody CreateStatusDtoIn createStatusDtoIn) {
-        return statusService.createStatus(createStatusDtoIn.getStatusName(), createStatusDtoIn.getStatusColor());
+    @PostMapping("/{projectId}")
+    public Status createStatus(
+            @PathVariable(name = "projectId")Integer projectId,
+            @RequestBody CreateStatusDtoIn createStatusDtoIn) throws ProjectNotFoundException {
+        return projectService.createStatusInProject(
+                projectId,
+                createStatusDtoIn.getStatusName(),
+                createStatusDtoIn.getStatusColor()
+        );
     }
 
-    @DeleteMapping("/{statusName}")
-    public void deleteStatus(@PathVariable(name = "statusName") String statusName) throws StatusNotFoundException {
-        statusService.deleteStatusWithBugs(statusName);
+    @DeleteMapping("/{statusId}")
+    public void deleteStatus(@PathVariable Integer statusId) throws StatusNotFoundException {
+        statusService.deleteStatusWithBugs(statusId);
     }
 
-    @PutMapping("/{statusName}/name")
-    public void updateStatusName(@PathVariable(name = "statusName") String statusNameOld,
+    @PutMapping("/{statusId}/name")
+    public void updateStatusName(@PathVariable Integer statusId,
                                  @RequestBody UpdateStatusNameDtoIn updateStatusNameDtoIn) throws StatusNotFoundException {
-        statusService.updateStatusName(statusNameOld, updateStatusNameDtoIn.getStatusName());
+        statusService.updateStatusName(statusId, updateStatusNameDtoIn.getStatusName());
     }
 
     @PutMapping("/{statusName}/color")
@@ -47,9 +58,13 @@ public class StatusesController {
         statusService.updateStatusColor(statusName, updateStatusColorDtoIn.getStatusColor());
     }
 
-    @PutMapping("/order")
-    public void updateStatusOrder(@RequestBody UpdateStatusOrderDtoIn updateStatusOrderDtoIn) throws StatusNotFoundException {
+    @PutMapping("/{projectId}/order")
+    public void updateStatusOrder(
+            @PathVariable Integer projectId,
+            @RequestBody UpdateStatusOrderDtoIn updateStatusOrderDtoIn
+    ) throws StatusNotFoundException, ProjectNotFoundException {
         statusService.reorderStatusesByChangedStatusOrder(
+                projectService.getProjectById(projectId),
                 updateStatusOrderDtoIn.getOldOrder(),
                 updateStatusOrderDtoIn.getNewOrder()
         );
