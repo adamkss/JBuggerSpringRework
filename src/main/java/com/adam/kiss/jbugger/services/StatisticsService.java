@@ -1,5 +1,6 @@
 package com.adam.kiss.jbugger.services;
 
+import com.adam.kiss.jbugger.entities.Project;
 import com.adam.kiss.jbugger.entities.StatisticOutputDataWithColor;
 import com.adam.kiss.jbugger.repositories.BugRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +12,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class StatisticsService {
-    private final LabelService labelService;
 
-    public List<StatisticOutputDataWithColor> getAssociatedNumberOfBugsForLabels() {
-        return labelService.getAllLabels().stream()
+    public List<StatisticOutputDataWithColor> getAssociatedNumberOfBugsForLabels(Project project) {
+        return project.getLabelsOfProject().stream()
                 .filter(label -> label.getBugsWithThisLabel().size() != 0)
                 .map(label -> new StatisticOutputDataWithColor(
                         label.getLabelName(),

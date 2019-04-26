@@ -14,5 +14,5 @@ public interface StatusRepository extends JpaRepository<Status, Integer> {
 
     public List<Status> findAllByProjectOrderByOrderNrAsc(Project project);
 
-    public Status findByOrderNr(int orderNr);
+    public Status findByOrderNrAndProject(int orderNr, Project project);
 }

@@ -50,32 +50,32 @@ public class StatusService {
     }
 
     public void updateStatusName(Integer oldStatusId, String newStatusName) throws StatusNotFoundException {
-        Status statusToUpdate =  getStatusById(oldStatusId);
+        Status statusToUpdate = getStatusById(oldStatusId);
         statusToUpdate.setStatusName(newStatusName);
         statusRepository.save(statusToUpdate);
     }
 
-    public void updateStatusColor(String statusName, String newStatusColor) throws StatusNotFoundException {
-        Status statusToUpdate = getStatusByStatusName(statusName);
+    public void updateStatusColor(Integer statusId, String newStatusColor) throws StatusNotFoundException {
+        Status statusToUpdate = getStatusById(statusId);
         statusToUpdate.setStatusColor(newStatusColor);
         statusRepository.save(statusToUpdate);
     }
 
     public void reorderStatusesByChangedStatusOrder(Project project, int oldOrder, int newOrder) throws StatusNotFoundException {
-        Status statusOrderChanged = this.statusRepository.findByOrderNr(oldOrder);
+        Status statusOrderChanged = this.statusRepository.findByOrderNrAndProject(oldOrder, project);
 
         List<Status> allStatuses = getAllStatusesOfProject(project);
 
         if (newOrder < oldOrder) {
             for (int i = newOrder; i < oldOrder; i++) {
-                Status currentStatus = statusRepository.findByOrderNr(i);
+                Status currentStatus = statusRepository.findByOrderNrAndProject(i, project);
                 currentStatus.incrementOrderNr();
             }
         }
 
         if (newOrder > oldOrder) {
             for (int i = oldOrder + 1; i <= newOrder; i++) {
-                Status currentStatus = statusRepository.findByOrderNr(i);
+                Status currentStatus = statusRepository.findByOrderNrAndProject(i, project);
                 currentStatus.decrementOrderNr();
             }
         }

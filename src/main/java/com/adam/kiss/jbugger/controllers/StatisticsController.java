@@ -1,12 +1,11 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.entities.StatisticOutputDataWithColor;
+import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
+import com.adam.kiss.jbugger.services.ProjectService;
 import com.adam.kiss.jbugger.services.StatisticsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,9 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatisticsController {
     private final StatisticsService statisticsService;
+    private final ProjectService projectService;
 
-    @GetMapping("/byLabels")
-    public List<StatisticOutputDataWithColor> getLabelsStatistics() {
-        return statisticsService.getAssociatedNumberOfBugsForLabels();
+    @GetMapping("/byLabels/{projectId}")
+    public List<StatisticOutputDataWithColor> getLabelsStatistics(@PathVariable Integer projectId)
+            throws ProjectNotFoundException {
+        return statisticsService.getAssociatedNumberOfBugsForLabels(projectService.getProjectById(projectId));
     }
 }

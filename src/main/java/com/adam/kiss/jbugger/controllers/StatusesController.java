@@ -52,10 +52,10 @@ public class StatusesController {
         statusService.updateStatusName(statusId, updateStatusNameDtoIn.getStatusName());
     }
 
-    @PutMapping("/{statusName}/color")
-    public void updateStatusName(@PathVariable(name = "statusName") String statusName,
+    @PutMapping("/{statusId}/color")
+    public void updateStatusName(@PathVariable Integer statusId,
                                  @RequestBody UpdateStatusColorDtoIn updateStatusColorDtoIn) throws StatusNotFoundException {
-        statusService.updateStatusColor(statusName, updateStatusColorDtoIn.getStatusColor());
+        statusService.updateStatusColor(statusId, updateStatusColorDtoIn.getStatusColor());
     }
 
     @PutMapping("/{projectId}/order")
