@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface StatusRepository extends JpaRepository<Status, Integer> {
-    public Optional<Status> findByStatusName(String statusName);
+    public Optional<Status> findByStatusNameAndProject(String statusName, Project project);
 
     public List<Status> findAllByProjectOrderByOrderNrAsc(Project project);
 

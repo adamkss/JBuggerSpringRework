@@ -34,16 +34,30 @@ public class SingletonInit {
 
         Project project1 = new Project("AMDARIS");
         projectService.createProject(project1);
+        Project project2 = new Project("BMW");
+        projectService.createProject(project2);
 
         labelRepository.save(new Label(project1, "Frontend", "#ff0000"));
         labelRepository.save(new Label(project1, "Backend", "#00ff00"));
         labelRepository.save(new Label(project1, "DevOps", "#0000ff"));
         labelRepository.save(new Label(project1, "Testing", "#ff00ff"));
 
+        labelRepository.save(new Label(project2, "Frontend2", "#ff0000"));
+        labelRepository.save(new Label(project2, "Backend2", "#00ff00"));
+        labelRepository.save(new Label(project2, "DevOps2", "#0000ff"));
+        labelRepository.save(new Label(project2, "Testing2", "#ff00ff"));
+
         Status.PredefinedStatuses.PREDEFINED_STATUSES.forEach(
                 predefinedStatus -> {
                     statusService.createStatusWithOrder(
                             project1,
+                            predefinedStatus.getStatusName(),
+                            predefinedStatus.getStatusColor(),
+                            predefinedStatus.getOrderNr()
+                    );
+
+                    statusService.createStatusWithOrder(
+                            project2,
                             predefinedStatus.getStatusName(),
                             predefinedStatus.getStatusColor(),
                             predefinedStatus.getOrderNr()
@@ -124,6 +138,7 @@ public class SingletonInit {
 
         tester.getProjects().add(project1);
         admin.getProjects().add(project1);
+        admin.getProjects().add(project2);
         dev1.getProjects().add(project1);
         dev2.getProjects().add(project1);
 
@@ -140,5 +155,7 @@ public class SingletonInit {
         bugRepository.save(new Bug(project1, "Buggy Uber", "Uber doesn't work!", "4.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatusesOfProject(project1).get(4), admin));
         bugRepository.save(new Bug(project1, "Bug in Autovit", "Autovit doesn't show the cars...", "1.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatusesOfProject(project1).get(5), admin));
         bugRepository.save(new Bug(project1, "Bug in WizzAir", "WizzAir planes don't fly", "2.0.1", null, LocalDate.now().minusDays(14), Severity.CRITICAL, dev1, statusService.getAllStatusesOfProject(project1).get(0), dev1));
+        bugRepository.save(new Bug(project2, "Bug in Autovit", "Autovit doesn't show the cars...", "1.0", null, LocalDate.now().minusDays(25), Severity.HIGH, tester, statusService.getAllStatusesOfProject(project2).get(5), admin));
+        bugRepository.save(new Bug(project2, "Bug in WizzAir", "WizzAir planes don't fly", "2.0.1", null, LocalDate.now().minusDays(14), Severity.CRITICAL, dev1, statusService.getAllStatusesOfProject(project2).get(0), dev1));
     }
 }

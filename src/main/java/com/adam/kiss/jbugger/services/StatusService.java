@@ -40,8 +40,8 @@ public class StatusService {
         return statusRepository.save(new Status(project, statusName, backgroundColor, order));
     }
 
-    public Status getStatusByStatusName(String statusName) throws StatusNotFoundException {
-        return statusRepository.findByStatusName(statusName).orElseThrow(StatusNotFoundException::new);
+    public Status getStatusByStatusName(Project project, String statusName) throws StatusNotFoundException {
+        return statusRepository.findByStatusNameAndProject(statusName, project).orElseThrow(StatusNotFoundException::new);
     }
 
     public void deleteStatusWithBugs(Integer statusId) throws StatusNotFoundException {

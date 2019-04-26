@@ -68,6 +68,10 @@ public class BugController {
         createBugDtoIn.setCreatedByUsername(userPrincipal.getUsername());
 
         Bug mappedBug = bugMapper.mapCreateBugDtoInToBug(createBugDtoIn);
+        mappedBug.setStatus(statusService.getStatusByStatusName(
+                projectService.getProjectById(projectId),
+                createBugDtoIn.getStatus())
+        );
         Bug savedBug = projectService.createBugInProject(projectId, mappedBug);
 
         changeInBugService.createChangeInBug(
@@ -91,7 +95,10 @@ public class BugController {
         Bug affectedBug = bugService.getBugById(bugId);
 
         Status oldStatus = affectedBug.getStatus();
-        Status newStatus = statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus());
+        Status newStatus = statusService.getStatusByStatusName(
+                affectedBug.getProject(),
+                updateBugStatusDTOIn.getNewStatus()
+        );
         if (oldStatus.equals(newStatus)) {
             throw new NothingChangedException();
         }
@@ -288,9 +295,9 @@ public class BugController {
         bugService.closeBug(bugId);
     }
 
-    @GetMapping("/closedStatistics")
-    public ClosedStatusStatistics getClosedStatistics() {
-        return bugService.calculateAverageCloseTimes();
+    @GetMapping("/closedStatistics/{projectId}")
+    public ClosedStatusStatistics getClosedStatistics(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        return bugService.calculateAverageCloseTimes(projectService.getProjectById(projectId));
     }
 
     @PutMapping("bug/{bugId}/interested")

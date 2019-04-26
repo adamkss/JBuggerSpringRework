@@ -30,8 +30,8 @@ public class LabelController {
     }
 
     @GetMapping("/project/{projectId}")
-    public List<ViewLabelDtoOut> getAllLabelsOfProject() {
-        return labelService.getAllLabels()
+    public List<ViewLabelDtoOut> getAllLabelsOfProject(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        return projectService.getProjectById(projectId).getLabelsOfProject()
                 .stream()
                 .map(ViewLabelDtoOut::mapLabelToDto)
                 .collect(Collectors.toList());

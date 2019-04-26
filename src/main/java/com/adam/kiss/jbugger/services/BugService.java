@@ -99,10 +99,10 @@ public class BugService {
         notificationService.sendNotificationUsersBugWasClosed(bugToClose.getCreatedBy(), bugToClose);
     }
 
-    public ClosedStatusStatistics calculateAverageCloseTimes() {
+    public ClosedStatusStatistics calculateAverageCloseTimes(Project project) {
         List<ClosedBugInfo> closedBugsInfo = new ArrayList<>();
 
-        getAllBugs("").forEach(bug -> {
+        project.getBugs().forEach(bug -> {
             List<ChangeInBug> changesInBug = bug.getChangesOfBug()
                     .stream()
                     .filter(changeInBug -> {
