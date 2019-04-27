@@ -10,6 +10,7 @@ import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.services.ProjectService;
 import com.adam.kiss.jbugger.services.StatusService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class StatusesController {
     }
 
     @PostMapping("/{projectId}")
+    @Secured({"ROLE_ADM", "ROLE_PM"})
     public Status createStatus(
             @PathVariable(name = "projectId")Integer projectId,
             @RequestBody CreateStatusDtoIn createStatusDtoIn) throws ProjectNotFoundException {
@@ -42,17 +44,20 @@ public class StatusesController {
     }
 
     @DeleteMapping("/{statusId}")
+    @Secured({"ROLE_ADM", "ROLE_PM"})
     public void deleteStatus(@PathVariable Integer statusId) throws StatusNotFoundException {
         statusService.deleteStatusWithBugs(statusId);
     }
 
     @PutMapping("/{statusId}/name")
+    @Secured({"ROLE_ADM", "ROLE_PM"})
     public void updateStatusName(@PathVariable Integer statusId,
                                  @RequestBody UpdateStatusNameDtoIn updateStatusNameDtoIn) throws StatusNotFoundException {
         statusService.updateStatusName(statusId, updateStatusNameDtoIn.getStatusName());
     }
 
     @PutMapping("/{statusId}/color")
+    @Secured({"ROLE_ADM", "ROLE_PM"})
     public void updateStatusName(@PathVariable Integer statusId,
                                  @RequestBody UpdateStatusColorDtoIn updateStatusColorDtoIn) throws StatusNotFoundException {
         statusService.updateStatusColor(statusId, updateStatusColorDtoIn.getStatusColor());
