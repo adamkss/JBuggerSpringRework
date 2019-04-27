@@ -64,6 +64,7 @@ public class StatusesController {
     }
 
     @PutMapping("/{projectId}/order")
+    @Secured({"ROLE_ADM", "ROLE_PM", "ROLE_DEV"})
     public void updateStatusOrder(
             @PathVariable Integer projectId,
             @RequestBody UpdateStatusOrderDtoIn updateStatusOrderDtoIn
