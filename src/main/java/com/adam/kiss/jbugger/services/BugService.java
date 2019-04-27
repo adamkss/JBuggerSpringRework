@@ -93,16 +93,16 @@ public class BugService {
     public void closeBug(Integer bugId) throws BugNotFoundException, NoClosedStatusException {
         Bug bugToClose = getBugById(bugId);
         bugToClose.setStatus(
-                statusService.getClosedStatusIfExists()
+                statusService.getClosedStatusIfExists(bugToClose.getProject())
         );
         bugRepository.save(bugToClose);
         notificationService.sendNotificationUsersBugWasClosed(bugToClose.getCreatedBy(), bugToClose);
     }
 
-    public ClosedStatusStatistics calculateAverageCloseTimes() {
+    public ClosedStatusStatistics calculateAverageCloseTimes(Project project) {
         List<ClosedBugInfo> closedBugsInfo = new ArrayList<>();
 
-        getAllBugs("").forEach(bug -> {
+        project.getBugs().forEach(bug -> {
             List<ChangeInBug> changesInBug = bug.getChangesOfBug()
                     .stream()
                     .filter(changeInBug -> {

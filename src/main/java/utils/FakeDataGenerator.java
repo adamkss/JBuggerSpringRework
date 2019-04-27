@@ -39,7 +39,7 @@ public class FakeDataGenerator {
 
     }
 
-    private static User generateNewUser() {
+    private static User generateNewUser(Project project) {
         User user = new User();
         Random generator = new Random();
         String prenume = FIRST_NAMES[generator.nextInt(FIRST_NAMES.length)];
@@ -68,10 +68,12 @@ public class FakeDataGenerator {
 
         user.setRole(Role.DEV_ROLE);
 
+        user.getProjects().add(project);
+
         return user;
     }
 
-    private static Bug generateNewBug() {
+    private static Bug generateNewBug(Project project) {
         Bug bug = new Bug();
         Random random = new Random();
         bug.setTitle(BUG_TITLES_PREFIX[random.nextInt(BUG_TITLES_PREFIX.length)]+BUG_TITLES_SUBJECT[random.nextInt(BUG_TITLES_SUBJECT.length)]);
@@ -82,16 +84,17 @@ public class FakeDataGenerator {
         bug.setTargetDate(LocalDate.now().plusDays(random.nextInt(100)));
         bug.setCreatedBy(USERS.get(random.nextInt(USERS.size())));
         bug.setAssignedTo(USERS.get(random.nextInt(USERS.size())));
+        bug.setProject(project);
 
         return bug;
     }
 
-    public static void doGenerate(int nrUsers,int nrBugs){
+    public static void doGenerate(int nrUsers,int nrBugs, Project project){
         for(int i=0;i<nrUsers;i++){
-            USERS.add(generateNewUser());
+            USERS.add(generateNewUser(project));
         }
         for(int i=0;i<nrBugs;i++){
-            BUGS.add(generateNewBug());
+            BUGS.add(generateNewBug(project));
         }
     }
 

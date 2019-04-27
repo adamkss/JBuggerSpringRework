@@ -31,38 +31,48 @@ public class BugController {
     private final StatusService statusService;
     private final LabelService labelService;
     private final ChangeInBugService changeInBugService;
+    private final ProjectService projectService;
 
     private User getUserByUserPrincipal(UserPrincipal userPrincipal) throws UserIdNotValidException {
         return userService.getUserById(userPrincipal.getId());
     }
 
-    @GetMapping
+    @GetMapping("/{projectId}")
     public List<ViewBugWithStarredStarsOutDto> getAllBugs(
+            @PathVariable(name = "projectId") Integer projectId,
             @RequestParam(
                     name = "filter",
                     defaultValue = "") String filter,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) throws UserIdNotValidException {
+            @AuthenticationPrincipal UserPrincipal userPrincipal)
+            throws UserIdNotValidException, ProjectNotFoundException {
         return ViewBugWithStarredStarsOutDto.mapToDtoList(
-                bugService.getAllBugs(filter),
+                projectService.getAllBugsOfProject(projectId),
                 getUserByUserPrincipal(userPrincipal)
         );
     }
 
     @GetMapping("/bug/{id}")
-    public ViewBugOutDto getBugById(@PathVariable(name = "id") Integer id) throws BugNotFoundException {
+    public ViewBugOutDto getBugById(
+            @PathVariable(name = "id") Integer id) throws BugNotFoundException {
         Bug bug = bugService.getBugById(id);
         return ViewBugOutDto.mapToDto(bug);
     }
 
-    @PostMapping
+    @PostMapping("/{projectId}")
     @SneakyThrows
-    public ResponseEntity<ViewBugOutDto> createBug(@RequestBody CreateBugDtoIn createBugDtoIn,
-                                                   @AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<ViewBugOutDto> createBug(
+            @PathVariable(name = "projectId") Integer projectId,
+            @RequestBody CreateBugDtoIn createBugDtoIn,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
         //TODO: Temporary, just for testing UI. No security yet.
         createBugDtoIn.setCreatedByUsername(userPrincipal.getUsername());
 
         Bug mappedBug = bugMapper.mapCreateBugDtoInToBug(createBugDtoIn);
-        Bug savedBug = bugService.createBug(mappedBug);
+        mappedBug.setStatus(statusService.getStatusByStatusName(
+                projectService.getProjectById(projectId),
+                createBugDtoIn.getStatus())
+        );
+        Bug savedBug = projectService.createBugInProject(projectId, mappedBug);
 
         changeInBugService.createChangeInBug(
                 "Bug created.",
@@ -77,16 +87,6 @@ public class BugController {
         ).body(viewBugOutDto);
     }
 
-    @GetMapping("/bugStatuses")
-    public ResponseEntity<List<ViewStatusDtoOut>> getAllBugStatuses() {
-        List<ViewStatusDtoOut> statusDtoOuts = statusService.getAllStatuses()
-                .stream()
-                .map(ViewStatusDtoOut::mapStatusToDTO)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(statusDtoOuts);
-    }
-
     @PutMapping("/bug/{bugId}/status")
     public void updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
                                 @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn,
@@ -95,7 +95,10 @@ public class BugController {
         Bug affectedBug = bugService.getBugById(bugId);
 
         Status oldStatus = affectedBug.getStatus();
-        Status newStatus = statusService.getStatusByStatusName(updateBugStatusDTOIn.getNewStatus());
+        Status newStatus = statusService.getStatusByStatusName(
+                affectedBug.getProject(),
+                updateBugStatusDTOIn.getNewStatus()
+        );
         if (oldStatus.equals(newStatus)) {
             throw new NothingChangedException();
         }
@@ -292,9 +295,9 @@ public class BugController {
         bugService.closeBug(bugId);
     }
 
-    @GetMapping("/closedStatistics")
-    public ClosedStatusStatistics getClosedStatistics() {
-        return bugService.calculateAverageCloseTimes();
+    @GetMapping("/closedStatistics/{projectId}")
+    public ClosedStatusStatistics getClosedStatistics(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        return bugService.calculateAverageCloseTimes(projectService.getProjectById(projectId));
     }
 
     @PutMapping("bug/{bugId}/interested")
@@ -306,7 +309,7 @@ public class BugController {
 
     @PutMapping("bug/{bugId}/uninterested")
     public void userIsUninterestedInBug(@PathVariable(name = "bugId") Integer bugId,
-                                      @AuthenticationPrincipal UserPrincipal userPrincipal)
+                                        @AuthenticationPrincipal UserPrincipal userPrincipal)
             throws UserIdNotValidException, BugNotFoundException {
         bugService.removeInterestedUserFromBug(userService.getUserById(userPrincipal.getId()), bugId);
     }

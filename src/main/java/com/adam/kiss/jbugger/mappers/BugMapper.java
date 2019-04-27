@@ -48,9 +48,6 @@ public class BugMapper {
         //Fields not present in the DTO
         bug.setRevision("1.0");
 
-        Status status = statusService.getStatusByStatusName(createBugDtoIn.getStatus());
-        bug.setStatus(status);
-
         bug.setLabels(
                 createBugDtoIn.getLabelsIds()
                 .stream()
