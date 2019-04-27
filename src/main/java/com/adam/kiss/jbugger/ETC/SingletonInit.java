@@ -124,7 +124,7 @@ public class SingletonInit {
         dev2.setRole(Role.DEV_ROLE);
         dev2.setPhoneNumber("004045839999");
 
-        FakeDataGenerator.doGenerate(10, 20);
+        FakeDataGenerator.doGenerate(10, 20, project1);
         FakeDataGenerator.getUSERS().forEach(user -> userRepository.save(user));
 //        FakeDataGenerator.getBUGS().forEach(bug -> bugRepository.save(bug));
 

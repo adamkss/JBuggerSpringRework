@@ -1,5 +1,6 @@
 package com.adam.kiss.jbugger.repositories;
 
+import com.adam.kiss.jbugger.entities.Project;
 import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.projections.UserWithNameAndUsernameProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Integer> {
     User findByUsername(String username);
 
-    List<UserWithNameAndUsernameProjection> findAllUsersWithNamesAndUsernamesProjectedBy();
+    List<UserWithNameAndUsernameProjection> findByProjectsContains(Project project);
 
     @Query(value = "SELECT user FROM User user WHERE user.name LIKE %:searchString% OR user.username LIKE " +
             "%:searchString%")

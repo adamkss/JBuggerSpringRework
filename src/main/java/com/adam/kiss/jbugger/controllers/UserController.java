@@ -2,12 +2,14 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.*;
 import com.adam.kiss.jbugger.entities.User;
+import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
 import com.adam.kiss.jbugger.exceptions.RoleNotFoundException;
 import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
 import com.adam.kiss.jbugger.exceptions.UserNotValidException;
 import com.adam.kiss.jbugger.projections.UserWithNameAndUsernameProjection;
 import com.adam.kiss.jbugger.security.UserPrincipal;
 import com.adam.kiss.jbugger.services.NotificationService;
+import com.adam.kiss.jbugger.services.ProjectService;
 import com.adam.kiss.jbugger.services.RoleService;
 import com.adam.kiss.jbugger.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
     private final RoleService roleService;
+    private final ProjectService projectService;
     private final NotificationService notificationService;
 
     @GetMapping
@@ -50,9 +53,12 @@ public class UserController {
         return ViewUserForAdminDtoOut.mapToDtoList(userService.getAllUsers());
     }
 
-    @GetMapping("/namesAndUsernames")
-    public List<UserWithNameAndUsernameProjection> getAllUsernames() {
-        return userService.getAllUsersWithNamesAndUsernames();
+    @GetMapping("/namesAndUsernames/{projectId}")
+    public List<UserWithNameAndUsernameProjection> getAllUsernames(@PathVariable Integer projectId)
+            throws ProjectNotFoundException {
+        return userService.getAllUsersWithNamesAndUsernames(
+                projectService.getProjectById(projectId)
+        );
     }
 
     @GetMapping("/byFilterStringInName/{filterString}")

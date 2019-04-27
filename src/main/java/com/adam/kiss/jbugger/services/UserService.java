@@ -1,6 +1,7 @@
 package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.Notification;
+import com.adam.kiss.jbugger.entities.Project;
 import com.adam.kiss.jbugger.entities.Role;
 import com.adam.kiss.jbugger.entities.User;
 import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
@@ -28,8 +29,8 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(UserIdNotValidException::new);
     }
 
-    public List<UserWithNameAndUsernameProjection> getAllUsersWithNamesAndUsernames() {
-        return userRepository.findAllUsersWithNamesAndUsernamesProjectedBy();
+    public List<UserWithNameAndUsernameProjection> getAllUsersWithNamesAndUsernames(Project project) {
+        return userRepository.findByProjectsContains(project);
     }
 
     public User getUserByUsername(String username) {
