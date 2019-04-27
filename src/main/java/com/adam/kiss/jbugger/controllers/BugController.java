@@ -8,11 +8,15 @@ import com.adam.kiss.jbugger.security.UserPrincipal;
 import com.adam.kiss.jbugger.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -32,6 +36,7 @@ public class BugController {
     private final LabelService labelService;
     private final ChangeInBugService changeInBugService;
     private final ProjectService projectService;
+    private final SecurityService securityService;
 
     private User getUserByUserPrincipal(UserPrincipal userPrincipal) throws UserIdNotValidException {
         return userService.getUserById(userPrincipal.getId());
@@ -88,10 +93,11 @@ public class BugController {
     }
 
     @PutMapping("/bug/{bugId}/status")
-    public void updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
+    public ResponseEntity updateBugStatus(@PathVariable(name = "bugId") Integer bugId,
                                 @RequestBody UpdateBugStatusDTOIn updateBugStatusDTOIn,
-                                @AuthenticationPrincipal UserPrincipal userPrincipal) throws BugNotFoundException,
-            StatusNotFoundException, UserIdNotValidException, NothingChangedException, NoClosedStatusException {
+                                @AuthenticationPrincipal UserPrincipal userPrincipal,
+                                HttpServletResponse httpServletResponse) throws BugNotFoundException,
+            StatusNotFoundException, UserIdNotValidException, NothingChangedException, NoClosedStatusException, IOException {
         Bug affectedBug = bugService.getBugById(bugId);
 
         Status oldStatus = affectedBug.getStatus();
@@ -104,8 +110,13 @@ public class BugController {
         }
 
         if (newStatus.getStatusName().equalsIgnoreCase("CLOSED")) {
-            closeBug(bugId, userPrincipal);
-            return;
+            if (securityService.isUserAdmin(userPrincipal) || securityService.isUserPM(userPrincipal))
+            {
+                closeBug(bugId, userPrincipal);
+                return ResponseEntity.ok().build();
+            }
+            else
+                return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
 
         changeInBugService.createChangeInBug(
@@ -118,6 +129,7 @@ public class BugController {
         );
 
         bugService.updateBugStatus(bugId, newStatus);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/bug/{bugId}")
