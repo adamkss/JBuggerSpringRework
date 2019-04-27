@@ -8,6 +8,7 @@ import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
 import com.adam.kiss.jbugger.services.LabelService;
 import com.adam.kiss.jbugger.services.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class LabelController {
     }
 
     @PostMapping("/{projectId}")
+    @Secured({"ROLE_ADM", "ROLE_PM", "ROLE_DEV"})
     public ViewLabelDtoOut createLabel(
             @PathVariable(name = "projectId") Integer projectId,
             @RequestBody CreateLabelDtoIn createLabelDtoIn)
