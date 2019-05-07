@@ -1,7 +1,9 @@
 package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.*;
+import com.adam.kiss.jbugger.entities.Project;
 import com.adam.kiss.jbugger.entities.User;
+import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
 import com.adam.kiss.jbugger.exceptions.RoleNotFoundException;
 import com.adam.kiss.jbugger.exceptions.UserIdNotValidException;
 import com.adam.kiss.jbugger.exceptions.UserNotValidException;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/projects")
@@ -41,4 +44,43 @@ public class ProjectController {
         return ViewProjectShortOutDto.mapToDtoList(user.getProjects());
     }
 
+    @GetMapping("/{projectId}/members")
+    public List<ViewUserShortDtoOut> getAllMembersOfAProject(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        return projectService.getProjectById(projectId)
+                .getUsersOfProject()
+                .stream()
+                .map(ViewUserShortDtoOut::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @PutMapping("/{projectId}/members/{userId}")
+    public void assignUserToProject(@PathVariable Integer projectId,
+                                        @PathVariable Integer userId) throws ProjectNotFoundException, UserIdNotValidException {
+        Project project = projectService.getProjectById(projectId);
+        User user = userService.getUserById(userId);
+        projectService.addUserToProject(user, project);
+    }
+
+    @DeleteMapping("/{projectId}/members/{userId}")
+    public void unassignUserFromProject(@PathVariable Integer projectId,
+                                    @PathVariable Integer userId) throws ProjectNotFoundException, UserIdNotValidException {
+        Project project = projectService.getProjectById(projectId);
+        User user = userService.getUserById(userId);
+        projectService.removeUserFromProject(user, project);
+    }
+
+    @GetMapping("/{projectId}/notMembers")
+    public List<ViewUserShortDtoOut> getAllNotYetMembersOfAProject(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        return projectService.getAllUsersNotPartOfProject(projectId)
+                .stream()
+                .map(ViewUserShortDtoOut::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @PostMapping
+    public ViewProjectShortOutDto createProject(@RequestBody CreateProjectDtoIn projectDtoIn) {
+        return ViewProjectShortOutDto.mapToDto(
+                projectService.createProject(new Project(projectDtoIn.getProjectName()))
+        );
+    }
 }

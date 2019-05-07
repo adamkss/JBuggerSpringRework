@@ -80,4 +80,14 @@ public class UserService {
                 .stream()
                 .forEach(user -> addNotificationToUser(user, notification));
     }
+
+    public void addProjectToUser(User user, Project project) {
+        user.getProjects().add(project);
+        userRepository.save(user);
+    }
+
+    public void removeProjectFromUser(User user, Project project) {
+        user.getProjects().remove(project);
+        userRepository.save(user);
+    }
 }

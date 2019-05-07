@@ -1,9 +1,6 @@
 package com.adam.kiss.jbugger.services;
 
-import com.adam.kiss.jbugger.entities.Bug;
-import com.adam.kiss.jbugger.entities.Label;
-import com.adam.kiss.jbugger.entities.Project;
-import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.entities.*;
 import com.adam.kiss.jbugger.exceptions.LabelWithThisNameAlreadyExistsException;
 import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
 import com.adam.kiss.jbugger.repositories.AttachmentRepository;
@@ -12,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +18,7 @@ public class ProjectService {
     private final BugService bugService;
     private final LabelService labelService;
     private final StatusService statusService;
+    private final UserService userService;
 
     public Project createProject(Project project) {
         return projectRepository.save(project);
@@ -27,6 +26,16 @@ public class ProjectService {
 
     public Project getProjectById(Integer projectId) throws ProjectNotFoundException {
         return projectRepository.findById(projectId).orElseThrow(ProjectNotFoundException::new);
+    }
+
+    public List<User> getAllUsersNotPartOfProject(Integer projectId) throws ProjectNotFoundException {
+        List<User> projectMembers = getProjectById(projectId).getUsersOfProject();
+        List<User> allUsers = userService.getAllUsers();
+
+        return allUsers
+                .stream()
+                .filter(user -> !projectMembers.contains(user))
+                .collect(Collectors.toList());
     }
 
     public List<Bug> getAllBugsOfProject(Integer projectId) throws ProjectNotFoundException {
@@ -76,4 +85,15 @@ public class ProjectService {
         return createdStatus;
     }
 
+    public void addUserToProject(User user, Project project) {
+        project.getUsersOfProject().add(user);
+        projectRepository.save(project);
+        userService.addProjectToUser(user, project);
+    }
+
+    public void removeUserFromProject(User user, Project project) {
+        project.getUsersOfProject().remove(user);
+        projectRepository.save(project);
+        userService.removeProjectFromUser(user, project);
+    }
 }
