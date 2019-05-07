@@ -21,7 +21,14 @@ public class ProjectService {
     private final UserService userService;
 
     public Project createProject(Project project) {
-        return projectRepository.save(project);
+        project = projectRepository.save(project);
+        return project;
+    }
+
+    public Project createProjectAndInitialize(Project project){
+        project = projectRepository.save(project);
+        statusService.initializeProjectWithStatuses(project);
+        return project;
     }
 
     public Project getProjectById(Integer projectId) throws ProjectNotFoundException {
@@ -95,5 +102,9 @@ public class ProjectService {
         project.getUsersOfProject().remove(user);
         projectRepository.save(project);
         userService.removeProjectFromUser(user, project);
+    }
+
+    public void deleteProject(Integer projectId) throws ProjectNotFoundException {
+        projectRepository.delete(getProjectById(projectId));
     }
 }

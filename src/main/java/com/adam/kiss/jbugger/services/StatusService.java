@@ -2,12 +2,14 @@ package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.entities.Project;
 import com.adam.kiss.jbugger.entities.Status;
+import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.exceptions.NoClosedStatusException;
 import com.adam.kiss.jbugger.exceptions.StatusNotFoundException;
 import com.adam.kiss.jbugger.repositories.StatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,22 @@ public class StatusService {
 
     public Status getStatusById(Integer id) throws StatusNotFoundException {
         return statusRepository.findById(id).orElseThrow(StatusNotFoundException::new);
+    }
+
+    public void initializeProjectWithStatuses(Project project) {
+        Status.PredefinedStatuses.PREDEFINED_STATUSES
+                .forEach(
+                        status -> {
+                            Status newStatus = new Status(
+                                    project,
+                                    status.getStatusName(),
+                                    status.getStatusColor(),
+                                    status.getOrderNr()
+                            );
+                            statusRepository.save(newStatus);
+                            project.getProjectStatuses().add(newStatus);
+                        }
+                );
     }
 
     private void shiftStatuses(Project project) {

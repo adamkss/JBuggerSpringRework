@@ -55,7 +55,7 @@ public class ProjectController {
 
     @PutMapping("/{projectId}/members/{userId}")
     public void assignUserToProject(@PathVariable Integer projectId,
-                                        @PathVariable Integer userId) throws ProjectNotFoundException, UserIdNotValidException {
+                                    @PathVariable Integer userId) throws ProjectNotFoundException, UserIdNotValidException {
         Project project = projectService.getProjectById(projectId);
         User user = userService.getUserById(userId);
         projectService.addUserToProject(user, project);
@@ -63,7 +63,7 @@ public class ProjectController {
 
     @DeleteMapping("/{projectId}/members/{userId}")
     public void unassignUserFromProject(@PathVariable Integer projectId,
-                                    @PathVariable Integer userId) throws ProjectNotFoundException, UserIdNotValidException {
+                                        @PathVariable Integer userId) throws ProjectNotFoundException, UserIdNotValidException {
         Project project = projectService.getProjectById(projectId);
         User user = userService.getUserById(userId);
         projectService.removeUserFromProject(user, project);
@@ -80,7 +80,12 @@ public class ProjectController {
     @PostMapping
     public ViewProjectShortOutDto createProject(@RequestBody CreateProjectDtoIn projectDtoIn) {
         return ViewProjectShortOutDto.mapToDto(
-                projectService.createProject(new Project(projectDtoIn.getProjectName()))
+                projectService.createProjectAndInitialize(new Project(projectDtoIn.getProjectName()))
         );
+    }
+
+    @DeleteMapping("/{projectId}")
+    public void deleteProject(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        projectService.deleteProject(projectId);
     }
 }
