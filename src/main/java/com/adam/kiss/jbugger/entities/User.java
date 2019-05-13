@@ -44,6 +44,10 @@ public class User {
     @EqualsAndHashCode.Exclude
     private List<Bug> bugsAssignedToTheUser = new ArrayList<>();
 
+    @OneToMany(mappedBy = "createdBy")
+    @EqualsAndHashCode.Exclude
+    private List<Bug> bugsCreatedByTheUser = new ArrayList<>();
+
     @OneToMany(mappedBy = "author")
     @EqualsAndHashCode.Exclude
     private List<Comment> comments = new ArrayList<>();

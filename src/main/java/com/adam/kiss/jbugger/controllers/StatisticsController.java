@@ -1,5 +1,6 @@
 package com.adam.kiss.jbugger.controllers;
 
+import com.adam.kiss.jbugger.dtos.ProjectUserStatistics;
 import com.adam.kiss.jbugger.entities.StatisticOutputDataWithColor;
 import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
 import com.adam.kiss.jbugger.services.ProjectService;
@@ -21,5 +22,10 @@ public class StatisticsController {
     public List<StatisticOutputDataWithColor> getLabelsStatistics(@PathVariable Integer projectId)
             throws ProjectNotFoundException {
         return statisticsService.getAssociatedNumberOfBugsForLabels(projectService.getProjectById(projectId));
+    }
+
+    @GetMapping("/byUsers/{projectId}")
+    public ProjectUserStatistics getProjectUserStatistics(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        return statisticsService.getProjectUserStatistics(projectId);
     }
 }
