@@ -43,7 +43,8 @@ public class SecurityController {
                 new JwtAuthenticationResponse(
                         jwt,
                         userPrincipal.getUsername(),
-                        userPrincipal.getName()
+                        userPrincipal.getName(),
+                        userPrincipal.isFirstTimeLogin()
                 )
         );
     }

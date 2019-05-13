@@ -19,6 +19,7 @@ public class UserPrincipal implements UserDetails {
     private String username;
     private String email;
     private String password;
+    private boolean isFirstTimeLogin;
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserPrincipal create(User user){
@@ -31,6 +32,7 @@ public class UserPrincipal implements UserDetails {
                 user.getUsername(),
                 user.getEmail(),
                 user.getPasswordHash(),
+                user.isFirstTimeLogin(),
                 authorities
         );
     }

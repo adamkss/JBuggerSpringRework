@@ -5,16 +5,21 @@ import com.adam.kiss.jbugger.enums.PredefinedStatusNames;
 import com.adam.kiss.jbugger.repositories.*;
 import com.adam.kiss.jbugger.enums.NotificationType;
 import com.adam.kiss.jbugger.enums.Severity;
+import com.adam.kiss.jbugger.services.EmailService;
 import com.adam.kiss.jbugger.services.ProjectService;
 import com.adam.kiss.jbugger.services.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.context.annotation.Bean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 import utils.FakeDataGenerator;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Properties;
 
 @Component
 @RequiredArgsConstructor

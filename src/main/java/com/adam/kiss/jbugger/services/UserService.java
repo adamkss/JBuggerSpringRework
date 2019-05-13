@@ -9,6 +9,7 @@ import com.adam.kiss.jbugger.exceptions.UserNotValidException;
 import com.adam.kiss.jbugger.projections.UserWithNameAndUsernameProjection;
 import com.adam.kiss.jbugger.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.RandomStringGenerator;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import utils.UserHelper;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -53,13 +55,22 @@ public class UserService {
         return null;
     }
 
-    public User createUser(String name, String phoneNumber, String email, String password, Role role)
+    public String generateRandomSpecialCharacters() {
+        RandomStringGenerator pwdGenerator = new RandomStringGenerator.Builder().withinRange(33, 45)
+                .build();
+        return pwdGenerator.generate(5);
+    }
+
+    public User createUser(String name, String phoneNumber, String email, Role role)
             throws UserNotValidException {
         User newUser = new User();
         newUser.setName(name);
         newUser.setPhoneNumber(phoneNumber);
         newUser.setEmail(email);
-        newUser.setPasswordHash(BCrypt.hashpw(password, BCrypt.gensalt()));
+
+        String temporaryPassword = generateRandomSpecialCharacters();
+        newUser.setPasswordHash(BCrypt.hashpw(temporaryPassword, BCrypt.gensalt()));
+
         newUser.setRole(role);
         newUser.setUserActivated(true);
 
@@ -67,7 +78,15 @@ public class UserService {
 
         newUser.setUsername(getUsernameForUser(userNameParts[0], userNameParts[1]));
 
-        return userRepository.save(newUser);
+        newUser.setFirstTimeLogin(true);
+        newUser = userRepository.save(newUser);
+
+        emailService.sendPasswordToUser(
+                email,
+                newUser.getUsername(),
+                temporaryPassword
+        );
+        return newUser;
     }
 
     public void addNotificationToUser(User user, Notification notification) {
@@ -89,5 +108,15 @@ public class UserService {
     public void removeProjectFromUser(User user, Project project) {
         user.getProjects().remove(project);
         userRepository.save(user);
+    }
+
+    public User changePasswordOfUser(Integer id, String newPassword) throws UserIdNotValidException {
+        User user = getUserById(id);
+        user.setPasswordHash(BCrypt.hashpw(
+                newPassword,
+                BCrypt.gensalt()
+        ));
+        user.setFirstTimeLogin(false);
+        return userRepository.save(user);
     }
 }

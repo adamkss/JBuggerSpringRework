@@ -56,6 +56,8 @@ public class User {
     @EqualsAndHashCode.Exclude
     private List<Bug> bugsUserIsInterestedIn = new ArrayList<>();
 
+    private boolean isFirstTimeLogin;
+
     @ManyToMany
     private List<Project> projects = new ArrayList<>();
 

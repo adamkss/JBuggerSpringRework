@@ -10,4 +10,5 @@ public class JwtAuthenticationResponse {
     private String tokenType = "Bearer";
     private final String username;
     private final String name;
+    private final boolean isFirstTimeLogin;
 }

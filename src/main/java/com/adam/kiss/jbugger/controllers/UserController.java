@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -85,7 +83,6 @@ public class UserController {
                 createUserDtoIn.getName(),
                 createUserDtoIn.getPhoneNumber(),
                 createUserDtoIn.getEmail(),
-                createUserDtoIn.getPassword(),
                 roleService.findByRoleName(createUserDtoIn.getRole())
         );
 
@@ -120,5 +117,17 @@ public class UserController {
                 userService.getUserById(
                         userPrincipal.getId()
                 ));
+    }
+
+    @PutMapping("/current/password")
+    public ViewUserShortDtoOut changePasswordOfUser(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody ChangePasswordOfUserDtoIn changePasswordOfUserDtoIn) throws UserIdNotValidException {
+        return ViewUserShortDtoOut.mapToDto(
+                userService.changePasswordOfUser(
+                        userPrincipal.getId(),
+                        changePasswordOfUserDtoIn.getPassword()
+                )
+        );
     }
 }
