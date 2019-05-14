@@ -7,6 +7,7 @@ import com.adam.kiss.jbugger.entities.Project;
 import com.adam.kiss.jbugger.entities.StatisticOutputDataWithColor;
 import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -94,7 +95,7 @@ public class StatisticsService {
         return projectUserStatistics;
     }
 
-    public List<ProjectActiveBugsStatistic> getProjectActiveBugsStatistics(Integer projectId, LocalDateTime startPeriod, LocalDateTime endPeriod)
+    public List<ProjectActiveBugsStatistic> getProjectActiveBugsStatistics(Integer projectId, LocalDate startPeriod, LocalDate endPeriod)
             throws ProjectNotFoundException {
         Project project = projectService.getProjectById(projectId);
 
@@ -102,21 +103,21 @@ public class StatisticsService {
 
         List<ProjectActiveBugsStatistic> projectActiveBugsStatistics = new ArrayList<>();
 
-        LocalDateTime currentDateTime = LocalDateTime.from(startPeriod);
+        LocalDate currentDateTime = LocalDate.from(startPeriod);
 
         while (currentDateTime.compareTo(endPeriod) <= 0) {
             int bugsActiveThatTime = 0;
 
             for (Bug bug :
                     bugsOfProject){
-                if( bug.getCreatedTime().compareTo(currentDateTime) <= 0
+                if(LocalDate.from(bug.getCreatedTime()).compareTo((currentDateTime)) <= 0
                         &&
-                        (bug.getCloseTime() == null || bug.getCloseTime().compareTo(currentDateTime) > 0)){
+                        (bug.getCloseTime() == null || LocalDate.from(bug.getCloseTime()).compareTo(currentDateTime) > 0)){
                     bugsActiveThatTime ++ ;
                 }
             }
             projectActiveBugsStatistics.add(new ProjectActiveBugsStatistic(
-                    LocalDateTime.from(currentDateTime),
+                    LocalDate.from(currentDateTime),
                     bugsActiveThatTime)
             );
             currentDateTime = currentDateTime.plusDays(1);

@@ -8,7 +8,9 @@ import com.adam.kiss.jbugger.services.ProjectService;
 import com.adam.kiss.jbugger.services.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import utils.FormatHelper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,12 +33,15 @@ public class StatisticsController {
         return statisticsService.getProjectUserStatistics(projectId);
     }
 
-    @GetMapping("/activeBugs/{projectId}")
-    public List<ProjectActiveBugsStatistic> getProjectActiveBugsStatistics(@PathVariable Integer projectId) throws ProjectNotFoundException {
+    @GetMapping("/activeBugs/{projectId}/{startDate}/{endDate}")
+    public List<ProjectActiveBugsStatistic> getProjectActiveBugsStatistics(@PathVariable Integer projectId,
+                                                                           @PathVariable String startDate,
+                                                                           @PathVariable String endDate)
+            throws ProjectNotFoundException {
         return statisticsService.getProjectActiveBugsStatistics(
                 projectId,
-                LocalDateTime.now().minusMonths(3),
-                LocalDateTime.now()
+                LocalDate.parse(startDate, FormatHelper.LOCAL_DATE_FORMATTER),
+                LocalDate.parse(endDate, FormatHelper.LOCAL_DATE_FORMATTER)
         );
     }
 }
