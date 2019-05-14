@@ -95,6 +95,7 @@ public class BugService {
         bugToClose.setStatus(
                 statusService.getClosedStatusIfExists(bugToClose.getProject())
         );
+        bugToClose.setCloseTime(LocalDateTime.now());
         bugRepository.save(bugToClose);
         notificationService.sendNotificationUsersBugWasClosed(bugToClose.getCreatedBy(), bugToClose);
     }

@@ -73,6 +73,8 @@ public class Bug {
     @ManyToOne
     private Project project;
 
+    private LocalDateTime closeTime;
+
     public Bug(Project project, String title, String description, String revision, String fixedInRevision, LocalDate targetDate, Severity severity, User createdBy, Status status, User assignedTo) {
         this.project = project;
         this.title = title;

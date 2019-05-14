@@ -1,5 +1,6 @@
 package com.adam.kiss.jbugger.controllers;
 
+import com.adam.kiss.jbugger.dtos.ProjectActiveBugsStatistic;
 import com.adam.kiss.jbugger.dtos.ProjectUserStatistics;
 import com.adam.kiss.jbugger.entities.StatisticOutputDataWithColor;
 import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
@@ -8,6 +9,7 @@ import com.adam.kiss.jbugger.services.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestMapping("/statistics")
@@ -27,5 +29,14 @@ public class StatisticsController {
     @GetMapping("/byUsers/{projectId}")
     public ProjectUserStatistics getProjectUserStatistics(@PathVariable Integer projectId) throws ProjectNotFoundException {
         return statisticsService.getProjectUserStatistics(projectId);
+    }
+
+    @GetMapping("/activeBugs/{projectId}")
+    public List<ProjectActiveBugsStatistic> getProjectActiveBugsStatistics(@PathVariable Integer projectId) throws ProjectNotFoundException {
+        return statisticsService.getProjectActiveBugsStatistics(
+                projectId,
+                LocalDateTime.now().minusMonths(3),
+                LocalDateTime.now()
+        );
     }
 }
