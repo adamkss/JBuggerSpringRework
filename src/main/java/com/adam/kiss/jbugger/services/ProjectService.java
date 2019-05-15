@@ -1,5 +1,6 @@
 package com.adam.kiss.jbugger.services;
 
+import com.adam.kiss.jbugger.dtos.ViewMinMaxProjectBugs;
 import com.adam.kiss.jbugger.entities.*;
 import com.adam.kiss.jbugger.exceptions.LabelWithThisNameAlreadyExistsException;
 import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
@@ -25,7 +26,7 @@ public class ProjectService {
         return project;
     }
 
-    public Project createProjectAndInitialize(Project project){
+    public Project createProjectAndInitialize(Project project) {
         project = projectRepository.save(project);
         statusService.initializeProjectWithStatuses(project);
         return project;

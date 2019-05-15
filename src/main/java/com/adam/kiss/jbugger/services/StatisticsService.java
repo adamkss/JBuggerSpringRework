@@ -2,6 +2,7 @@ package com.adam.kiss.jbugger.services;
 
 import com.adam.kiss.jbugger.dtos.ProjectActiveBugsStatistic;
 import com.adam.kiss.jbugger.dtos.ProjectUserStatistics;
+import com.adam.kiss.jbugger.dtos.ViewMinMaxProjectBugs;
 import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.entities.Project;
 import com.adam.kiss.jbugger.entities.StatisticOutputDataWithColor;
@@ -109,11 +110,11 @@ public class StatisticsService {
             int bugsActiveThatTime = 0;
 
             for (Bug bug :
-                    bugsOfProject){
-                if(LocalDate.from(bug.getCreatedTime()).compareTo((currentDateTime)) <= 0
+                    bugsOfProject) {
+                if (LocalDate.from(bug.getCreatedTime()).compareTo((currentDateTime)) <= 0
                         &&
-                        (bug.getCloseTime() == null || LocalDate.from(bug.getCloseTime()).compareTo(currentDateTime) > 0)){
-                    bugsActiveThatTime ++ ;
+                        (bug.getCloseTime() == null || LocalDate.from(bug.getCloseTime()).compareTo(currentDateTime) > 0)) {
+                    bugsActiveThatTime++;
                 }
             }
             projectActiveBugsStatistics.add(new ProjectActiveBugsStatistic(
@@ -125,4 +126,26 @@ public class StatisticsService {
 
         return projectActiveBugsStatistics;
     }
+
+    public ViewMinMaxProjectBugs getMinMaxProjectBugs() {
+        List<Project> projects = projectService.getAllProjects();
+
+        List<Project> projectsOrderedByBugs = projects
+                .stream()
+                .sorted(Comparator.comparingInt(p -> p.getBugs().size()))
+                .collect(Collectors.toList());
+        Project minProject = projectsOrderedByBugs.get(0);
+        Project maxProject = projectsOrderedByBugs.get(projectsOrderedByBugs.size() - 1);
+
+        ViewMinMaxProjectBugs viewMinMaxProjectBugs = new ViewMinMaxProjectBugs();
+
+        if(minProject != null) {
+            viewMinMaxProjectBugs.setMinProjectName(minProject.getName());
+            viewMinMaxProjectBugs.setMinProjectBugsNr(minProject.getBugs().size());
+            viewMinMaxProjectBugs.setMaxProjectNr(maxProject.getBugs().size());
+            viewMinMaxProjectBugs.setMaxProjectName(maxProject.getName());
+        }
+        return viewMinMaxProjectBugs;
+    }
+
 }

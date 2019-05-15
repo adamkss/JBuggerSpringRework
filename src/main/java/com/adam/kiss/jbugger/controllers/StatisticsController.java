@@ -2,11 +2,13 @@ package com.adam.kiss.jbugger.controllers;
 
 import com.adam.kiss.jbugger.dtos.ProjectActiveBugsStatistic;
 import com.adam.kiss.jbugger.dtos.ProjectUserStatistics;
+import com.adam.kiss.jbugger.dtos.ViewMinMaxProjectBugs;
 import com.adam.kiss.jbugger.entities.StatisticOutputDataWithColor;
 import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
 import com.adam.kiss.jbugger.services.ProjectService;
 import com.adam.kiss.jbugger.services.StatisticsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import utils.FormatHelper;
 
@@ -43,5 +45,10 @@ public class StatisticsController {
                 LocalDate.parse(startDate, FormatHelper.LOCAL_DATE_FORMATTER),
                 LocalDate.parse(endDate, FormatHelper.LOCAL_DATE_FORMATTER)
         );
+    }
+
+    @GetMapping("/minMaxBugs")
+    public ViewMinMaxProjectBugs getMinMaxStatistics() {
+        return statisticsService.getMinMaxProjectBugs();
     }
 }
