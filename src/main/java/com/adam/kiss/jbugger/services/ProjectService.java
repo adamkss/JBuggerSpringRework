@@ -1,10 +1,8 @@
 package com.adam.kiss.jbugger.services;
 
-import com.adam.kiss.jbugger.dtos.ViewMinMaxProjectBugs;
 import com.adam.kiss.jbugger.entities.*;
 import com.adam.kiss.jbugger.exceptions.LabelWithThisNameAlreadyExistsException;
 import com.adam.kiss.jbugger.exceptions.ProjectNotFoundException;
-import com.adam.kiss.jbugger.repositories.AttachmentRepository;
 import com.adam.kiss.jbugger.repositories.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

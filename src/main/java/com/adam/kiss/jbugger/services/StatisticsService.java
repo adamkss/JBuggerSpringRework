@@ -1,8 +1,6 @@
 package com.adam.kiss.jbugger.services;
 
-import com.adam.kiss.jbugger.dtos.ProjectActiveBugsStatistic;
-import com.adam.kiss.jbugger.dtos.ProjectUserStatistics;
-import com.adam.kiss.jbugger.dtos.ViewMinMaxProjectBugs;
+import com.adam.kiss.jbugger.dtos.*;
 import com.adam.kiss.jbugger.entities.Bug;
 import com.adam.kiss.jbugger.entities.Project;
 import com.adam.kiss.jbugger.entities.StatisticOutputDataWithColor;
@@ -144,6 +142,9 @@ public class StatisticsService {
             viewMinMaxProjectBugs.setMinProjectBugsNr(minProject.getBugs().size());
             viewMinMaxProjectBugs.setMaxProjectNr(maxProject.getBugs().size());
             viewMinMaxProjectBugs.setMaxProjectName(maxProject.getName());
+            viewMinMaxProjectBugs.setViewProjectShortOutDtos(
+                    ViewProjectWithNrOfBugsOutDto.mapToDtoList(projectsOrderedByBugs)
+            );
         }
         return viewMinMaxProjectBugs;
     }

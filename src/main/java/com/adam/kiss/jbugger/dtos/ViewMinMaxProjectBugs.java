@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,4 +17,6 @@ public class ViewMinMaxProjectBugs {
 
     private String maxProjectName;
     private Integer maxProjectNr;
+
+    private List<ViewProjectWithNrOfBugsOutDto> viewProjectShortOutDtos;
 }
